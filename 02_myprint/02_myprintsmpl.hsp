@@ -1,0 +1,47 @@
+// INFO ****************************************************
+// FileName : 02_myprintsmpl.hsp
+// Version  : 0.10
+// Date     : 2022/11/25
+// Author   : YUZRANIUM（ゆずらにうむ）
+// Twitter  : https://twitter.com/YUZRANIUM
+// GitHub   : https://github.com/YUZRANIUM/02_myprint
+//**********************************************************
+/* Description
+HSP3で多次元配列を確認用に書き出す
+なんてことないモジュールです。
+************************************************************/
+
+
+// #cmpopt varname 1
+	// #include "hspda.as"
+	#include "C:\\gitproject\\02_myprint\\02_myprint.hsp"
+
+	font "MyricaM M", 16 : objmode 2, 1
+
+	sdim aray0, 256, 20
+	ddim aray1, 9, 9
+	dim aray2, 5, 5, 5
+	dim aray3, 3, 3, 3, 3
+
+	aray0 = "デッデ～デッデ～", "デッデ～デ～デ～", "デッデ～デッデ～", "デッデ～デ～デ～"
+	aray0(4) = "でっでっででっ～ででっで", "でっでっでっで～ででっで", "でっでっでっでで～ででで"
+	aray0(7) = "でっでっででっ～ででっで", "でっでっでっで～ででっで", "でっでっでっでで～ででで"
+	aray0(10) = "でっでっでっでっで～でっででっでっで", "でででででっでっでで", "ででででででで"
+	aray0(13) = "でっでっでっでっで～でっででっでっで", "でででででっでっでで", "ででででででで～"
+	aray0(16) = "0～3 : イントロ", "4～9 : Aメロ?", "10～15 : サビ", "という歌詞の曲があります"
+
+	sdim lmoni, 16384     // 書き出し用の変数は必ず文字列型で
+
+	mesbox lmoni, 400, 400, 0
+	hmes = objinfo(stat, 2)
+
+
+	priaray1 lmoni, aray0
+	priaray2 lmoni, aray1
+	priaray3 lmoni, aray2
+	priaray4 lmoni, aray3
+
+	sendmsg hmes, $C, 0, lmoni
+
+
+	stop
