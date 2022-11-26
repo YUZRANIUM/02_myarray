@@ -1,10 +1,10 @@
 // INFO ****************************************************
-// FileName : 02_myprintsmpl.hsp
-// Version  : 0.10
-// Date     : 2022/11/25
+// FileName : 02_myarraysmpl.hsp
+// Version  : 0.20
+// Date     : 2022/11/26
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
-// GitHub   : https://github.com/YUZRANIUM/02_myprint
+// GitHub   : https://github.com/YUZRANIUM/02_myarray
 //**********************************************************
 /* Description
 HSP3で多次元配列を確認用に文字列として書き出す
@@ -12,7 +12,7 @@ HSP3で多次元配列を確認用に文字列として書き出す
 ************************************************************/
 
 
-	#include "C:\\gitproject\\02_myprint\\02_myprint.hsp"
+	#include "C:\\gitproject\\02_myprint\\02_myarray.hsp"
 
 	font "MyricaM M", 16 : objmode 2, 1
 

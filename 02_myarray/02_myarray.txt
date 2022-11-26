@@ -1,11 +1,11 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    Module   : 02_myprint.hsp
-    Version  : 0.40
-    Date     : 2022/11/19
+    Module   : 02_myarray.hsp
+    Version  : 0.20
+    Date     : 2022/11/26
     Author   : YUZRANIUM（ゆずらにうむ）
     Twitter  : https://twitter.com/YUZRANIUM
-    Git Hub  : https://github.com/YUZRANIUM/02_myprint
+    Git Hub  : https://github.com/YUZRANIUM/02_myarray
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     必要環境 | HSP 3.6 以上
     動作環境 | Windows10, 11
@@ -39,27 +39,27 @@ priaray p1, p2
 # 導入方法
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 .
-├─ 02_myprint.hsp
+├─ 02_myarray.hsp
 │
-├── 02_myprint
-│   ├── 02_myprint.hs
-│   ├── 02_myprintsmpl.hsp
-│   └── 02_myprint.txt
+├── 02_myarray
+│   ├── 02_myarray.hs
+│   ├── 02_myarraysmpl.hsp
+│   └── 02_myarray.txt
 │
 ├── README.md
 ├── README.html
 └── License.txt
 
-* 02_myprint.hspをユーザースクリプトのディレクトリか、HSPのインストールディレクトリ下の
-    commonフォルダ内において、02_myprint.hspをインクルードしてください。
+* 02_myarray.hspをユーザースクリプトのディレクトリか、HSPのインストールディレクトリ下の
+    commonフォルダ内において、02_myarray.hspをインクルードしてください。
 
-    例） hsp36/common/02_myprint.hsp
+    例） hsp36/common/02_myarray.hsp
 
 
-* 02_myprintフォルダをHSPのインストールディレクトリ下にあるdoclibフォルダ内に02_myprint
+* 02_myarrayフォルダをHSPのインストールディレクトリ下にあるdoclibフォルダ内に02_myarray
     フォルダごと置いて下さい。サンプルファイルもそのままで構いません。
 
-    例） hsp36/doclib/02_myprint
+    例） hsp36/doclib/02_myarray
 
 
 # ライセンス等

@@ -1,4 +1,4 @@
-# マイ・アレイ ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YUZRANIUM/02_myprint?include_prereleases&style=flat-square)
+# マイ・アレイ ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YUZRANIUM/02_myarray?include_prereleases&style=flat-square)
 
 多次元配列変数を簡単に書き出す、なんてことないモジュール
 
@@ -37,25 +37,25 @@
 
 ~~~
 .
-├── 02_myprint.hsp
+├── 02_myarray.hsp
 │
-├── 02_myprint
-│   ├── 02_myprint.hs
-│   ├── 02_myprintsmpl.hsp
-│   └── 02_myprint.txt
+├── 02_myarray
+│   ├── 02_myarray.hs
+│   ├── 02_myarraysmpl.hsp
+│   └── 02_myarray.txt
 │
 ├── README.md
 ├── README.html
 └── License.txt
 ~~~
 
-* 02_myprint.hsp をユーザースクリプトのディレクトリか、HSP のインストールディレクトリ下の commonフォルダ内において、02_myprint.hspをインクルードしてください。
+* 02_myarray.hsp をユーザースクリプトのディレクトリか、HSP のインストールディレクトリ下の commonフォルダ内において、02_myarray.hspをインクルードしてください。
 
-        例） hsp36/common/02_myprint.hsp
+        例） hsp36/common/02_myarray.hsp
 
-* 02_myprintフォルダをHSPのインストールディレクトリ下にある **doclibフォルダ内に02_myprintフォルダごと** 置いて下さい。サンプルファイルもそのままで構いません。
+* 02_myarrayフォルダをHSPのインストールディレクトリ下にある **doclibフォルダ内に02_myarrayフォルダごと** 置いて下さい。サンプルファイルもそのままで構いません。
 
-        例） hsp36/doclib/02_myprint
+        例） hsp36/doclib/02_myarray
 
 <br>
 
