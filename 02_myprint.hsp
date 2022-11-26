@@ -7,7 +7,7 @@
 // GitHub   : https://github.com/YUZRANIUM/02_myprint
 //**********************************************************
 /* Description
-HSP3で多次元配列を確認用に書き出す
+HSP3で多次元配列を確認用に文字列として書き出す
 なんてことないモジュールです。
 ************************************************************/
 
@@ -16,17 +16,7 @@ HSP3で多次元配列を確認用に書き出す
 #define global __myprint__
 
 
-
-#module "MyPrint" i, j
-
-
-// コンストラクタ
-#modinit
-	dim i, 4
-	i = 0, 0, 0, 0
-	j = 0
-	return
-
+#module "MyPrint"
 
 
 
@@ -35,20 +25,12 @@ HSP3で多次元配列を確認用に書き出す
 //----------------------------------------------------------
 
 
-// モジュール変数内容表示(4次元配列変数)
-#modfunc viewcount4 var p1
-	strrep p1, "aa", str(i(0))
-	strrep p1, "bb", str(i(1))
-	strrep p1, "cc", str(i(2))
-	strrep p1, "dd", str(i(3))
-	return
-
 // 4次元配列変数の書き出し
 //
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
-#modfunc local priaray4_ var p1, array p2
-	p1 += "(aa, bb, cc, dd)\n"
+#deffunc local priaray4_ var p1, array p2, str p3
+	p1 += "zz(aa, bb, cc, dd)\n"
 	i = 0, 0, 0, 0
 	repeat length4(p2)
 		i(2) = 0
@@ -74,15 +56,12 @@ HSP3で多次元配列を確認用に書き出す
 		i(3)++
 	loop
 	p1 += "\n"
-	viewcount4 thismod, p1
+	strrep p1, "aa", str(i(0))
+	strrep p1, "bb", str(i(1))
+	strrep p1, "cc", str(i(2))
+	strrep p1, "dd", str(i(3))
+	strrep p1, "zz", p3
 	return
-
-// 4次元配列変数の書き出し
-//
-// p1 : 配列変数の中身を受け取る文字列型変数
-// p2 : 配列変数
-#define global priaray4(%1,%2) priaray4_@MyPrint myv,%1,%2
-
 
 
 
@@ -92,20 +71,12 @@ HSP3で多次元配列を確認用に書き出す
 //----------------------------------------------------------
 
 
-// モジュール変数内容表示(3次元配列変数)
-#modfunc viewcount3 var p1
-	strrep p1, "aa", str(i(0))
-	strrep p1, "bb", str(i(1))
-	strrep p1, "cc", str(i(2))
-	return
-
-
 // 3次元配列変数の書き出し
 //
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
-#modfunc local priaray3_ var p1, array p2
-	p1 += "(aa, bb, cc)\n"
+#deffunc local priaray3_ var p1, array p2, str p3
+	p1 += "zz(aa, bb, cc)\n"
 	i = 0, 0, 0, 0
 	repeat length3(p2)
 		i(1) = 0
@@ -127,17 +98,11 @@ HSP3で多次元配列を確認用に書き出す
 		i(2)++
 	loop
 	p1 += "\n"
-	viewcount3 thismod, p1
+	strrep p1, "aa", str(i(0))
+	strrep p1, "bb", str(i(1))
+	strrep p1, "cc", str(i(2))
+	strrep p1, "zz", p3
 	return
-
-
-// 3次元配列変数の書き出し
-//
-// p1 : 配列変数の中身を受け取る文字列型変数
-// p2 : 配列変数
-#define global priaray3(%1,%2) priaray3_@MyPrint myv,%1,%2
-
-
 
 
 
@@ -146,19 +111,12 @@ HSP3で多次元配列を確認用に書き出す
 //----------------------------------------------------------
 
 
-// モジュール変数内容表示(2次元配列変数)
-#modfunc viewcount2 var p1
-	strrep p1, "aa", str(i(0))
-	strrep p1, "bb", str(i(1))
-	return
-
-
 // 2次元配列変数の書き出し
 //
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
-#modfunc local priaray2_ var p1, array p2
-	p1 += "(aa, bb)\n"
+#deffunc local priaray2_ var p1, array p2, str p3
+	p1 += "zz(aa, bb)\n"
 	i = 0, 0, 0, 0
 	repeat length2(p2)
 		i(0) = 0
@@ -169,15 +127,10 @@ HSP3で多次元配列を確認用に書き出す
 		i(1)++
 	loop
 	p1 += "\n"
-	viewcount2 thismod, p1
+	strrep p1, "aa", str(i(0))
+	strrep p1, "bb", str(i(1))
+	strrep p1, "zz", p3
 	return
-
-
-// 2次元配列変数の書き出し
-//
-// p1 : 配列変数の中身を受け取る文字列型変数
-// p2 : 配列変数
-#define global priaray2(%1,%2) priaray2_@MyPrint myv,%1,%2
 
 
 
@@ -186,47 +139,43 @@ HSP3で多次元配列を確認用に書き出す
 //----------------------------------------------------------
 
 
-// モジュール変数内容表示(1次元配列変数)
-#modfunc viewcount1 var p1
-	strrep p1, "aa", str(i(0))
-	return
-
-
 // 1次元配列変数の書き出し
 //
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
-#modfunc local priaray1_ var p1, array p2
-	p1 += "(aa)\n"
+#deffunc local priaray1_ var p1, array p2, str p3
+	p1 += "zz(aa)\n"
 	i = 0, 0, 0, 0
 	repeat length(p2)
 		p1 += "(" + i(0) + ") = " + p2(i(0)) + "\n"
 		i(0)++
 	loop
 	p1 += "\n"
-	viewcount1 thismod, p1
+	strrep p1, "aa", str(i(0))
+	strrep p1, "zz", p3
 	return
 
 
-// 1次元配列変数の書き出し
+
+
+
+//----------------------------------------------------------
+//条件分岐マクロ
+//----------------------------------------------------------
+
+
+// 多次元配列変数の書き出し
 //
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
-#define global priaray1(%1,%2) priaray1_@MyPrint myv,%1,%2
+#define global priaray(%1,%2)\
+	if      (length4(%2) != 0) {priaray4_@MyPrint %1,%2,"%2"}\
+	else:if (length3(%2) != 0) {priaray3_@MyPrint %1,%2,"%2"}\
+	else:if (length2(%2) != 0) {priaray2_@MyPrint %1,%2,"%2"}\
+	else:if (length(%2) != 0)  {priaray1_@MyPrint %1,%2,"%2"}
 
-
-
-
-
-
-
-#deffunc my_deleteY onexit
-	delmod thismod
-	return
 
 
 #global // MyPrint
-	newmod myv, MyPrint
-
 
 #endif // __myprint__
