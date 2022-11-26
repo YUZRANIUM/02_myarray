@@ -12,11 +12,11 @@ HSP3で多次元配列を確認用に文字列として書き出す
 ************************************************************/
 
 
-#ifndef __myprint__
-#define global __myprint__
+#ifndef __myarray__
+#define global __myarray__
 
 
-#module "MyPrint"
+#module "MyArray"
 
 
 
@@ -169,13 +169,13 @@ HSP3で多次元配列を確認用に文字列として書き出す
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
 #define global priaray(%1,%2)\
-	if      (length4(%2) != 0) {priaray4_@MyPrint %1,%2,"%2"}\
-	else:if (length3(%2) != 0) {priaray3_@MyPrint %1,%2,"%2"}\
-	else:if (length2(%2) != 0) {priaray2_@MyPrint %1,%2,"%2"}\
-	else:if (length(%2) != 0)  {priaray1_@MyPrint %1,%2,"%2"}
+	if      (length4(%2) != 0) {priaray4_@MyArray %1,%2,"%2"}\
+	else:if (length3(%2) != 0) {priaray3_@MyArray %1,%2,"%2"}\
+	else:if (length2(%2) != 0) {priaray2_@MyArray %1,%2,"%2"}\
+	else:if (length(%2) != 0)  {priaray1_@MyArray %1,%2,"%2"}
 
 
 
-#global // MyPrint
+#global // MyArray
 
-#endif // __myprint__
+#endif // __myarray__
