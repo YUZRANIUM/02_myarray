@@ -30,38 +30,39 @@ HSP3で多次元配列を確認用に文字列として書き出す
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
 #deffunc local priaray4_ var p1, array p2, str p3
-	p1 += "zz(aa, bb, cc, dd)\n"
-	i = 0, 0, 0, 0
-	repeat length4(p2)
-		i(2) = 0
-		repeat length3(p2)
-			i(1) = 0
-			repeat length2(p2)
-				i(0) = 0
-				repeat length(p2)
-					j(0) = 0
-					p1 += "("
-					repeat 3
-						p1 += "" + i(j(0)) + ", "
-						j(0)++
-					loop
-					p1 += "" + i(3) + ") = "
-					p1 += "" + p2(i(0), i(1), i(2), i(3)) + "\n"
-					i(0)++
-				loop
-				i(1)++
-			loop
-			i(2)++
-		loop
-		i(3)++
-	loop
-	p1 += "\n"
-	strrep p1, "aa", str(i(0))
-	strrep p1, "bb", str(i(1))
-	strrep p1, "cc", str(i(2))
-	strrep p1, "dd", str(i(3))
-	strrep p1, "zz", p3
-	return
+    p1 += "zz(aa, bb, cc, dd) L=ll\n"
+    i = 0, 0, 0, 0
+    repeat length4(p2)
+        i(2) = 0
+        repeat length3(p2)
+            i(1) = 0
+            repeat length2(p2)
+                i(0) = 0
+                repeat length(p2)
+                    j(0) = 0
+                    p1 += "("
+                    repeat 3
+                        p1 += "" + i(j(0)) + ", "
+                        j(0)++
+                    loop
+                    p1 += "" + i(3) + ") = "
+                    p1 += "" + p2(i(0), i(1), i(2), i(3)) + "\n"
+                    i(0)++
+                loop
+                i(1)++
+            loop
+            i(2)++
+        loop
+        i(3)++
+    loop
+    p1 += "\n"
+    strrep p1, "zz", p3
+    strrep p1, "aa", str(i(0))
+    strrep p1, "bb", str(i(1))
+    strrep p1, "cc", str(i(2))
+    strrep p1, "dd", str(i(3))
+    strrep p1, "ll", str(lcnt_)
+    return
 
 
 
@@ -76,33 +77,34 @@ HSP3で多次元配列を確認用に文字列として書き出す
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
 #deffunc local priaray3_ var p1, array p2, str p3
-	p1 += "zz(aa, bb, cc)\n"
-	i = 0, 0, 0, 0
-	repeat length3(p2)
-		i(1) = 0
-		repeat length2(p2)
-			i(0) = 0
-			repeat length(p2)
-				j(0) = 0
-				p1 += "("
-				repeat 2
-					p1 += "" + i(j(0)) + ", "
-					j(0)++
-				loop
-				p1 += "" + i(2) + ") = "
-				p1 += "" + p2(i(0), i(1), i(2)) + "\n"
-				i(0)++
-			loop
-			i(1)++
-		loop
-		i(2)++
-	loop
-	p1 += "\n"
-	strrep p1, "aa", str(i(0))
-	strrep p1, "bb", str(i(1))
-	strrep p1, "cc", str(i(2))
-	strrep p1, "zz", p3
-	return
+    p1 += "zz(aa, bb, cc) L=ll\n"
+    i = 0, 0, 0, 0
+    repeat length3(p2)
+        i(1) = 0
+        repeat length2(p2)
+            i(0) = 0
+            repeat length(p2)
+                j(0) = 0
+                p1 += "("
+                repeat 2
+                    p1 += "" + i(j(0)) + ", "
+                    j(0)++
+                loop
+                p1 += "" + i(2) + ") = "
+                p1 += "" + p2(i(0), i(1), i(2)) + "\n"
+                i(0)++
+            loop
+            i(1)++
+        loop
+        i(2)++
+    loop
+    p1 += "\n"
+    strrep p1, "zz", p3
+    strrep p1, "aa", str(i(0))
+    strrep p1, "bb", str(i(1))
+    strrep p1, "cc", str(i(2))
+    strrep p1, "ll", str(lcnt_)
+    return
 
 
 
@@ -116,21 +118,22 @@ HSP3で多次元配列を確認用に文字列として書き出す
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
 #deffunc local priaray2_ var p1, array p2, str p3
-	p1 += "zz(aa, bb)\n"
-	i = 0, 0, 0, 0
-	repeat length2(p2)
-		i(0) = 0
-		repeat length(p2)
-			p1 += "(" + i(0) + ", " + i(1) + ") = " + p2(i(0), i(1)) + "\n"
-			i(0)++
-		loop
-		i(1)++
-	loop
-	p1 += "\n"
-	strrep p1, "aa", str(i(0))
-	strrep p1, "bb", str(i(1))
-	strrep p1, "zz", p3
-	return
+    p1 += "zz(aa, bb) L=ll\n"
+    i = 0, 0, 0, 0
+    repeat length2(p2)
+        i(0) = 0
+        repeat length(p2)
+            p1 += "(" + i(0) + ", " + i(1) + ") = " + p2(i(0), i(1)) + "\n"
+            i(0)++
+        loop
+        i(1)++
+    loop
+    p1 += "\n"
+    strrep p1, "zz", p3
+    strrep p1, "aa", str(i(0))
+    strrep p1, "bb", str(i(1))
+    strrep p1, "ll", str(lcnt_)
+    return
 
 
 
@@ -144,16 +147,17 @@ HSP3で多次元配列を確認用に文字列として書き出す
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
 #deffunc local priaray1_ var p1, array p2, str p3
-	p1 += "zz(aa)\n"
-	i = 0, 0, 0, 0
-	repeat length(p2)
-		p1 += "(" + i(0) + ") = " + p2(i(0)) + "\n"
-		i(0)++
-	loop
-	p1 += "\n"
-	strrep p1, "aa", str(i(0))
-	strrep p1, "zz", p3
-	return
+    p1 += "zz(aa) L=ll\n"
+    i = 0, 0, 0, 0
+    repeat length(p2)
+        p1 += "(" + i(0) + ") = " + p2(i(0)) + "\n"
+        i(0)++
+    loop
+    p1 += "\n"
+    strrep p1, "zz", p3
+    strrep p1, "aa", str(i(0))
+    strrep p1, "ll", str(lcnt_)
+    return
 
 
 
@@ -168,12 +172,18 @@ HSP3で多次元配列を確認用に文字列として書き出す
 //
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
-#define global priaray(%1,%2)\
-	if      (length4(%2) != 0) {priaray4_@MyArray %1,%2,"%2"}\
-	else:if (length3(%2) != 0) {priaray3_@MyArray %1,%2,"%2"}\
-	else:if (length2(%2) != 0) {priaray2_@MyArray %1,%2,"%2"}\
-	else:if (length(%2) != 0)  {priaray1_@MyArray %1,%2,"%2"}
+#define global priaray(%1,%2) lcnt_@MyArray = __line__:\
+    if      (length4(%2) != 0) {priaray4_@MyArray %1,%2,"%2"}\
+    else:if (length3(%2) != 0) {priaray3_@MyArray %1,%2,"%2"}\
+    else:if (length2(%2) != 0) {priaray2_@MyArray %1,%2,"%2"}\
+    else:if (length(%2) != 0)  {priaray1_@MyArray %1,%2,"%2"}
 
+
+    ; lcnt_@MyArray : マクロが呼び出された時点での行数を渡しています
+    ;               : 行末のコロン（:）はマクロ展開時のマルチステートメント用です
+    ;               : この位置でないと行数が正確に表示できません
+    ;
+    ; "%2"          : 変数名を表示させるための幻の第3パラメータです
 
 
 #global // MyArray
