@@ -16,7 +16,7 @@ HSP3で多次元配列を確認用に文字列として書き出す
 
 ************************************************************/
 
-    #include "02_myarray.hsp"
+    #include "C:\\gitproject\\doclib\\02_myarray.hsp"
 
     font "MyricaM M", 16 : objmode 2, 1
 
@@ -46,6 +46,7 @@ HSP3で多次元配列を確認用に文字列として書き出す
     mesbox lmoni, 640, 480, 0
     hmes = objinfo(stat, 2)
 
+
     priarray lmoni, 表示          // 次元は考えなくて大丈夫です
     priarray lmoni, 使い方
     priarray lmoni, aray0
@@ -54,7 +55,9 @@ HSP3で多次元配列を確認用に文字列として書き出す
     aray0(17) = "ヤマト", "銀河", "アスカ", "ヒュウガ"
 
     priarray lmoni, aray0        // 確認
+
     priarray lmoni, aray1
+
     priarray lmoni, aray2:priarray lmoni, aray3
 
     priarray lmoni, test1        // 処理の前後で確認したい場合は挟んで下さい
