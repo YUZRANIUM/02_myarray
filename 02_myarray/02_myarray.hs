@@ -1,6 +1,6 @@
 ; INFO „ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 ; FileName : 02_myarray.hs
-; Version  : 0.20
+; Version  : 0.21
 ; Date     : 2022/11/26
 ; Author   : YUZRANIUMi‚ä‚¸‚ç‚É‚¤‚Şj
 ; Twitter  : https://twitter.com/YUZRANIUM
@@ -13,7 +13,7 @@
 %dll
 02_myarray
 %ver
-0.20
+0.21
 %date
 2022/11/26
 %author
