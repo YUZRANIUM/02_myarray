@@ -1,7 +1,7 @@
 // INFO ****************************************************
 // FileName : 02_myarraysmpl.hsp
-// Version  : 0.21
-// Date     : 2022/11/26
+// Version  : 0.22
+// Date     : 2022/12/01
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -13,64 +13,82 @@ HSP3で多次元配列を確認用に文字列として書き出す
     ※注意事項※
 
     * 初回実行時、動作がかなり重くなります。
+	* 気になるようでしたら次元要素数の変更をおすすめします。
 
 ************************************************************/
 
-    #include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	#include "02_myarray.hsp"
 
     font "MyricaM M", 16 : objmode 2, 1
 
-    sdim aray0, 256, 20
-    ddim aray1, 4, 6
-    dim aray2, 3, 3, 3
-    dim aray3, 3, 2, 3, 2
-    dim test1, 15
-    sdim lmoni, 4096             // 書き出し用の変数は必ず文字列型で
+	sdim 使い方, 128, 13
+	sdim aray0, 256, 20
+	ddim aray1, 6, 6
+	sdim aray2, 64, 4, 4, 4
+	dim aray3, 3, 2, 3, 2
+	dim test, 15
+	sdim lmoni, 4096             // 書き出し用の変数は必ず文字列型で
 
-    表示 = "ちゃんと変数名も行数も表示できますよ", "そう、マクロならね"
-    使い方 = "第一パラメータには文字列型変数を指定して下さい。"
-    使い方(1) = "第二パラメータに中身を見たい多次元配列変数を指定して下さい"
-    使い方(2) = "こんなふうに変数名と要素の総数、マクロを呼び出した行数"
-    使い方(3) = "そして各配列要素に対応した値が一覧として表示できます"
-    使い方(5) = "デバッグウィンドウで確認できるって?", "ログ表示をテキストに出力できるって?"
-    使い方(7) = "......", "うっあっあっうわぁぁぁぁぁぁぁぁぁぁぁぁぁぁ"
-    使い方(9) = "あっ!!、でっ、でっ、でも明示的にスクリプト内でこういった事が"
-    使い方(10) = "できるだけでも存在価値はあるんじゃない?"
-    使い方(11) = "ほっ、ほら!", "ログ出力みたいに上書きされずに済むよ(;ﾟ∀ﾟ)=3ﾊｧﾊｧ"
+	aa = "ちゃんと変数名も行数も表示できますよ", "そう、マクロならね"
+	使い方 = "第一パラメータには文字列型変数を指定して下さい。"
+	使い方(1) = "第二パラメータに中身を見たい多次元配列変数を指定して下さい"
+	使い方(2) = "こんなふうに変数名と要素の総数、マクロを呼び出した行数"
+	使い方(3) = "そして各配列要素に対応した値が一覧として表示できます"
+	使い方(5) = "デバッグウィンドウで確認できるって?", "ログ表示をテキストに出力できるって?"
+	使い方(7) = "......", "うっあっあっうわぁぁぁぁぁぁぁぁぁぁぁぁぁぁ"
+	使い方(9) = "あっ!!、でっ、でっ、でも明示的にスクリプト内でこういった事が"
+	使い方(10) = "できるだけでも存在価値はあるんじゃない?"
+	使い方(11) = "ほっ、ほら!", "ログ出力みたいに上書きされずに済むよ(;ﾟ∀ﾟ)=3ﾊｧﾊｧ"
 
-    aray0 = "鳳翔", "翔鶴", "瑞鶴", "赤城", "加賀", "龍驤", "蒼龍"
-    aray0(7) = "飛龍", "瑞鳳", "祥鳳", "隼鷹", "飛鷹", "千歳", "信濃"
-    aray0(14) = "古鷹", "青葉", "妙高", "高雄", "最上", "利根", "改鈴谷"
+	aray0 = "鳳翔", "翔鶴", "瑞鶴", "赤城", "加賀", "龍驤", "蒼龍"
+	aray0(7) = "飛龍", "瑞鳳", "祥鳳", "隼鷹", "飛鷹", "千歳", "信濃"
+	aray0(14) = "古鷹", "青葉", "妙高", "高雄", "最上", "利根", "改鈴谷"
+	i = 0, 0, 0
+	repeat length3(aray2)
+		i(1) = 0
+		repeat length2(aray2)
+			i(0) = 0
+			repeat length(aray2)
+				aray2(i(0), i(1), i(2)) = "0.000000"
+				i(0)++
+			loop
+			i(1)++
+		loop
+		i(2)++
+	loop
 
-    // 表示用
-    mesbox lmoni, 640, 480, 0
-    hmes = objinfo(stat, 2)
+	// 表示用
+	mesbox lmoni, 640, 480, 0
+	hmes = objinfo(stat, 2)
 
 
-    priarray lmoni, 表示          // 次元は考えなくて大丈夫です
-    priarray lmoni, 使い方
-    priarray lmoni, aray0
 
-    // 途中で追加
-    aray0(17) = "ヤマト", "銀河", "アスカ", "ヒュウガ"
+	priarray lmoni, aa          // 次元は考えなくて大丈夫です
+	priarray lmoni, 使い方
 
-    priarray lmoni, aray0        // 確認
 
-    priarray lmoni, aray1
+	priarray lmoni, aray0
+	// 途中で追加
+	aray0(15) = "999", "ヤマト", "銀河", "アスカ", "ヒュウガ", "アンドロメダ"
+	priarray lmoni, aray0        // 確認
 
-    priarray lmoni, aray2:priarray lmoni, aray3
 
-    priarray lmoni, test1        // 処理の前後で確認したい場合は挟んで下さい
-    foreach test1
-        test1(cnt) = cnt
-    loop
-    priarray lmoni, test1
-                                // ループ内での使用は避けたほうが宜しいかと
-                                // 内部命令で1番深いところでは、既に
-                                // ループレベル5に達しています
+	priarray lmoni, aray1
+	priarray lmoni, aray2:priarray lmoni, aray3
+
+
+	priarray lmoni, test        // 処理の前後で確認したい場合は挟んで下さい
+	foreach test
+	    test(cnt) = cnt
+	loop
+	priarray lmoni, test
+                        // ループ内での使用は避けたほうが宜しいかと
+                        // 内部命令で1番深いところでは、既に
+                        // ループレベル4に達しています
+
+	// スクリプトの途中でテキストファイルに出力
     notesel lmoni
-    notesave dir_cur + "\\log2.txt"     // スクリプトの途中でテキストファイルに出力
+	notesave dir_cur + "\\log2.txt"
 
-    sendmsg hmes, $C, 0, lmoni
-
-    stop
+	sendmsg hmes, $C, 0, lmoni
+	stop
