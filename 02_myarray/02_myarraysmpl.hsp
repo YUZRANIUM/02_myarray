@@ -43,7 +43,7 @@
 //==============================================================================//
 
 
-	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	#include "02_myarray.hsp"
     font "MyricaM M", 16 : objmode 2, 1
 
 	aa = "ちゃんと変数名も型も行数も表示できますよ", "そう、マクロならね"
