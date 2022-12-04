@@ -1,22 +1,29 @@
-// INFO ****************************************************
+// INFO ************************************************************************
 // FileName : 02_myarray.hsp
-// Version  : 0.22
-// Date     : 2022/12/01
+// Version  : 0.23
+// Date     : 2022/12/04
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
-// *********************************************************
+// *****************************************************************************
 /* Description
- HSP3で多次元配列を確認用に文字列として書き出す
- なんてことないモジュールです。
-************************************************************/
+ HSP3で多次元配列を確認用に文字列として書き出すなんてことないモジュールです。
+
+    このモジュールはHSPTV!掲示板の皆様によって支えられております。
+    この場を借りて感謝申し上げます。誠に有難うございます。
+
+    ***  掲示板情報  ***
+    kind    : 宣伝
+    date    : 2022/11/26
+    person  : Yuzranium
+    content : 多次元配列変数を複数行文字列に
+********************************************************************************/
 
 
 #ifndef __myarray__
 #define global __myarray__
 
-
-#module "MyArray"
+#module "myarray"
 
 
 
@@ -24,211 +31,153 @@
 //配列変数の情報表示用
 //----------------------------------------------------------
 
-
-// p1 : 配列変数の中身を受け取る文字列型変数
+// p1 : 配列変数の中身を受け取る文字列型変数 ( array information )
 // p2 : 配列変数
 // p3 : 変数名
 // p4 : 行数
-#defcfunc local ainfo_ var p1, array p2, str p3, int p4
+#defcfunc local ainfo_ array p2, str p3, int p4
 
-	; * デバッグウィンドウのように変数の型表示を追加してみました
-	;   str型の変数に "123" などとして書き出した場合、int型と区別がつかなくなるためです
-	;
-	if      (vartype(p2) == 2) {vinfo_ = "str"}
-	else:if (vartype(p2) == 3) {vinfo_ = "double"}
-	else:if (vartype(p2) == 4) {vinfo_ = "int"}
+    ; 配列書き出し 分岐用ラベル    *未対応の型, *1次元, *2次元, *3次元, *4次元
+    ;
+    view_ = *not_vartype@myarray, *Dimention_1@myarray, *Dimention_2@myarray, *Dimention_3@myarray, *Dimention_4@myarray
 
+    ; 配列情報表示 分岐用ラベル    *1次元, *2次元, *3次元, *4次元
+    ;
+    vinfo_ = *D1_info@myarray, *D2_info@myarray, *D3_info@myarray, *D4_info@myarray
 
-	if      (length4(p2) != 0) {
-		return strf("[%s ] %s(%d, %d, %d, %d) %d L=%d\n", p3, vinfo_@MyArray, length(p2), length2(p2), length3(p2), length4(p2), varsize(p2), p4)
-	}
-	else:if (length3(p2) != 0) {
-		return strf("[%s ] %s(%d, %d, %d) %d L=%d\n", p3, vinfo_@MyArray, length(p2), length2(p2), length3(p2), varsize(p2), p4)
-	}
-	else:if (length2(p2) != 0) {
-		return strf("[%s ] %s(%d, %d) %d L=%d\n", p3, vinfo_@MyArray, length(p2), length2(p2), varsize(p2), p4)
-	}
-	else:if (length(p2)  != 0) {
-		return strf("[%s ] %s(%d) %d L=%d\n", p3, vinfo_@MyArray, length(p2), varsize(p2), p4)
-	}
+    ; 変数の型表示    要素には vartype関数を用いて利用します
+    ; ラベル型、モジュール型は書き出せませんが、変数の情報だけは取得できるのでとりあえず
+    ;
+    tinfo_ = "", "label", "str", "double", "int", "struct", "comobj"
 
-	; p1に格納される書式
-	;
-	; [ 変数名 ] 型(1次元要素, 2次元要素, 3次元要素, 4次元要素) バッファサイズ L=行数
+    ; 使用次元の確認
+    ;
+    prinfo_ = (length4(p2) != 0) + (length3(p2) != 0) + (length2(p2) != 0) + (length(p2) != 0) - 1
+
+    gosub vinfo_@myarray(prinfo_@myarray)       ; ラベルジャンプで分岐
+
+    return
+
+//-------------------------------  配列情報表示  -------------------------------//
+
+    ; [ 変数名 ] 型(1次元要素, 2次元要素, 3次元要素, 4次元要素) L=行数
+
+*D4_info@myarray
+    return strf("[%s ] %s(%d, %d, %d, %d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), length2(p2), length3(p2), length4(p2), p4)
+
+*D3_info@myarray
+    return strf("[%s ] %s(%d, %d, %d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), length2(p2), length3(p2), p4)
+
+*D2_info@myarray
+    return strf("[%s ] %s(%d, %d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), length2(p2), p4)
+
+*D1_info@myarray
+    return strf("[%s ] %s(%d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), p4)
+
 
 
 
 
 //----------------------------------------------------------
-//4次元配列変数
+//配列変数の書き出し用内部命令
 //----------------------------------------------------------
 
-
-// 4次元配列変数の書き出し
+// n次元配列変数の書き出し
 //
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
-#deffunc local priarray4_ var p1, array p2, str p3, int p4
-	;
-	; 配列情報表示用の内部関数
-	;
-	p1 += ainfo_@MyArray(p1, p2, p3, p4)
+#deffunc local priarray_dx var p1, array p2, str p3, int p4
 
-	i = 0, 0, 0, 0                      ; 次元要素カウンタ
+    ; 配列情報表示用の内部関数
+    ;
+    p1 += ainfo_@myarray(p2, p3, p4)
 
-	repeat length4(p2)      ; 第4次元
-		i(2) = 0
+    ; ラベル型、モジュール型変数はこの方法では書き出せない（エラーになる）ので書き出しを実行させずに return させる
+    ;
+    if (vartype(p2) == 1) | (vartype(p2) == 5) | (vartype(p2) == 6)  :  goto view_@myarray(0)
 
-		repeat length3(p2)      ; 第3次元
-			i(1) = 0
+    ; 各次元要素の保持
+    ;
+    alldim = length(p2), length2(p2), length3(p2), length4(p2)
 
-			repeat length2(p2)      ; 第2次元
-				i(0) = 0
+    ; 各次元の使用状況を 0, 1 で表現
+    ;
+    usedim = (alldim(0) != 0) + (alldim(1) != 0) + (alldim(2) != 0) + (alldim(3) != 0)
 
-				repeat length(p2)       ; 第1次元
+    ; 配列数合計
+    sum = 1
+    repeat 4
+        if (alldim(cnt) = 0) { break }
+        sum *= alldim(cnt)
+    loop
 
-					p1 += "(" + i(0) + ", " + i(1) + ", " + i(2) + ", " + i(3) + ") = " + p2(i(0), i(1), i(2), i(3)) + "\n" ; これで1行
-
-					i(0)++
-				loop                    ; 第1次元
-
-				i(1)++
-			loop                   ; 第2次元
-
-			i(2)++
-		loop                    ; 第3次元
-
-		i(3)++
-	loop                    ; 第4次元
-
-	p1 += "\n"      ; 次の配列表示のための改行。 最終行の後は上のものと合わせて2行分空行ができます
-	return
-
-
-
-
-//----------------------------------------------------------
-//3次元配列変数
-//----------------------------------------------------------
+    ; 書き出し
+    repeat sum
+        j = cnt
+        repeat usedim
+            num = j
+            repeat cnt
+                num /= alldim(cnt)
+            loop
+            i(cnt) = num \ alldim(cnt)
+        loop
+        gosub view_@myarray(usedim)      ; ラベルジャンプで分岐
+    loop
 
 
-// 3次元配列変数の書き出し
-//
-// p1 : 配列変数の中身を受け取る文字列型変数
-// p2 : 配列変数
-#deffunc local priarray3_ var p1, array p2, str p3, int p4
+; 未対応の型はこちらへ
+*not_vartype@myarray
+    p1 += "\n"      ; 次の配列変数表示のための改行
+    return
 
-	p1 += ainfo_@MyArray(p1, p2, p3, p4)
 
-	i = 0, 0, 0, 0
 
-	repeat length3(p2)
-		i(1) = 0
+//-------------------------------  配列書き出し  -------------------------------//
 
-		repeat length2(p2)
-			i(0) = 0
+; 1次元配列
+*Dimention_1@myarray
+    p1 += strf("(%d) = %s\n", i(0), p2(i(0)))
+    return
 
-			repeat length(p2)
+; 2次元配列
+*Dimention_2@myarray
+    p1 += strf("(%d, %d) = %s\n", i(0), i(1), p2(i(0), i(1)))
+    return
 
-				p1 += "(" + i(0) + ", " + i(1) + ", " + i(2) + ") = " + p2(i(0), i(1), i(2)) + "\n"
+; 3次元配列
+*Dimention_3@myarray
+    p1 += strf("(%d, %d, %d) = %s\n", i(0), i(1), i(2), p2(i(0), i(1), i(2)))
+    return
 
-				i(0)++
-			loop
+; 4次元配列
+*Dimention_4@myarray
+    p1 += strf("(%d, %d, %d, %d) = %s\n", i(0), i(1), i(2), i(3), p2(i(0), i(1), i(2), i(3)))
+    return
 
-			i(1)++
-		loop
 
-		i(2)++
-	loop
 
-	p1 += "\n"
-	return
 
+//##############################################################################
+//                               <<  マクロ  >>
+//##############################################################################
 
 
 //----------------------------------------------------------
-//2次元配列変数
+// 多次元配列書き出しマクロ
 //----------------------------------------------------------
-
-
-// 2次元配列変数の書き出し
-//
-// p1 : 配列変数の中身を受け取る文字列型変数
-// p2 : 配列変数
-#deffunc local priarray2_ var p1, array p2, str p3, int p4
-
-	p1 += ainfo_@MyArray(p1, p2, p3, p4)
-
-	i = 0, 0, 0, 0
-
-	repeat length2(p2)
-		i(0) = 0
-
-		repeat length(p2)
-
-			p1 += "(" + i(0) + ", " + i(1) + ") = " + p2(i(0), i(1)) + "\n"
-
-			i(0)++
-		loop
-
-		i(1)++
-	loop
-
-	p1 += "\n"
-	return
-
-
-
-//----------------------------------------------------------
-//1次元配列変数
-//----------------------------------------------------------
-
-
-// 1次元配列変数の書き出し
-//
-// p1 : 配列変数の中身を受け取る文字列型変数
-// p2 : 配列変数
-#deffunc local priarray1_ var p1, array p2, str p3, int p4
-
-	p1 += ainfo_@MyArray(p1, p2, p3, p4)
-
-	i = 0, 0, 0, 0
-
-	repeat length(p2)
-
-		p1 += "(" + i(0) + ") = " + p2(i(0)) + "\n"
-
-		i(0)++
-	loop
-
-	p1 += "\n"
-	return
-
-
-
-
-
-//----------------------------------------------------------
-//条件分岐マクロ
-//----------------------------------------------------------
-
 
 // 多次元配列変数の書き出し
 //
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
-#define global priarray(%1,%2,%3=__line__)\
-	if      (length4(%2) != 0) {priarray4_@MyArray %1,%2,"%2",%3}\
-	else:if (length3(%2) != 0) {priarray3_@MyArray %1,%2,"%2",%3}\
-	else:if (length2(%2) != 0) {priarray2_@MyArray %1,%2,"%2",%3}\
-	else:if (length(%2)  != 0) {priarray1_@MyArray %1,%2,"%2",%3}
+#define global priarray(%1,%2,%3=__line__) priarray_dx@myarray %1,%2,"%2",%3
 
-	// "%2"         : 変数名を表示させるための幻の第3パラメータです
-	//              : マクロ展開時、ダブルクオーテーションに囲まれた状態で
-	//              : 展開されるので文字列として内部命令に渡すことができています
-	//              : これは仕様なのでしょうか?
+    // "%2"         : 変数名を表示させるための幻の第3パラメータです
+    //              : マクロ展開時、ダブルクオーテーションに囲まれた状態で
+    //              : 展開されるので文字列として内部命令に渡すことができています
+    //              : これは仕様なのでしょうか?
 
 
-#global // MyArray
+#global // myarray
 
 #endif // __myarray__

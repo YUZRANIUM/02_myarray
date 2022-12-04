@@ -1,35 +1,54 @@
-// INFO ****************************************************
-// FileName : 02_myarraysmpl.hsp
-// Version  : 0.22
-// Date     : 2022/12/01
+// INFO ************************************************************************
+// FileName : 02_myarray.hsp
+// Version  : 0.23
+// Date     : 2022/12/04
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
-//**********************************************************
+// *****************************************************************************
 /* Description
-HSP3で多次元配列を確認用に文字列として書き出す
-なんてことないモジュールです。
+ HSP3で多次元配列を確認用に文字列として書き出すなんてことないモジュールです。
 
-    ※注意事項※
+    このモジュールはHSPTV!掲示板の皆様によって支えられております。
+    この場を借りて感謝申し上げます。誠に有難うございます。
 
-    * 初回実行時、動作がかなり重くなります。
-	* 気になるようでしたら次元要素数の変更をおすすめします。
+	***  掲示板情報  ***
+	kind    : 宣伝
+	date    : 2022/11/26
+	person  : Yuzranium
+	content : 多次元配列変数を複数行文字列に
 
-************************************************************/
+	※サンプルの実行時、動作が重くなる場合がございます。
+********************************************************************************/
 
-	#include "02_myarray.hsp"
 
+
+// テスト用モジュール変数
+#module "hoge_mod_" a, b, c
+
+#modinit int p1, double p2, str p3, str p4
+	sdim c, 64
+	a = p1  :  b = p2  :  c = p3, p4
+	return
+
+#modfunc viewmod var p1
+	p1 += "a = " + a + "\nb = " + b + "\nc(0) = " + c(0) + "\nc(1) = " + c(1)
+	return
+
+#global
+	newmod v, hoge_mod_, 15, 3.140, "始めてのモジュール変数です。", "大丈夫かな?(;ﾟ∀ﾟ)=3ﾊｧﾊｧ\n\n"
+	newmod v, hoge_mod_, 12345, 9.8765, "こんな風にモジュール型変数も表示できたらいいなぁ～", "無理かぁ～w\n\n"
+
+
+//==============================================================================//
+
+
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
     font "MyricaM M", 16 : objmode 2, 1
 
-	sdim 使い方, 128, 13
-	sdim aray0, 256, 20
-	ddim aray1, 6, 6
-	sdim aray2, 64, 4, 4, 4
-	dim aray3, 3, 2, 3, 2
-	dim test, 15
-	sdim lmoni, 4096             // 書き出し用の変数は必ず文字列型で
+	aa = "ちゃんと変数名も型も行数も表示できますよ", "そう、マクロならね"
 
-	aa = "ちゃんと変数名も行数も表示できますよ", "そう、マクロならね"
+	sdim 使い方, 128, 13
 	使い方 = "第一パラメータには文字列型変数を指定して下さい。"
 	使い方(1) = "第二パラメータに中身を見たい多次元配列変数を指定して下さい"
 	使い方(2) = "こんなふうに変数名と要素の総数、マクロを呼び出した行数"
@@ -40,55 +59,47 @@ HSP3で多次元配列を確認用に文字列として書き出す
 	使い方(10) = "できるだけでも存在価値はあるんじゃない?"
 	使い方(11) = "ほっ、ほら!", "ログ出力みたいに上書きされずに済むよ(;ﾟ∀ﾟ)=3ﾊｧﾊｧ"
 
+	sdim aray0, 256, 20
 	aray0 = "鳳翔", "翔鶴", "瑞鶴", "赤城", "加賀", "龍驤", "蒼龍"
 	aray0(7) = "飛龍", "瑞鳳", "祥鳳", "隼鷹", "飛鷹", "千歳", "信濃"
 	aray0(14) = "古鷹", "青葉", "妙高", "高雄", "最上", "利根", "改鈴谷"
-	i = 0, 0, 0
-	repeat length3(aray2)
-		i(1) = 0
-		repeat length2(aray2)
-			i(0) = 0
-			repeat length(aray2)
-				aray2(i(0), i(1), i(2)) = "0.000000"
-				i(0)++
-			loop
-			i(1)++
-		loop
-		i(2)++
-	loop
+
+	ddim aray1, 6, 6
+	sdim aray2, 126, 4, 4, 4
+	ldim aray3, 3, 2, 3, 2
+	dim aray4, 15
+
+	sdim lmoni, 4096             // 書き出し用の変数は必ず文字列型で
+
 
 	// 表示用
 	mesbox lmoni, 640, 480, 0
 	hmes = objinfo(stat, 2)
 
 
-
 	priarray lmoni, aa          // 次元は考えなくて大丈夫です
 	priarray lmoni, 使い方
-
 
 	priarray lmoni, aray0
 	// 途中で追加
 	aray0(15) = "999", "ヤマト", "銀河", "アスカ", "ヒュウガ", "アンドロメダ"
 	priarray lmoni, aray0        // 確認
-
-
 	priarray lmoni, aray1
-	priarray lmoni, aray2:priarray lmoni, aray3
+	priarray lmoni, aray2
+	priarray lmoni, aray3
 
 
-	priarray lmoni, test        // 処理の前後で確認したい場合は挟んで下さい
-	foreach test
-	    test(cnt) = cnt
-	loop
-	priarray lmoni, test
-                        // ループ内での使用は避けたほうが宜しいかと
-                        // 内部命令で1番深いところでは、既に
-                        // ループレベル4に達しています
+	priarray lmoni, v
+	viewmod v(0), lmoni
+	viewmod v(1), lmoni
+
+	priarray lmoni, aray4
+
 
 	// スクリプトの途中でテキストファイルに出力
     notesel lmoni
 	notesave dir_cur + "\\log2.txt"
 
-	sendmsg hmes, $C, 0, lmoni
+
+	sendmsg hmes, $C, 0, lmoni          // 表示・確認
 	stop
