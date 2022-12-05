@@ -1,7 +1,7 @@
 // INFO ************************************************************************
 // FileName : 02_myarray.hsp
-// Version  : 0.23
-// Date     : 2022/12/04
+// Version  : 0.24
+// Date     : 2022/12/05
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -9,14 +9,14 @@
 /* Description
  HSP3で多次元配列を確認用に文字列として書き出すなんてことないモジュールです。
 
-    このモジュールはHSPTV!掲示板の皆様によって支えられております。
-    この場を借りて感謝申し上げます。誠に有難うございます。
+	このモジュールはHSPTV!掲示板の皆様によって支えられております。
+	この場を借りて感謝申し上げます。誠に有難うございます。
 
-    ***  掲示板情報  ***
-    kind    : 宣伝
-    date    : 2022/11/26
-    person  : Yuzranium
-    content : 多次元配列変数を複数行文字列に
+	***  掲示板情報  ***
+	kind    : 宣伝
+	date    : 2022/11/26
+	person  : Yuzranium
+	content : 多次元配列変数を複数行文字列に
 ********************************************************************************/
 
 
@@ -27,53 +27,81 @@
 
 
 
+
+// 内部変数の初期化
+#deffunc local _myarray_init_
+
+	; 呼び出しの多い関数側で、下の管理用変数を置いておくと関数が呼び出されるたびに
+	; 管理用変数も初期化して代入、を繰り返すことになるので切り離してみました
+	; また、このファイルの最下部で使用しておりますので特別、呼び出す必要はありません
+
+	ldim jump_@myarray, 5, 3
+	; 配列情報表示 分岐ラベル    *未対応の型, *1次元, *2次元, *3次元, *4次元
+	jump_@myarray(0, 0) = *notvarinfo@myarray, *D1_aryinfo@myarray, *D2_aryinfo@myarray, *D3_aryinfo@myarray, *D4_aryinfo@myarray
+	; 配列書き出し 分岐ラベル
+	jump_@myarray(0, 1) = *notvartype@myarray, *priarray_1@myarray, *priarray_2@myarray, *priarray_3@myarray, *priarray_4@myarray
+	; 配列一括代入 分岐ラベル
+	jump_@myarray(0, 2) = *not_varset@myarray, *setarray_1@myarray, *setarray_2@myarray, *setarray_3@myarray, *setarray_4@myarray
+
+	; 変数の型表示    要素には vartype関数を用いて利用します
+	sdim tinfo_@myarray, 30, 7
+	tinfo_@myarray = "", "label", "str", "double", "int", "struct", "comobj"
+
+	dim i_@myarray, 4
+	i_@myarray = 0, 0, 0, 0
+
+	dim alldim_@myarray, 4
+	alldim_@myarray = 0, 0, 0, 0
+
+	prinfo_@myarray = 0
+	sum_@myarray = 0
+	j_@myarray = 0
+	error_report_@myarray = ""
+
+	return
+
+
+
+
 //----------------------------------------------------------
 //配列変数の情報表示用
 //----------------------------------------------------------
 
-// p1 : 配列変数の中身を受け取る文字列型変数 ( array information )
+// p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
 // p3 : 変数名
 // p4 : 行数
 #defcfunc local ainfo_ array p2, str p3, int p4
 
-    ; 配列書き出し 分岐用ラベル    *未対応の型, *1次元, *2次元, *3次元, *4次元
-    ;
-    view_ = *not_vartype@myarray, *Dimention_1@myarray, *Dimention_2@myarray, *Dimention_3@myarray, *Dimention_4@myarray
+	; 使用次元の確認
+	prinfo_@myarray = (length4(p2) != 0) + (length3(p2) != 0) + (length2(p2) != 0) + (length(p2) != 0)
 
-    ; 配列情報表示 分岐用ラベル    *1次元, *2次元, *3次元, *4次元
-    ;
-    vinfo_ = *D1_info@myarray, *D2_info@myarray, *D3_info@myarray, *D4_info@myarray
+	gosub jump_@myarray(prinfo_@myarray, 0)
 
-    ; 変数の型表示    要素には vartype関数を用いて利用します
-    ; ラベル型、モジュール型は書き出せませんが、変数の情報だけは取得できるのでとりあえず
-    ;
-    tinfo_ = "", "label", "str", "double", "int", "struct", "comobj"
-
-    ; 使用次元の確認
-    ;
-    prinfo_ = (length4(p2) != 0) + (length3(p2) != 0) + (length2(p2) != 0) + (length(p2) != 0) - 1
-
-    gosub vinfo_@myarray(prinfo_@myarray)       ; ラベルジャンプで分岐
-
-    return
+	return
 
 //-------------------------------  配列情報表示  -------------------------------//
+	; [ 変数名 ] 型(1次元要素, 2次元要素, 3次元要素, 4次元要素) L=行数
 
-    ; [ 変数名 ] 型(1次元要素, 2次元要素, 3次元要素, 4次元要素) L=行数
+; jump_(0, 0)
+*notvarinfo@myarray
+	return
 
-*D4_info@myarray
-    return strf("[%s ] %s(%d, %d, %d, %d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), length2(p2), length3(p2), length4(p2), p4)
+; jump_(1, 0)
+*D1_aryinfo@myarray
+	return strf("[%s ] %s(%d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), p4)
 
-*D3_info@myarray
-    return strf("[%s ] %s(%d, %d, %d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), length2(p2), length3(p2), p4)
+; jump_(2, 0)
+*D2_aryinfo@myarray
+	return strf("[%s ] %s(%d, %d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), length2(p2), p4)
 
-*D2_info@myarray
-    return strf("[%s ] %s(%d, %d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), length2(p2), p4)
+; jump_(3, 0)
+*D3_aryinfo@myarray
+	return strf("[%s ] %s(%d, %d, %d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), length2(p2), length3(p2), p4)
 
-*D1_info@myarray
-    return strf("[%s ] %s(%d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), p4)
-
+; jump_(4, 0)
+*D4_aryinfo@myarray
+	return strf("[%s ] %s(%d, %d, %d, %d) L=%d\n", p3, tinfo_@myarray(vartype(p2)), length(p2), length2(p2), length3(p2), length4(p2), p4)
 
 
 
@@ -88,71 +116,139 @@
 // p2 : 配列変数
 #deffunc local priarray_dx var p1, array p2, str p3, int p4
 
-    ; 配列情報表示用の内部関数
-    ;
-    p1 += ainfo_@myarray(p2, p3, p4)
+	; 配列情報表示用の内部関数
+	p1 += ainfo_@myarray(p2, p3, p4)
 
-    ; ラベル型、モジュール型変数はこの方法では書き出せない（エラーになる）ので書き出しを実行させずに return させる
-    ;
-    if (vartype(p2) == 1) | (vartype(p2) == 5) | (vartype(p2) == 6)  :  goto view_@myarray(0)
+	; ラベル型、モジュール型変数は return させる
+	if (vartype(p2) == 1) | (vartype(p2) == 5) | (vartype(p2) == 6)  :  goto jump_@myarray(0, 1)
 
-    ; 各次元要素の保持
-    ;
-    alldim = length(p2), length2(p2), length3(p2), length4(p2)
+	; 各次元要素の保持
+	alldim_@myarray = length(p2), length2(p2), length3(p2), length4(p2)
 
-    ; 各次元の使用状況を 0, 1 で表現
-    ;
-    usedim = (alldim(0) != 0) + (alldim(1) != 0) + (alldim(2) != 0) + (alldim(3) != 0)
+	; 各次元の使用状況
+	prinfo_@myarray = (alldim_@myarray(0) != 0) + (alldim_@myarray(1) != 0) + (alldim_@myarray(2) != 0) + (alldim_@myarray(3) != 0)
 
-    ; 配列数合計
-    sum = 1
-    repeat 4
-        if (alldim(cnt) = 0) { break }
-        sum *= alldim(cnt)
-    loop
+	; 配列数合計
+	sum_@myarray = 1
+	repeat 4
+		if (alldim_@myarray(cnt) == 0) { break }
+		sum_@myarray *= alldim_@myarray(cnt)
+	loop
 
-    ; 書き出し
-    repeat sum
-        j = cnt
-        repeat usedim
-            num = j
-            repeat cnt
-                num /= alldim(cnt)
-            loop
-            i(cnt) = num \ alldim(cnt)
-        loop
-        gosub view_@myarray(usedim)      ; ラベルジャンプで分岐
-    loop
+	; 書き出し
+	repeat sum_@myarray
+		j_@myarray = cnt
+		repeat prinfo_@myarray
+			num_@myarray = j_@myarray
+			repeat cnt
+				num_@myarray /= alldim_@myarray(cnt)
+			loop
+			i_(cnt) = num_@myarray \ alldim_@myarray(cnt)
+		loop
+		gosub jump_@myarray(prinfo_@myarray, 1)      ; ラベルジャンプで分岐
+	loop
 
-
-; 未対応の型はこちらへ
-*not_vartype@myarray
-    p1 += "\n"      ; 次の配列変数表示のための改行
-    return
-
+	p1 += "\n"      ; 次の配列変数表示のための改行
+	return
 
 
 //-------------------------------  配列書き出し  -------------------------------//
 
-; 1次元配列
-*Dimention_1@myarray
-    p1 += strf("(%d) = %s\n", i(0), p2(i(0)))
-    return
+; 未対応の型はこちらへ jump_(0, 1)
+*notvartype@myarray
+	p1 += error_report_@myarray + "not supported var-type\n"
+	p1 += "varuse = " + varuse(p2) + "\n\n"
+	error_report_@myarray = ""
+	return
 
-; 2次元配列
-*Dimention_2@myarray
-    p1 += strf("(%d, %d) = %s\n", i(0), i(1), p2(i(0), i(1)))
-    return
+; 1次元配列 jump_(1, 1)
+*priarray_1@myarray
+	p1 += strf("(%d) = %s\n", i_(0), p2(i_(0)))
+	return
 
-; 3次元配列
-*Dimention_3@myarray
-    p1 += strf("(%d, %d, %d) = %s\n", i(0), i(1), i(2), p2(i(0), i(1), i(2)))
-    return
+; 2次元配列 jump_(2, 1)
+*priarray_2@myarray
+	p1 += strf("(%d, %d) = %s\n", i_(0), i_(1), p2(i_(0), i_(1)))
+	return
 
-; 4次元配列
-*Dimention_4@myarray
-    p1 += strf("(%d, %d, %d, %d) = %s\n", i(0), i(1), i(2), i(3), p2(i(0), i(1), i(2), i(3)))
-    return
+; 3次元配列 jump_(3, 1)
+*priarray_3@myarray
+	p1 += strf("(%d, %d, %d) = %s\n", i_(0), i_(1), i_(2), p2(i_(0), i_(1), i_(2)))
+	return
+
+; 4次元配列 jump_(4, 1)
+*priarray_4@myarray
+	p1 += strf("(%d, %d, %d, %d) = %s\n", i_(0), i_(1), i_(2), i_(3), p2(i_(0), i_(1), i_(2), i_(3)))
+	return
+
+
+
+
+
+//----------------------------------------------------------
+// 一括代入用内部命令
+//----------------------------------------------------------
+
+// 一括代入用内部命令
+//
+// p1 : 代入先の配列変数
+// p2 : 代入したい値またはそれを格納した変数
+#deffunc local setarray_ array p1, var p2, int p3
+
+	; モジュール型変数は return させる
+	if (vartype(p1) == 5) | (vartype(p1) == 6)  :  goto jump_@myarray(0, 2)
+
+	alldim_@myarray = length(p1), length2(p1), length3(p1), length4(p1)
+
+	prinfo_@myarray = (length4(p1) != 0) + (length3(p1) != 0) + (length2(p1) != 0) + (length(p1) != 0)
+
+	sum_@myarray = 1
+	repeat 4
+		if (alldim_@myarray(cnt) == 0) { break }
+		sum_@myarray *= alldim_@myarray(cnt)
+	loop
+
+	repeat sum_@myarray
+		j_@myarray = cnt
+		repeat prinfo_@myarray
+			num_@myarray = j_@myarray
+			repeat cnt
+				num_@myarray /= alldim_@myarray(cnt)
+			loop
+			i_(cnt) = num_@myarray \ alldim_@myarray(cnt)
+		loop
+		gosub jump_@myarray(prinfo_@myarray, 2)
+	loop
+
+	return
+
+//---------------------------------  配列代入  ---------------------------------//
+
+; 未対応の型はこちらへ jump_(0, 2)
+*not_varset@myarray
+	error_report_@myarray = "not supported var-type input -> line : " + p3 + "\n"
+	return
+
+; 1次元配列 jump_(1, 2)
+*setarray_1@myarray
+	p1(i_(0)) = p2
+	return
+
+; 2次元配列 jump_(2, 2)
+*setarray_2@myarray
+	p1(i_(0), i_(1)) = p2
+	return
+
+; 3次元配列 jump_(3, 2)
+*setarray_3@myarray
+	p1(i_(0), i_(1), i_(2)) = p2
+	return
+
+; 4次元配列 jump_(4, 2)
+*setarray_4@myarray
+	p1(i_(0), i_(1), i_(2), i_(3)) = p2
+	return
+
 
 
 
@@ -172,12 +268,45 @@
 // p2 : 配列変数
 #define global priarray(%1,%2,%3=__line__) priarray_dx@myarray %1,%2,"%2",%3
 
-    // "%2"         : 変数名を表示させるための幻の第3パラメータです
-    //              : マクロ展開時、ダブルクオーテーションに囲まれた状態で
-    //              : 展開されるので文字列として内部命令に渡すことができています
-    //              : これは仕様なのでしょうか?
+	// "%2"         : 変数名を表示させるための幻の第3パラメータです
+	//              : マクロ展開時、ダブルクオーテーションに囲まれた状態で
+	//              : 展開されるので文字列として内部命令に渡すことができています
+	//              : これは仕様なのでしょうか?
+
+
+
+//----------------------------------------------------------
+// 多次元配列一括代入マクロ
+//----------------------------------------------------------
+
+// 多次元配列一括代入マクロ
+//
+// p1 : 代入先の配列変数
+// p2 : 代入したい値
+#define global setarray(%1,%2,%3=__line__)\
+	midlevar_@myarray="":midlevar_@myarray=%2:\
+	setarray_@myarray %1,midlevar_@myarray,%3
+
+	// midlevar@myarray
+	//          パラメータタイプを var に統一するための中間変数
+	//          ラベル型、文字列型、実数型、整数型、そして変数での指定
+	//          これらを可能にするため変数で格納し、変数として内部命令に渡しています
 
 
 #global // myarray
+
+	; @ モジュール名  さすがにつけ過ぎでしょうか?
+	;
+	; つけすぎて判読性を著しく欠くようなことになってしまっていることは申し訳ありません
+	; ただ、いつかの掲示板で「HSPはコンパイル時に@hspや@モジュール名を置換している」
+	; と見聞きしたものですから、あらかじめつけておけばその分動作が軽くなるのでは?
+	; と思っているのですがこの程度の量では体感できるほどの変化があるわけ無いですよね
+	; すみません。要望があれば必要十分な範囲にします。
+	;
+
+	; モジュール内の管理用変数の初期化です
+	_myarray_init_@myarray
+
+
 
 #endif // __myarray__

@@ -1,7 +1,7 @@
 // INFO ************************************************************************
 // FileName : 02_myarray.hsp
-// Version  : 0.23
-// Date     : 2022/12/04
+// Version  : 0.24
+// Date     : 2022/12/05
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -9,8 +9,8 @@
 /* Description
  HSP3で多次元配列を確認用に文字列として書き出すなんてことないモジュールです。
 
-    このモジュールはHSPTV!掲示板の皆様によって支えられております。
-    この場を借りて感謝申し上げます。誠に有難うございます。
+	このモジュールはHSPTV!掲示板の皆様によって支えられております。
+	この場を借りて感謝申し上げます。誠に有難うございます。
 
 	***  掲示板情報  ***
 	kind    : 宣伝
@@ -36,15 +36,15 @@
 	return
 
 #global
-	newmod v, hoge_mod_, 15, 3.140, "始めてのモジュール変数です。", "大丈夫かな?(;ﾟ∀ﾟ)=3ﾊｧﾊｧ\n\n"
+	newmod v, hoge_mod_, 15, 3.140, "初めてのモジュール変数です。", "大丈夫かな?(;ﾟ∀ﾟ)=3ﾊｧﾊｧ\n\n"
 	newmod v, hoge_mod_, 12345, 9.8765, "こんな風にモジュール型変数も表示できたらいいなぁ～", "無理かぁ～w\n\n"
-
 
 //==============================================================================//
 
 
 	#include "02_myarray.hsp"
-    font "MyricaM M", 16 : objmode 2, 1
+	font "MyricaM M", 16 : objmode 2, 1
+	newcom ie, "InternetExplorer.Application"
 
 	aa = "ちゃんと変数名も型も行数も表示できますよ", "そう、マクロならね"
 
@@ -64,10 +64,10 @@
 	aray0(7) = "飛龍", "瑞鳳", "祥鳳", "隼鷹", "飛鷹", "千歳", "信濃"
 	aray0(14) = "古鷹", "青葉", "妙高", "高雄", "最上", "利根", "改鈴谷"
 
-	ddim aray1, 6, 6
-	sdim aray2, 126, 4, 4, 4
+	ddim aray1, 3, 3
+	sdim aray2, 126, 3, 2, 1
 	ldim aray3, 3, 2, 3, 2
-	dim aray4, 15
+	dim aray4, 4, 3, 2, 1
 
 	sdim lmoni, 4096             // 書き出し用の変数は必ず文字列型で
 
@@ -84,22 +84,57 @@
 	// 途中で追加
 	aray0(15) = "999", "ヤマト", "銀河", "アスカ", "ヒュウガ", "アンドロメダ"
 	priarray lmoni, aray0        // 確認
+
+
+	priarray lmoni, aray1        // 処理の前後に挟むと確認ができます
+	setarray aray1, 3.141592
 	priarray lmoni, aray1
+
+
 	priarray lmoni, aray2
+	setarray aray2, "*main0"
+	priarray lmoni, aray2
+	setarray aray2, "ABCDEFG"
+	priarray lmoni, aray2
+
+
+	priarray lmoni, aray3
+	setarray aray3, *main        // 代入するだけならラベル型も扱えます
+	priarray lmoni, aray3
+	lablvar = *chk
+	setarray aray3, lablvar
 	priarray lmoni, aray3
 
 
+	priarray lmoni, aray4
+	setarray aray4, 123
+	priarray lmoni, aray4
+
+	// COMオブジェクト
+	priarray lmoni, ie
+	setarray ie, "test"
+	setarray ie, "test"
+	// priarray lmoni, ie
+
+	// モジュール変数(struct)
 	priarray lmoni, v
 	viewmod v(0), lmoni
 	viewmod v(1), lmoni
 
-	priarray lmoni, aray4
+	setarray v, "test"
+	priarray lmoni, v
+
 
 
 	// スクリプトの途中でテキストファイルに出力
-    notesel lmoni
+	notesel lmoni
 	notesave dir_cur + "\\log2.txt"
-
 
 	sendmsg hmes, $C, 0, lmoni          // 表示・確認
 	stop
+
+*main
+	return
+
+*chk
+	return
