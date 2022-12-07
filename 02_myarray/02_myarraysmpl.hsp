@@ -1,7 +1,7 @@
 // INFO ************************************************************************
 // FileName : 02_myarray.hsp
-// Version  : 0.24
-// Date     : 2022/12/05
+// Version  : 0.25
+// Date     : 2022/12/07
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -23,7 +23,7 @@
 
 
 
-// テスト用モジュール変数
+/*****  テスト用モジュール変数  *****/
 #module "hoge_mod_" a, b, c
 
 #modinit int p1, double p2, str p3, str p4
@@ -36,17 +36,30 @@
 	return
 
 #global
+	// テキトーにモジュール型変数
 	newmod v, hoge_mod_, 15, 3.140, "初めてのモジュール変数です。", "大丈夫かな?(;ﾟ∀ﾟ)=3ﾊｧﾊｧ\n\n"
 	newmod v, hoge_mod_, 12345, 9.8765, "こんな風にモジュール型変数も表示できたらいいなぁ～", "無理かぁ～w\n\n"
+
+	// テキトーにCOMオブジェクト型変数
+	newcom ie, "InternetExplorer.Application"
+	ie2 = ie
 
 //==============================================================================//
 
 
-	#include "02_myarray.hsp"
+
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
 	font "MyricaM M", 16 : objmode 2, 1
-	newcom ie, "InternetExplorer.Application"
+
+	/*****  変数の用意  *****/
 
 	aa = "ちゃんと変数名も型も行数も表示できますよ", "そう、マクロならね"
+
+	comment = {"
+		コメントの表示形式についてどうでしょうか?
+		デバッグ用、確認用と謳っているにも関わらず
+		コメントできないというのはどうなんだろう...
+		と思いまして。もう少し表示形式を練ってみます"}
 
 	sdim 使い方, 128, 13
 	使い方 = "第一パラメータには文字列型変数を指定して下さい。"
@@ -65,66 +78,80 @@
 	aray0(14) = "古鷹", "青葉", "妙高", "高雄", "最上", "利根", "改鈴谷"
 
 	ddim aray1, 3, 3
-	sdim aray2, 126, 3, 2, 1
+	sdim aray2, 126, 4, 3, 2
 	ldim aray3, 3, 2, 3, 2
 	dim aray4, 4, 3, 2, 1
 
 	sdim lmoni, 4096             // 書き出し用の変数は必ず文字列型で
 
 
-	// 表示用
+	/*****  表示用  *****/
 	mesbox lmoni, 640, 480, 0
 	hmes = objinfo(stat, 2)
 
 
-	priarray lmoni, aa          // 次元は考えなくて大丈夫です
-	priarray lmoni, 使い方
+	/*****  以下実践  *****/
+
+	; 書き出し
+	; priarray <中身を受け取る文字列型変数>, <多次元配列変数>, <コメント（省略可）>
+	;
+	priarray lmoni, aa                  // 次元は考えなくて大丈夫です
+	priarray lmoni, 使い方, comment
 
 	priarray lmoni, aray0
 	// 途中で追加
 	aray0(15) = "999", "ヤマト", "銀河", "アスカ", "ヒュウガ", "アンドロメダ"
-	priarray lmoni, aray0        // 確認
+	priarray lmoni, aray0               // 確認
 
 
-	priarray lmoni, aray1        // 処理の前後に挟むと確認ができます
-	setarray aray1, 3.141592
-	priarray lmoni, aray1
+	priarray lmoni, aray1, "処理の前後に挟むと確認ができます"
+	; インデックス付与機能
+	; setarray <代入先の配列変数>, <代入したい値（インデックスの初期値）>, <インデックス使用フラグ(0:off, 1:on)>, <増減値>
+	setarray aray1, 0.0, 1, 0.125
+	;
+	priarray lmoni, aray1, "インデックス機能のテストです"
 
 
 	priarray lmoni, aray2
-	setarray aray2, "*main0"
-	priarray lmoni, aray2
-	setarray aray2, "ABCDEFG"
-	priarray lmoni, aray2
+	setarray aray2, "*main", 1, 1
+	priarray lmoni, aray2, "文字列に対してインデックスをつけることも可能"
+	setarray aray2, "ABCDEFG", 1, "(｀･ω･´)ゞ"
+	priarray lmoni, aray2, "増減値に文字列を指定することも可能です\n(｀･ω･´)ゞ"
 
 
-	priarray lmoni, aray3
-	setarray aray3, *main        // 代入するだけならラベル型も扱えます
-	priarray lmoni, aray3
+	priarray lmoni, aray3, "ラベル型も扱えます\n表示できるとは言っていない"
+	setarray aray3, *main
+	priarray lmoni, aray3, "有効なラベルですか?"
 	lablvar = *chk
-	setarray aray3, lablvar
+	setarray aray3, lablvar, 1, 1
+	setarray aray3, lablvar         // 変数から  ※配列変数には対応していません
 	priarray lmoni, aray3
 
 
 	priarray lmoni, aray4
-	setarray aray4, 123
-	priarray lmoni, aray4
+	setarray aray4, 100, 1, -10
+	priarray lmoni, aray4, "負の値も指定可"
 
 	// COMオブジェクト
-	priarray lmoni, ie
 	setarray ie, "test"
-	setarray ie, "test"
-	// priarray lmoni, ie
+	setarray ie2, "test"
 
 	// モジュール変数(struct)
-	priarray lmoni, v
+	setarray v, "test"
+	priarray lmoni, v, "エラーレポート機能のテストです"
 	viewmod v(0), lmoni
 	viewmod v(1), lmoni
 
-	setarray v, "test"
-	priarray lmoni, v
+	newmod v, hoge_mod_, 9, 3.14159265358979, "モジュール変数の表示命令と合わせるといい感じ?", "モジュール変数に\n\n"
+	newmod v, hoge_mod_, 1, 1.0, "a", "b"
+	v2 = v(2)
 
-
+	priarray lmoni, v2
+	priarray lmoni, v, "モジュール変数の使い方まだよくわかっていませんね"
+	viewmod v(0), lmoni
+	viewmod v(1), lmoni
+	viewmod v(2), lmoni
+	viewmod v(3), lmoni
 
 	// スクリプトの途中でテキストファイルに出力
 	notesel lmoni

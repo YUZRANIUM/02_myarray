@@ -1,122 +1,87 @@
-; INFO â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+; INFO „ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 ; FileName : 02_myarray.hs
-; Version  : 0.24
-; Date     : 2022/12/04
-; Author   : YUZRANIUMï¼ˆã‚†ãšã‚‰ã«ã†ã‚€ï¼‰
+; Version  : 0.25
+; Date     : 2022/12/07
+; Author   : YUZRANIUMi‚ä‚¸‚ç‚É‚¤‚Þj
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
-;â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+;„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 ; Description
 ;
-;   ã“ã®ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã¯HSPTV!æŽ²ç¤ºæ¿ã®çš†æ§˜ã«ã‚ˆã£ã¦æ”¯ãˆã‚‰ã‚Œã¦ãŠã‚Šã¾ã™ã€‚
-;   ã“ã®å ´ã‚’å€Ÿã‚Šã¦æ„Ÿè¬ç”³ã—ä¸Šã’ã¾ã™ã€‚èª ã«æœ‰é›£ã†ã”ã–ã„ã¾ã™ã€‚
+;   ‚±‚Ìƒ‚ƒWƒ…[ƒ‹‚ÍHSPTV!ŒfŽ¦”Â‚ÌŠF—l‚É‚æ‚Á‚ÄŽx‚¦‚ç‚ê‚Ä‚¨‚è‚Ü‚·B
+;   ‚±‚Ìê‚ðŽØ‚è‚ÄŠ´ŽÓ\‚µã‚°‚Ü‚·B½‚É—L“ï‚¤‚²‚´‚¢‚Ü‚·B
 ;
-;   ***  æŽ²ç¤ºæ¿æƒ…å ±  ***
-;   kind    : å®£ä¼
+;   ***  ŒfŽ¦”Âî•ñ  ***
+;   kind    : é“`
 ;   date    : 2022/11/26
 ;   person  : Yuzranium
-;   content : å¤šæ¬¡å…ƒé…åˆ—å¤‰æ•°ã‚’è¤‡æ•°è¡Œæ–‡å­—åˆ—ã«
+;   content : ‘½ŽŸŒ³”z—ñ•Ï”‚ð•¡”s•¶Žš—ñ‚É
 ;
-;â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+;„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 
 %dll
 02_myarray
 %ver
-0.24
+0.25
 %date
-2022/12/05
+2022/12/07
 %author
 YUZRANIUM
 %url
 https://twitter.com/YUZRANIUM
 https://github.com/YUZRANIUM/02_myarray
 %note
-02_myarray.hspã‚’ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ã™ã‚‹ã“ã¨
+02_myarray.hsp‚ðƒCƒ“ƒNƒ‹[ƒh‚·‚é‚±‚Æ
 %port
 Win
 
 
-;â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+;„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 
 
 %index
 priarray
-å¤šæ¬¡å…ƒé…åˆ—å¤‰æ•°ã®æ›¸å‡ºã—
+‘½ŽŸŒ³”z—ñ•Ï”‚Ì‘o‚µ
 %prm
-p1,p2
-p1 : é…åˆ—å¤‰æ•°ã®ä¸­èº«ã‚’å—ã‘å–ã‚‹æ–‡å­—åˆ—åž‹å¤‰æ•°
-p2 : ä¸­èº«ã‚’è¦‹ãŸã„é…åˆ—å¤‰æ•°
+p1,p2,p3
+p1 : ”z—ñ•Ï”‚Ì’†g‚ðŽó‚¯Žæ‚é•¶Žš—ñŒ^•Ï”
+p2 : ’†g‚ðŒ©‚½‚¢”z—ñ•Ï”
+p3 : ƒRƒƒ“ƒgiÈ—ª‰Âj
 %inst
-ã“ã®å‘½ä»¤ã¯å¤šæ¬¡å…ƒé…åˆ—å¤‰æ•°ã«æ ¼ç´ã•ã‚ŒãŸå€¤ã‚’å…¨ã¦è¤‡æ•°è¡Œæ–‡å­—åˆ—ã¨ã—ã¦æ›¸ãå‡ºã™ãƒžã‚¯ãƒ­ã§ã™ã€‚
+‚±‚Ì–½—ß‚Í‘½ŽŸŒ³”z—ñ•Ï”‚ÉŠi”[‚³‚ê‚½’l‚ð‘S‚Ä•¡”s•¶Žš—ñ‚Æ‚µ‚Ä‘‚«o‚·ƒ}ƒNƒ‚Å‚·B
 ^
-p1ã«é…åˆ—ã®ä¸­èº«ã‚’å—ã‘å–ã‚‹ãŸã‚ã®æ–‡å­—åˆ—åž‹å¤‰æ•°ã‚’æŒ‡å®šã—ã¦ä¸‹ã•ã„ã€‚
-p2ã«ä¸­èº«ã‚’ä¸€è¦§è¡¨ç¤ºã•ã›ãŸã„å¤šæ¬¡å…ƒé…åˆ—å¤‰æ•°ã‚’æŒ‡å®šã—ã¦ä¸‹ã•ã„ã€‚ã™ã¹ã¦ã®æ¬¡å…ƒã«å¯¾å¿œã—ã¦ã„ã¾ã™ã€‚
+p1‚É”z—ñ‚Ì’†g‚ðŽó‚¯Žæ‚é‚½‚ß‚Ì•¶Žš—ñŒ^•Ï”‚ðŽw’è‚µ‚Ä‰º‚³‚¢B
+p2‚É’†g‚ðˆê——•\Ž¦‚³‚¹‚½‚¢‘½ŽŸŒ³”z—ñ•Ï”‚ðŽw’è‚µ‚Ä‰º‚³‚¢B‚·‚×‚Ä‚ÌŽŸŒ³‚É‘Î‰ž‚µ‚Ä‚¢‚Ü‚·B
+p3‚É‚ÍAƒIƒvƒVƒ‡ƒ“‚Æ‚µ‚ÄƒRƒƒ“ƒg‚ð‚Â‚¯‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
 ^
-                p2ã«æŒ‡å®šã§ãã‚‹åž‹ã¨è¡¨ç¤ºå†…å®¹
-html{
-    <table border="1">
-        <tr>
-            <th align="center">
-                è¡¨ç¤ºå†…å®¹ \ åž‹
-            </th>
-            <th>label</th> <th>str</th> <th>double</th> <th>int</th> <th>struct</th> <th>comobj</th>
-        </tr>
+                p2‚ÉŽw’è‚Å‚«‚éŒ^‚Æ•\Ž¦“à—e
 
-        <tr align="center">
-            <th>
-                å¤‰æ•°å
-            </th>
-            <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td>
-        </tr>
+|  •\Ž¦“à—e \ Œ^  | label | str  | double | int  | struct | COM object |
+|-----------------|-------|------|--------|------|--------|------------|
+|      •Ï”–¼     |  OK   |  OK  |   OK   |  OK  |   OK   |     OK     |
+|        Œ^       |  OK   |  OK  |   OK   |  OK  |   OK   |     OK     |
+|    ŠeŽŸŒ³—v‘f   |  OK   |  OK  |   OK   |  OK  |   OK   |     OK     |
+|      s  ”     |  OK   |  OK  |   OK   |  OK  |   OK   |     OK     |
+|    ’l‚Ì‘o‚µ   | ----- |  OK  |   OK   |  OK  | ------ |   ------   |
+|  •Ï”‚ÌŽg—pó‹µ |  OK   | ---- | ------ | ---- |   OK   |     OK     |
 
-        <tr align="center">
-            <th>
-                åž‹
-            </th>
-            <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td>
-        </tr>
 
-        <tr align="center">
-            <th>
-                å„æ¬¡å…ƒè¦ç´ æ•°
-            </th>
-            <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td>
-        </tr>
+|  •\Ž¦“à—e \ Œ^ | ƒ‰ƒxƒ‹ | •¶Žš—ñ | ŽÀ” | ®” | ƒ‚ƒWƒ…[ƒ‹ | COMƒIƒuƒWƒFƒNƒg |
+|----------------|--------|--------|------|------|------------|-----------------|
+|     •Ï”–¼     |  OK   |  OK  |   OK   |  OK  |   OK   |     OK     |
+|       Œ^       |  OK   |  OK  |   OK   |  OK  |   OK   |     OK     |
+|   ŠeŽŸŒ³—v‘f   |  OK   |  OK  |   OK   |  OK  |   OK   |     OK     |
+|     s  ”     |  OK   |  OK  |   OK   |  OK  |   OK   |     OK     |
+|   ’l‚Ì‘o‚µ   | ----- |  OK  |   OK   |  OK  | ------ |   ------   |
+| •Ï”‚ÌŽg—pó‹µ |  OK   | ---- | ------ | ---- |   OK   |     OK     |
 
-        <tr align="center">
-            <th>
-                å‘¼ã³å‡ºã—è¡Œæ•°
-            </th>
-            <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td>
-        </tr>
 
-        <tr align="center">
-            <th>
-                å€¤ã®æ›¸ãå‡ºã—
-            </th>
-            <td>X</td> <td>â—‹</td> <td>â—‹</td> <td>â—‹</td> <td>X</td> <td>X</td>
-        </tr>
 
-        <tr align="center">
-            <th>
-                å¤‰æ•°ã®ä½¿ç”¨çŠ¶æ³
-            </th>
-            <td>â—‹</td> <td>---</td> <td>---</td> <td>---</td> <td>â—‹</td> <td>â—‹</td>
-        </tr>
-    </table>
 
-    <style>
-    th,td {
-    padding: 5px 15px;
-
-    }
-    </style>
-}html
-
-ä¸­èº«ã®æ›¸ãå‡ºã—ãŒå¯èƒ½ãªå¤‰æ•°ã®åž‹ã¯ã€æ–‡å­—åˆ—åž‹ã€å®Ÿæ•°åž‹ã€æ•´æ•°åž‹ã®3ã¤ã§ã€ãƒ©ãƒ™ãƒ«åž‹ã€ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«åž‹ã€COMã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåž‹ã«é–¢ã—ã¦ã¯æ›¸ãå‡ºã—ã‚’è¡Œã„ã¾ã›ã‚“ã€‚
-å¤‰æ•°ã®åž‹ã¯ vartypeã«ã‚ˆã‚‹ã‚‚ã®ã§ã€label, str, double, int, struct, comobj ã¨ãã‚Œãžã‚Œè¡¨ç¤ºã•ã‚Œã¾ã™ã€‚å¤‰æ•°ã®ä½¿ç”¨çŠ¶æ³ã¯varuseã«ã‚ˆã‚‹ã‚‚ã®ã§ã™ã€‚å¤‰æ•°åã®è¡¨ç¤ºã¯ãƒžã‚¯ãƒ­å±•é–‹ã‚’åˆ©ç”¨ã—ã¦è¡Œã£ã¦ã„ã¾ã™ã€‚è©³ç´°ã¯02_myarray.hspã‚’å¾¡è¦§ãã ã•ã„ã€‚
+’†g‚Ì‘‚«o‚µ‚ª‰Â”\‚È•Ï”‚ÌŒ^‚ÍA•¶Žš—ñŒ^AŽÀ”Œ^A®”Œ^‚Ì3‚Â‚ÅAƒ‰ƒxƒ‹Œ^Aƒ‚ƒWƒ…[ƒ‹Œ^ACOMƒIƒuƒWƒFƒNƒgŒ^‚ÉŠÖ‚µ‚Ä‚Í‘‚«o‚µ‚ðs‚¢‚Ü‚¹‚ñB
+•Ï”‚ÌŒ^‚Í vartype‚É‚æ‚é‚à‚Ì‚ÅAlabel, str, double, int, struct, comobj ‚Æ‚»‚ê‚¼‚ê•\Ž¦‚³‚ê‚Ü‚·B•Ï”‚ÌŽg—pó‹µ‚Ívaruse‚É‚æ‚é‚à‚Ì‚Å‚·B•Ï”–¼‚Ì•\Ž¦‚Íƒ}ƒNƒ“WŠJ‚ð—˜—p‚µ‚Äs‚Á‚Ä‚¢‚Ü‚·BÚ×‚Í02_myarray.hsp‚ðŒä——‚­‚¾‚³‚¢B
 ^
-â€»ã‚ãã¾ã§ã‚‚ã€ãƒ‡ãƒãƒƒã‚°ç”¨ã€ç¢ºèªç”¨ã«ä½¿ç”¨ã—ã¦ä¸‹ã•ã„ã€‚
+¦‚ ‚­‚Ü‚Å‚àAƒfƒoƒbƒO—pAŠm”F—p‚ÉŽg—p‚µ‚Ä‰º‚³‚¢B
 %sample
     dim  array1, 3, 3, 3  :  array1 = 1, 1, 2, 3, 5, 8, 13, 21, 34
     ddim array2, 5, 6     :  array2 = 1.41421356, 2.2360679, 3.141592
@@ -132,9 +97,9 @@ html{
     notesave dir_cur + "\\print_array.txt"
 
 %group
-æ–‡å­—åˆ—æ“ä½œå‘½ä»¤
+•¶Žš—ñ‘€ì–½—ß
 %type
-ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©ãƒžã‚¯ãƒ­
+ƒ†[ƒU[’è‹`ƒ}ƒNƒ
 %href
 setarray
 dim
@@ -148,28 +113,28 @@ length4
 vartype
 
 
-;â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+;„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 
 
 %index
 setarray
-å¤šæ¬¡å…ƒé…åˆ—ä¸€æ‹¬ä»£å…¥
+‘½ŽŸŒ³”z—ñˆêŠ‡‘ã“ü
 %prm
 p1,p2
-p1 : ä»£å…¥å…ˆã®é…åˆ—å¤‰æ•°
-p2 : ä»£å…¥ã—ãŸã„å€¤ã‚‚ã—ãã¯ãã‚Œã‚’æ ¼ç´ã—ãŸå¤‰æ•°
+p1 : ‘ã“üæ‚Ì”z—ñ•Ï”
+p2 : ‘ã“ü‚µ‚½‚¢’l‚à‚µ‚­‚Í‚»‚ê‚ðŠi”[‚µ‚½•Ï”
 %inst
-ã“ã®å‘½ä»¤ã¯å¤šæ¬¡å…ƒé…åˆ—å¤‰æ•°ã«åŒä¸€ã®å€¤ã‚’ä¸€æ‹¬ä»£å…¥ã™ã‚‹ãƒžã‚¯ãƒ­ã§ã™ã€‚
+‚±‚Ì–½—ß‚Í‘½ŽŸŒ³”z—ñ•Ï”‚É“¯ˆê‚Ì’l‚ðˆêŠ‡‘ã“ü‚·‚éƒ}ƒNƒ‚Å‚·B
 ^
-p1ã«ã¯ä»£å…¥å…ˆã¨ãªã‚‹å¤šæ¬¡å…ƒé…åˆ—å¤‰æ•°ã‚’æŒ‡å®šã—ã¦ä¸‹ã•ã„ã€‚
-p2ã«ã¯ä»£å…¥ã—ãŸã„å€¤è‹¥ã—ãã¯ãã‚Œã‚’æ ¼ç´ã—ãŸå¤‰æ•°ã‚’æŒ‡å®šã—ã¦ä¸‹ã•ã„ã€‚
+p1‚É‚Í‘ã“üæ‚Æ‚È‚é‘½ŽŸŒ³”z—ñ•Ï”‚ðŽw’è‚µ‚Ä‰º‚³‚¢B
+p2‚É‚Í‘ã“ü‚µ‚½‚¢’lŽá‚µ‚­‚Í‚»‚ê‚ðŠi”[‚µ‚½•Ï”‚ðŽw’è‚µ‚Ä‰º‚³‚¢B
 ^
-p1ã§æŒ‡å®šã§ãã‚‹åž‹ã¯ã€ãƒ©ãƒ™ãƒ«åž‹ã€æ–‡å­—åˆ—åž‹ã€å®Ÿæ•°åž‹ã€æ•´æ•°åž‹ã€ã®4ã¤ã®ã¿ã§ã™ã€‚
+p1‚ÅŽw’è‚Å‚«‚éŒ^‚ÍAƒ‰ƒxƒ‹Œ^A•¶Žš—ñŒ^AŽÀ”Œ^A®”Œ^A‚Ì4‚Â‚Ì‚Ý‚Å‚·B
 ^
-æœ¬ãƒžã‚¯ãƒ­ã¯å±•é–‹æ™‚ã« midlevar_ ã¨ã„ã†å¤‰æ•°ã‚’ä»‹ã—ã¦ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å†…ã®å‘½ä»¤ã«ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚¿ã‚¤ãƒ—varã§p2ã‚’æ¸¡ã—ã¦ã„ã¾ã™ã€‚
-ãã®ãŸã‚ã€p2ã¯ãƒ©ãƒ™ãƒ«ã€æ–‡å­—åˆ—ã€å®Ÿæ•°ã€æ•´æ•°ã€è‹¥ã—ãã¯ãã‚Œã‚‰ã‚’æ ¼ç´ã—ãŸå¤‰æ•°ã§ã®æŒ‡å®šã«å¯¾å¿œã—ã¦ã„ã¾ã™ã€‚é…åˆ—å¤‰æ•°ã«ã¯å¯¾å¿œã—ã¦ã„ã¾ã›ã‚“ã€‚
+–{ƒ}ƒNƒ‚Í“WŠJŽž‚É midlevar_ ‚Æ‚¢‚¤•Ï”‚ð‰î‚µ‚Äƒ‚ƒWƒ…[ƒ‹“à‚Ì–½—ß‚Éƒpƒ‰ƒ[ƒ^ƒ^ƒCƒvvar‚Åp2‚ð“n‚µ‚Ä‚¢‚Ü‚·B
+‚»‚Ì‚½‚ßAp2‚Íƒ‰ƒxƒ‹A•¶Žš—ñAŽÀ”A®”AŽá‚µ‚­‚Í‚»‚ê‚ç‚ðŠi”[‚µ‚½•Ï”‚Å‚ÌŽw’è‚É‘Î‰ž‚µ‚Ä‚¢‚Ü‚·B”z—ñ•Ï”‚É‚Í‘Î‰ž‚µ‚Ä‚¢‚Ü‚¹‚ñB
 ^
-ã“ã®å‘½ä»¤ã¯ã€0ä»¥å¤–ã®å€¤ã‚„ç‰¹å®šã®æ–‡å­—åˆ—ã§é…åˆ—ã‚’åˆæœŸåŒ–ã—ãŸã„å ´åˆã‚„ã€å‹•ä½œç¢ºèªç”¨ã¨ã—ã¦åˆ©ç”¨ã™ã‚‹é…åˆ—ã®æº–å‚™ç­‰ã§ã®åˆ©ç”¨ã‚’æƒ³å®šã—ã¦ã—ã¾ã™ã€‚ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚„æ·»å­—ç­‰ã‚’ä»˜åŠ ã™ã‚‹æ©Ÿèƒ½ã¯ã”ã–ã„ã¾ã›ã‚“ã€‚
+‚±‚Ì–½—ß‚ÍA0ˆÈŠO‚Ì’l‚â“Á’è‚Ì•¶Žš—ñ‚Å”z—ñ‚ð‰Šú‰»‚µ‚½‚¢ê‡‚âA“®ìŠm”F—p‚Æ‚µ‚Ä—˜—p‚·‚é”z—ñ‚Ì€”õ“™‚Å‚Ì—˜—p‚ð‘z’è‚µ‚Ä‚µ‚Ü‚·BƒCƒ“ƒfƒbƒNƒX‚â“YŽš“™‚ð•t‰Á‚·‚é‹@”\‚Í‚²‚´‚¢‚Ü‚¹‚ñB
 
 %sample
 
@@ -180,11 +145,11 @@ setarray hoge3, 123456
 setarray hoge4, setnum
 
 %group
-æ–‡å­—åˆ—æ“ä½œå‘½ä»¤
+•¶Žš—ñ‘€ì–½—ß
 %type
-ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©ãƒžã‚¯ãƒ­
+ƒ†[ƒU[’è‹`ƒ}ƒNƒ
 %href
 priarray
 
 
-;â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+;„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª

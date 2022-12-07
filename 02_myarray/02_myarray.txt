@@ -1,8 +1,8 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 	Module   : 02_myarray.hsp
-	Version  : 0.24
-	Date     : 2022/12/05
+	Version  : 0.25
+	Date     : 2022/12/07
 	Author   : YUZRANIUM（ゆずらにうむ）
 	Twitter  : https://twitter.com/YUZRANIUM
 	Git Hub  : https://github.com/YUZRANIUM/02_myarray
@@ -53,14 +53,17 @@
 //
 // p1 : 中身を受け取る文字列型変数
 // p2 : 多次元配列変数
-priarray p1, p2
+// p3 : コメント（省略可）
+priarray p1, p2, p3
 
 
 // 多次元配列変数一括代入
 //
 // p1 : 代入先の配列変数
 // p2 : 代入したい値
-setarray p1, p2
+// p3 : indexフラグ(=0)
+// p4 : 増減値(str, double, int)
+setarray p1, p2, p3, p4
 
 
 # 導入方法
@@ -110,6 +113,12 @@ setarray p1, p2
 
 # 更新履歴
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ver 0.25
+2022/12/07
+書き出し命令 priarray命令にコメント機能の追加
+一括代入命令 setarray命令に増減機能の追加
+一部コードの改修
 
 ver 0.24
 2022/12/05
