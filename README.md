@@ -313,7 +313,7 @@ c(1) = 無理かぁ～w
 
 * Windows11 Pro 22H2 x64
 * Hot Soup Processor 3.7beta4
-* Visual Studio Code ver 1.73.1
+* Visual Studio Code ver 1.74
 
 
 ## LICENSE
