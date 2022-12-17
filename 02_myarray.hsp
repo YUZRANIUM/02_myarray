@@ -7,7 +7,7 @@
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
 // *****************************************************************************
 /* Description
- 多次元配列を確認用に書き出すモジュールです。
+ 多次元配列をなんやかんやするモジュールです。おまけ付きです
 
 	このモジュールはHSPTV!掲示板の皆様によって支えられております。
 	この場を借りて感謝申し上げます。誠に有難うございます。
@@ -19,6 +19,102 @@
 	content : 多次元配列変数を複数行文字列に
 ********************************************************************************/
 
+
+
+
+/////////////////////////////  ちょびっとつーるず  //////////////////////////////
+
+#ifndef __my_tools__
+#define global __my_tools__
+	; 私が普段使っているお供です。
+	; つーるず、と言ってもご覧の通り2つしかないですが...
+	; まぁ、そこまで良いものではありませんが、お役に立てれば幸いです。
+	;
+#module "mytool"
+
+// objprm のハンドル指定版(内部命令)
+//
+// objhwnd_     : オブジェクトハンドル
+// -------------
+// obj_prmdata_ : 表示する値(マクロから)
+#deffunc local objprh_ int objhwnd_, var obj_prmdata_
+	sendmsg objhwnd_, $C, 0, obj_prmdata_
+	return
+	;
+	; メリット
+	;  * gsel で描画先･操作先の管理をしなくて良い
+	;    複数のウィンドウで複数のオブジェクトを扱う場合に効果を発揮します
+	; objprm と同じことができる...はずです(layerobjだけ確認していません)
+
+/*--------------------------------------------------------*/
+
+// objprm のハンドル指定版
+//
+// p1 : オブジェクトハンドル
+// p2 : 変数(値の直接指定でも可)
+#define global objprh(%1,%2)\
+	midlevar_@mytool=%2:\
+	objprh_@mytool %1,midlevar_@mytool
+
+	// midlevar_@mytool
+	//      パラメータタイプを var に統一するための中間変数
+	//      文字列型、実数型、整数型、そして変数での指定
+	//      これらを可能にするため変数で格納し、変数として内部命令に渡しています
+
+/*============================================================================*/
+
+// 変数名と行数表示
+//
+// p1      : 表示させたい値
+// ---------
+// vname   : 変数名 (マクロから)
+// linenum : 行  数 (マクロから)
+#deffunc local logpri_ var p1, str vname, int lineunm
+	logmes "" + strf("\n/*** %d ***/\n%s = %s", lineunm, vname, p1)
+	return
+	;
+	; 変数名の表示と言うかp1に指定したものが表示されます。
+	;
+	; ※致命的な欠陥※
+	;        * ダブルクオーテーション(")が使えない
+	; 例)  123行目で、a = 1 : b = 0 のときの a & b が見たい!
+	; 123| logpri a & b
+	;
+	; ログ表示↓
+	; /*** 123 ***/
+	; a & b = 0
+	;
+	; 詳しいことは↓のマクロに
+
+/*--------------------------------------------------------*/
+
+// 変数名と行数表示
+//
+// p1 : 表示させたい値
+#define global logpri(%1)\
+	midlevar_@mytool=%1:\
+	logpri_@mytool midlevar_@mytool,"%1",__line__
+
+// "%1"     : 変数名
+// __line__ : 行数
+
+	// "%1"     変数名を表示させるための幻の第2パラメータです
+	//          マクロ展開時、ダブルクオーテーションに囲まれた状態で
+	//          展開されるので文字列として内部命令に渡すことができています
+	//          これは仕様なのでしょうか?
+
+#global // mytool
+#endif  //__my_tools__
+/////////////////////////  ちょびっとつーるず ここまで  //////////////////////////
+
+
+
+
+
+
+
+///////////////////////////  本体は ここから [EOF]まで  /////////////////////////
+	// ※[EOF] 含めて本体です
 
 #ifndef __myarray__
 #define global __myarray__
@@ -34,13 +130,19 @@
 
 	; *未対応の型, *1次元, *2次元, *3次元, *4次元
 	;
-	ldim jump_@myarray, 5, 3
+	ldim jump_@myarray, 5, 6
 	; 配列情報表示 分岐ラベル    * 使用箇所: ainfo_
 	jump_@myarray(0, 0) = *notvarinfo@myarray, *D1_aryinfo@myarray, *D2_aryinfo@myarray, *D3_aryinfo@myarray, *D4_aryinfo@myarray
 	; 配列書き出し 分岐ラベル    * 使用箇所: priarray_dx
 	jump_@myarray(0, 1) = *not_varpri@myarray, *priarray_1@myarray, *priarray_2@myarray, *priarray_3@myarray, *priarray_4@myarray
 	; 配列連続代入 分岐ラベル    * 使用箇所: setarray_
 	jump_@myarray(0, 2) = *not_varset@myarray, *setarray_1@myarray, *setarray_2@myarray, *setarray_3@myarray, *setarray_4@myarray
+	; 配列生値出力 分岐ラベル    * 使用箇所: outarray_
+	jump_@myarray(0, 3) = *not_varout@myarray, *outarray_1@myarray, *outarray_2@myarray, *outarray_3@myarray, *outarray_4@myarray
+	; 配列生値読込 分岐ラベル    * 使用箇所: cnvarray_
+	jump_@myarray(0, 4) = *not_varcnv@myarray, *cnvarray_1@myarray, *cnvarray_2@myarray, *cnvarray_3@myarray, *cnvarray_4@myarray
+	; ラベル型配列 分岐ラベル    * 使用箇所: labarray_
+	jump_@myarray(0, 5) = *not_varlab@myarray, *labarray_1@myarray, *labarray_2@myarray, *labarray_3@myarray, *labarray_4@myarray
 
 /*##############################################################################
 	*** 変数の型名表示 ***
@@ -66,10 +168,10 @@
 
 * 使用箇所: 配列の情報表示 ainfo_    分岐ラベル *D1_aryinfo ～ *D4_aryinfo
 ------------------------------------------------------------------------------*/
-	srfor@myarray(0, 0) = "[%s ] %s(%d) L=%d\n"
-	srfor@myarray(1, 0) = "[%s ] %s(%d, %d) L=%d\n"
-	srfor@myarray(2, 0) = "[%s ] %s(%d, %d, %d) L=%d\n"
-	srfor@myarray(3, 0) = "[%s ] %s(%d, %d, %d, %d) L=%d\n"
+	srfor@myarray(0, 0) = "[ %s ] %s(%d) L=%d\n"
+	srfor@myarray(1, 0) = "[ %s ] %s(%d, %d) L=%d\n"
+	srfor@myarray(2, 0) = "[ %s ] %s(%d, %d, %d) L=%d\n"
+	srfor@myarray(3, 0) = "[ %s ] %s(%d, %d, %d, %d) L=%d\n"
 
 
 /*==============================================================================
@@ -87,7 +189,7 @@
 
 
 /*==============================================================================
-	*** 配列の書き出し未対応の型(ラベル型、モジュール型、COMオブジェクト型) ***
+	*** 配列の書き出し未対応の型(モジュール型、COMオブジェクト型) ***
 	(1次元要素, 2次元要素, 3次元要素, 4次元要素): varuse [(0x)varptr]
 	例）(0, 0, 0, 0): 0 [0x12345]
 	例）(0, 0, 0, 0): 1 [0xabcde]
@@ -113,26 +215,24 @@ you tried to enter a value into unsupported variable types
 ((  値一覧  ))
 
 * 使用箇所: 配列書き出し priarray_dx
-* 使用箇所: 配列連続代入   setarray_    分岐ラベル *not_varset (エラーレポートの発行場所)
+* 使用箇所: 配列連続代入 setarray_    分岐ラベル *not_varset (エラーレポートの発行場所)
 ------------------------------------------------------------------------------*/
-	srfor@myarray(0, 3) = "----------\n%s\n----------\n"
+	srfor@myarray(0, 3) = "/*----------\n%s\n----------*/\n"
 
 	// エラーレポートメッセージ
 	reportmes_@myarray = "\nyou tried to enter a value into unsupported variable types"
 
 	// エラーレポートの書式
-	srfor@myarray(1, 3) = "\n->name:[%s ] line:%d"
+	srfor@myarray(1, 3) = "\n->name:[ %s ] line:%d"
 
 /*============================================================================*/
 	/*****  以下、特にここに置く必要もないのですが私的な理由で置いています  *****/
 
 	dim alldim_@myarray, 4      ; 各配列要素数の格納用
 	alldim_@myarray = 0, 0, 0, 0
-	dim i@myarray, 4            ; 各次元配列の要素
-	i@myarray = 0, 0, 0, 0
+	dim i@myarray, 6            ; 各次元配列の要素
+	i@myarray = 0, 0, 0, 0, 0, 0
 	sum_@myarray = 0            ; 各次元の使用状況と各次元要素数を乗算して総合計したもの (= 配列の総数)
-	j_@myarray = 0
-
 	type_ch@myarray = 0         ; 以降の if～else での未対応の型分岐用判別式
 	prinfo_@myarray = 0         ; 各次元の使用状況 ( length(p2) != 0 ) などとして 0, 1 で確保しているか否かを判別
 
@@ -140,11 +240,85 @@ you tried to enter a value into unsupported variable types
 	increase_@myarray = ""      ; setarrayにて、増減値用の媒介変数. double, intに対応 (マクロで使用)
 
 	sdim strbuf_@myarray, 125
-	strbuf_@myarray = "", ""    ; setarrayにて、インデックス付与のための文字列バッファー
+	strbuf_@myarray = ""        ; setarrayにて、インデックス付与のための文字列バッファー
 	indexbuf_@myarray = ""      ; setarrayにて、文字列型へのインデックス付与のための増減値バッファー
-
 	error_report_@myarray = ""  ; setarrayにて、未サポートの型への代入を試みた際に表示するエラーレポート (表示自体は直後のpriarray)
+
+	; 文字列型多目的変数
+	hogestr = ""  :  sdim hogestr, 1024
+	; 多目的変数
+	hoge = ""
+	hspctx = 0  :  name = ""
 	return
+
+
+
+//----------------------------------------------------------
+// ラベル名取得用    (2022/12/16現在、最適化できておらず)
+//----------------------------------------------------------
+
+	; ラベル名取得
+	; 構造体の詳細はhspsdkフォルダのhsp3code.txt,hspdll.txtを参考
+	; ※言語仕様としての注意※
+	; 1) リリース時にはデバック情報はobj(ax)ファイルに書き込まれない(#cmpopt varname 1は使えない？)
+	; 2) 隣接するラベルはまとまる(ジャンプ先が同一になるので判定不能)
+	; 3) 小文字になる
+	; ※hsp3_64未対応※
+	;
+#deffunc local _load_hsphed_
+	mref hspctx, 68                     ; HSPのシステム情報(HSPCTX構造体)
+	mem_mcs = hspctx(2)                 ; code segment ptr
+	mem_mds = hspctx(3)                 ; data segment ptr
+	mem_di  = hspctx(4)                 ; Debug info ptr
+	mem_ot  = hspctx(5)                 ; object temp segment ptr
+
+	dupptr hsphed, hspctx(0), 96        ; AXヘッダ情報の詳細(HSPHED構造体)
+	allsize = hsphed(3)                 ; total file size
+	dupptr hsphed, hspctx(0), allsize
+	max_ds = hsphed(7)                  ; size of DS
+	max_ot = hsphed(9)                  ; size of OT
+	max_dinfo = hsphed(11)              ; size of DI
+	dupptr ds, mem_mds, max_ds, 2       ; DS
+	dupptr ot, mem_ot, max_ot, 4        ; OT
+	dupptr di, mem_di, max_dinfo, 2     ; DI
+
+	; ラベル名とCSのオフセット値をリスト化
+	sdim m_label_name_list, 64, length(ot)
+	dim  m_label_ofs_list, length(ot)
+
+	i(4) = 0
+	repeat max_dinfo
+		d = peek(di, cnt)
+		if d == 251 { ; ラベル名
+			getstr name, ds, (lpeek(di, cnt + 1) & $00FFFFFF)
+			m_label_name_list(i(4)) = name
+			m_label_ofs_list(i(4))  = mem_mcs + ot(wpeek(di, cnt + 4)) * 2
+			i(4)++
+			continue cnt + 6
+		}
+		else:if (d == 255) {continue cnt + 1}      ; データ終端 (無視)
+		else:if (d == 254) {continue cnt + 6}      ; ソースファイル指定 (無視)
+		else:if (d == 253) {continue cnt + 6}      ; 変数名 (無視)
+		else:if (d == 252) {continue cnt + 4}      ; 16bit値CSオフセット(無視)
+		; 次行までのCSオフセット(無視)
+	loop
+	return
+
+
+//----------------------------------------------------------
+// ラベル名取得内部関数    (2022/12/16現在、最適化できておらず)
+//----------------------------------------------------------
+
+// ラベル取得関数
+//
+// ary : ラベル型変数
+#defcfunc local label2str_ var ary
+	dupptr clone, varptr(ary), 4  :  res = ""
+	; FIXME:愚直に検索しない
+	repeat length(m_label_ofs_list)
+		if (clone == m_label_ofs_list(cnt))  :  res = m_label_name_list(cnt)  :  break
+	loop
+	return "*" + res
 
 
 
@@ -155,14 +329,45 @@ you tried to enter a value into unsupported variable types
 // ary     : 配列変数
 // vname   : 変数名
 // linenum : 行数
-#defcfunc local ainfo_ array ary, str vname, int linenum
+// coment  : コメント
+#deffunc local ainfo_ var hyouj, array ary, str vname, int linenum, var coment, int cl
 
+	; 半角スペースのトリミング
+	hogestr = vname  :  hogestr = strtrim(hogestr, 3,)
+
+	/***  以降の if～else での未対応の型分岐用  ****/
+	; 未対応型 (ラベル型、モジュール型、COMオブジェクト型)
+	type_ch(0) = (vartype(ary) == 1) | (vartype(ary) == 5) | (vartype(ary) == 6)
+	type_ch(1) = (vartype(ary) == 1)    ; label
+	type_ch(2) = (vartype(ary) == 2)    ; str
+	type_ch(3) = (vartype(ary) == 3)    ; double
+	type_ch(4) = (vartype(ary) == 4)    ; int
+	type_ch(5) = (vartype(ary) == 5)    ; struct
+	type_ch(6) = (vartype(ary) == 6)    ; comobj
+
+
+	; 各次元要素の保持
+	alldim_ = length(ary), length2(ary), length3(ary), length4(ary)
 	; 使用次元の確認
-	prinfo_@myarray = (length4(ary) != 0) + (length3(ary) != 0) + (length2(ary) != 0) + (length(ary) != 0)
-	; 以降の if～else での未対応の型分岐用
-	type_ch@myarray = (vartype(ary) == 1) | (vartype(ary) == 5) | (vartype(ary) == 6)
+	prinfo_ = (alldim_(0) != 0) + (alldim_(1) != 0) + (alldim_(2) != 0) + (alldim_(3) != 0)
 
-	gosub jump_@myarray(prinfo_@myarray, 0)
+	; setarray
+	if cl == -1 : goto jump_(0, 0)
+
+
+	; labarray から呼び出される場合はコメントアウトしておく
+	if cl == -2 : hyouj += ";"
+
+
+	gosub jump_(prinfo_, 0)
+
+
+	; hoge(0) = コメントのみの場合, hoge(1) = コメント、エラーレポートの両方がある場合
+	hoge = ((coment != "") & (error_report_ == "")), ((coment != "") | (error_report_ != ""))
+
+	; エラーレポートを使用しない場合はelse以降をコメントアウトして下さい
+	if      hoge(0) {hyouj += strf(srfor(0, 3), coment)}
+	else:if hoge(1) {hyouj += strf(srfor(0, 3), coment + reportmes_ + error_report_) : error_report_ = ""}
 
 	return
 
@@ -175,19 +380,23 @@ you tried to enter a value into unsupported variable types
 
 ; jump_(1, 0)
 *D1_aryinfo@myarray
-	return strf(srfor(0, 0), vname, tinfo_(vartype(ary)), length(ary), linenum)
+	hyouj += strf(srfor(0, 0), hogestr, tinfo_(vartype(ary)), length(ary), linenum)
+	return
 
 ; jump_(2, 0)
 *D2_aryinfo@myarray
-	return strf(srfor(1, 0), vname, tinfo_(vartype(ary)), length(ary), length2(ary), linenum)
+	hyouj += strf(srfor(1, 0), hogestr, tinfo_(vartype(ary)), length(ary), length2(ary), linenum)
+	return
 
 ; jump_(3, 0)
 *D3_aryinfo@myarray
-	return strf(srfor(2, 0), vname, tinfo_(vartype(ary)), length(ary), length2(ary), length3(ary), linenum)
+	hyouj += strf(srfor(2, 0), hogestr, tinfo_(vartype(ary)), length(ary), length2(ary), length3(ary), linenum)
+	return
 
 ; jump_(4, 0)
 *D4_aryinfo@myarray
-	return strf(srfor(3, 0), vname, tinfo_(vartype(ary)), length(ary), length2(ary), length3(ary), length4(ary), linenum)
+	hyouj += strf(srfor(3, 0), hogestr, tinfo_(vartype(ary)), length(ary), length2(ary), length3(ary), length4(ary), linenum)
+	return
 
 
 
@@ -204,50 +413,41 @@ you tried to enter a value into unsupported variable types
 //---------
 // vname   : 変数名 (マクロから)
 // linenum : 行数   (マクロから)
-#deffunc local priarray_dx var hyouj, array ary, var coment, str vname, int linenum, local _var_use_, local _var_ptr
+#deffunc local priarray_dx var hyouj, array ary, var coment, str vname, int linenum
+	dim i, 6
+	; 配列情報表示用の内部命令
+	ainfo_@myarray hyouj, ary, vname, linenum, coment, 0
 
-	; 配列情報表示用の内部関数
-	hyouj += ainfo_@myarray(ary, vname, linenum)
-
-////////////////////////// コメント & エラーレポート ////////////////////////////
-	; コメントみの場合
-	if      (coment != "") & (error_report_@myarray == "") {hyouj += strf(srfor(0, 3), coment)}
-	else:if (coment != "") | (error_report_@myarray != "") {
-		; コメントかエラーレポートのどちらかがある場合
-		hyouj += strf(srfor(0, 3), coment + reportmes_@myarray + error_report_@myarray)
-		error_report_@myarray = "" ; 表示した後に初期化するようにして下さい
-	}
-	/*エラーレポートを使用しない場合はelse以降をコメントアウトして下さい*/
-////////////////////////////////////////////////////////////////////////////////
-
-	; 各次元要素の保持
-	alldim_@myarray = length(ary), length2(ary), length3(ary), length4(ary)
+	; モジュール型とCOMオブジェクト型は実行せずにreturn
+	if type_ch(5) | type_ch(6) : goto jump_(0, 0)
 
 	; 配列数合計
-	sum_@myarray = 1
+	sum_ = 1
 	repeat 4
-		if (alldim_@myarray(cnt) == 0)  :  break
-		sum_@myarray *= alldim_@myarray(cnt)
+		if (alldim_(cnt) == 0)  :  break
+		sum_ *= alldim_(cnt)
 	loop
 
 	; 書き出し
-	repeat sum_@myarray
-		j_@myarray = cnt
-		repeat prinfo_@myarray
-			num_@myarray = j_@myarray
+	repeat sum_
+		i(4) = cnt
+		repeat prinfo_
+			num_ = i(4)
 			repeat cnt
-				num_@myarray /= alldim_@myarray(cnt)
+				num_ /= alldim_(cnt)
 			loop
-			i(cnt) = num_@myarray \ alldim_@myarray(cnt)
+			i(cnt) = num_ \ alldim_(cnt)
 		loop
-		gosub jump_@myarray(prinfo_@myarray, 1)      ; ラベルジャンプで分岐
+		gosub jump_(prinfo_, 1)      ; ラベルジャンプで分岐
 	loop
 
 	hyouj += "\n"      ; 次の配列変数表示のための改行
 	return
 
-
 //-------------------------------  配列書き出し  -------------------------------//
+
+	; 丸括弧が重なりすぎて非常に読みにくくなってしまったので、
+	; このあたりだけ配列を旧書式としています。
 
 ; 未対応の型はこちらへ jump_(0, 1)
 *not_varpri@myarray
@@ -256,45 +456,37 @@ you tried to enter a value into unsupported variable types
 ; 1次元配列 jump_(1, 1)
 *priarray_1@myarray
 
-	if type_ch@myarray {
-		_var_use_ = varuse(ary(i(0)))
-		_var_ptr_ = varptr(ary(i(0)))
-		hyouj    += strf(srfor(0, 2), i(0), _var_use_, _var_ptr_)
+	if type_ch(1) {
+		hyouj  += strf(srfor(0, 1), i.0, label2str_@myarray(ary(i.0)))
 	}
-	else : hyouj += strf(srfor(0, 1), i(0), ary(i(0)))
+	else:hyouj += strf(srfor(0, 1), i.0, ary(i.0))
 	return
 
 ; 2次元配列 jump_(2, 1)
 *priarray_2@myarray
 
-	if type_ch@myarray {
-		_var_use_ = varuse(ary(i(0), i(1)))
-		_var_ptr_ = varptr(ary(i(0), i(1)))
-		hyouj    += strf(srfor(1, 2), i(0), i(1), _var_use_, _var_ptr_)
+	if type_ch(1) {
+		hyouj  += strf(srfor(1, 1), i.0, i.1, label2str_@myarray(ary(i.0, i.1)))
 	}
-	else : hyouj += strf(srfor(1, 1), i(0), i(1), ary(i(0), i(1)))
+	else:hyouj += strf(srfor(1, 1), i.0, i.1, ary(i.0, i.1))
 	return
 
 ; 3次元配列 jump_(3, 1)
 *priarray_3@myarray
 
-	if type_ch@myarray {
-		_var_use_ = varuse(ary(i(0), i(1), i(2)))
-		_var_ptr_ = varptr(ary(i(0), i(1), i(2)))
-		hyouj    += strf(srfor(2, 2), i(0), i(1), i(2), _var_use_, _var_ptr_)
+	if type_ch(1) {
+		hyouj  += strf(srfor(2, 1), i.0, i.1, i.2, label2str_@myarray(ary(i.0, i.1, i.2)))
 	}
-	else : hyouj += strf(srfor(2, 1), i(0), i(1), i(2), ary(i(0), i(1), i(2)))
+	else:hyouj += strf(srfor(2, 1), i.0, i.1, i.2, ary(i.0, i.1, i.2))
 	return
 
 ; 4次元配列 jump_(4, 1)
 *priarray_4@myarray
 
-	if type_ch@myarray {
-		_var_use_ = varuse(ary(i(0), i(1), i(2), i(3)))
-		_var_ptr_ = varptr(ary(i(0), i(1), i(2), i(3)))
-		hyouj    += strf(srfor(3, 2), i(0), i(1), i(2), i(3), _var_use_, _var_ptr_)
+	if type_ch(1) {
+		hyouj  += strf(srfor(3, 1), i.0, i.1, i.2, i.3, label2str_@myarray(ary(i.0, i.1, i.2, i.3)))
 	}
-	else : hyouj += strf(srfor(3, 1), i(0), i(1), i(2), i(3), ary(i(0), i(1), i(2), i(3)))
+	else:hyouj += strf(srfor(3, 1), i.0, i.1, i.2, i.3, ary(i.0, i.1, i.2, i.3))
 	return
 
 
@@ -314,46 +506,40 @@ you tried to enter a value into unsupported variable types
 // vname   : 変数名（マクロから）
 // linenum : 行数（マクロから）
 #deffunc local setarray_ array ary, var in_val, int iflg, var index, str vname, int linenum
+	dim i, 6
 
-	; 未対応型
-	type_ch@myarray = (vartype(ary) == 1) | (vartype(ary) == 5) | (vartype(ary) == 6)
+	ainfo_@myarray strbuf_, ary, vname, linenum, indexbuf_, -1
 
-/// (  (フラグ = 1) かつ (未対応型)  ) または ( モジュール型 ) または ( COMオブジェクト型 ) ///
-	; ラベル型の場合は連続代入のみが可能
-	if ((iflg == 1) & type_ch@myarray) | (vartype(ary) == 5) | (vartype(ary) == 6) {goto jump_@myarray(0, 2)}
+// (  (フラグ = 1) かつ (未対応型)  ) または ( モジュール型 ) または ( COMオブジェクト型 ) //
+	if ((iflg == 1) & type_ch(0)) | type_ch(5) | type_ch(6) : goto jump_(0, 2)
 
 	; 代入値が文字列の場合、インデックス付与のために一旦退避
-	if (iflg == 1) & (vartype(in_val) == 2)  :  strbuf_@myarray(0) = in_val  :  indexbuf_@myarray = index
+	if (iflg == 1) & (type_ch(2))  :  strbuf_ = in_val  :  indexbuf_ = index
 
-	prinfo_@myarray = (length4(ary) != 0) + (length3(ary) != 0) + (length2(ary) != 0) + (length(ary) != 0)
-
-	; 各次元要素の保持
-	alldim_@myarray = length(ary), length2(ary), length3(ary), length4(ary)
 	; 配列数合計
-	sum_@myarray = 1
+	sum_ = 1
 	repeat 4
-		if (alldim_@myarray(cnt) == 0)  :  break
-		sum_@myarray *= alldim_@myarray(cnt)
+		if (alldim_(cnt) == 0)  :  break
+		sum_ *= alldim_(cnt)
 	loop
 
-	repeat sum_@myarray
-		j_@myarray = cnt
-		repeat prinfo_@myarray
-			num_@myarray = j_@myarray
+	repeat sum_
+		i(4) = cnt
+		repeat prinfo_
+			num_ = i(4)
 			repeat cnt
-				num_@myarray /= alldim_@myarray(cnt)
+				num_ /= alldim_(cnt)
 			loop
-			i(cnt) = num_@myarray \ alldim_@myarray(cnt)
+			i(cnt) = num_ \ alldim_(cnt)
 		loop
 
-		gosub jump_@myarray(prinfo_@myarray, 2)    ; ラベルジャンプで分岐
+		gosub jump_(prinfo_, 2)    ; ラベルジャンプで分岐
 
 		; 文字列に対してインデックスの付与
-		;
-		if (iflg == 1) & (vartype(in_val) == 2) {
-			in_val = strbuf_@myarray(0)             ; 足される方を元データに上書き
-			in_val += "" + indexbuf_@myarray        ; インデックスの追加
-			indexbuf_@myarray += index              ; インデックスカウントアップ
+		if (iflg == 1) & (type_ch(2)) {
+			in_val = strbuf_            ; 足される方を元データに上書き
+			in_val += "" + indexbuf_    ; インデックスの追加
+			indexbuf_ += index          ; インデックスカウントアップ
 		}
 		else:if (iflg == 1)  :  in_val += index
 
@@ -366,7 +552,7 @@ you tried to enter a value into unsupported variable types
 ; 未対応の型はこちらへ jump_(0, 2)
 *not_varset@myarray
 /////////////////////////////  エラーレポートの発行  /////////////////////////////
-	error_report_@myarray += strf(srfor(1, 3), vname, linenum)
+	error_report_ += strf(srfor(1, 3), hogestr, linenum)
 	return
 
 ; 1次元配列 jump_(1, 2)
@@ -391,6 +577,241 @@ you tried to enter a value into unsupported variable types
 
 
 
+
+
+//----------------------------------------------------------
+//配列の生値出力
+//----------------------------------------------------------
+
+// n次元配列の生値出力
+//
+// hyouj   : 配列変数の中身を受け取る文字列型変数
+// ary     : 配列変数
+#deffunc outarray var hyouj, array ary
+	dim i, 6
+	; 各次元要素の保持
+	alldim_ = length(ary), length2(ary), length3(ary), length4(ary)
+	; 次元の使用状況
+	prinfo_ = (alldim_(0) != 0) + (alldim_(1) != 0) + (alldim_(2) != 0) + (alldim_(3) != 0)
+	; 配列数合計
+	sum_ = 1
+	repeat 4
+		if (alldim_(cnt) == 0)  :  break
+		sum_ *= alldim_(cnt)
+	loop
+
+	; 書き出し
+	repeat sum_
+		i(4) = cnt
+		repeat prinfo_
+			num_ = i(4)
+			repeat cnt
+				num_ /= alldim_(cnt)
+			loop
+			i(cnt) = num_ \ alldim_(cnt)
+		loop
+		gosub jump_(prinfo_, 3)      ; ラベルジャンプで分岐
+	loop
+
+	hyouj += "\n"      ; 次の配列変数表示のための改行
+	return
+
+//-------------------------------  配列書き出し  -------------------------------//
+
+*not_varout@myarray
+	return
+
+; 1次元配列 jump_(1, 3)
+*outarray_1@myarray
+	hyouj += "" + ary(i(0)) + "\n"
+	return
+
+; 2次元配列 jump_(2, 3)
+*outarray_2@myarray
+	hyouj += "" + ary(i(0), i(1)) + "\n"
+	return
+
+; 3次元配列 jump_(3, 3)
+*outarray_3@myarray
+	hyouj += "" + ary(i(0), i(1), i(2)) + "\n"
+	return
+
+; 4次元配列 jump_(4, 3)
+*outarray_4@myarray
+	hyouj += "" + ary(i(0), i(1), i(2), i(3)) + "\n"
+	return
+
+
+
+
+//----------------------------------------------------------
+// あらゆるものを多次元配列に変換する内部命令
+//----------------------------------------------------------
+
+// あらゆるものを多次元配列に変換する
+//
+// ary    : 変数名（dim系で初期化していなくてもOK）
+// in_val : 読み込む複数行文字列若しくは多次元配列変数
+// type   : 変換先の型を表す数値  (= 2) (2:文字列型, 3:実数型, 4:整数型) vartype
+// d1     : 第1次元要素数 (= 0)
+// d2     : 第2次元要素数 (= 0)
+// d3     : 第3次元要素数 (= 0)
+// d4     : 第4次元要素数 (= 0)
+#deffunc local cnvarray_ array ary, array in_val, int type, int d1, int d2, int d3, int d4
+	dim i, 6  :  sdim hogestr, 1024
+
+	; 複数行文字列、多次元配列の判別
+	; 要素数が2以上あれば多次元配列とみなしてoutarrayにて複数行文字列化
+	;		今のところ、私の思いついた最善手です
+	;		これがないと配列同士の次元を超えた変換ができない
+	;
+	if length(in_val) > 1 : outarray hogestr, in_val : else : hogestr = in_val
+
+	notesel hogestr
+
+	; 配列の各次元要素数
+	; p1が0の場合はもととなる配列の次元要素数をそのまま使う
+	;		(配列の全コピーとしても機能させるため)
+	;
+	if (d1 == 0) {alldim_ = length(in_val), length2(in_val), length3(in_val), length4(in_val)}
+	else:         alldim_ = d1, d2, d3, d4
+
+	; 配列の初期化 * 型の変換
+	;		数値型（実数型、整数型）はdimtypeでまとめてます
+	;
+	if (type == 2) {sdim ary, notesize, alldim_(0), alldim_(1), alldim_(2), alldim_(3)}
+	else:            dimtype ary, type, alldim_(0), alldim_(1), alldim_(2), alldim_(3)
+
+	; 次元の使用状況
+	prinfo_ = (alldim_(0) != 0) + (alldim_(1) != 0) + (alldim_(2) != 0) + (alldim_(3) != 0)
+
+	; 配列数合計
+	sum_ = 1
+	repeat 4
+		if (alldim_(cnt) == 0)  :  break
+		sum_ *= alldim_(cnt)
+	loop
+
+	; 書き出し
+	repeat sum_
+		i(4) = cnt
+		repeat prinfo_
+			num_ = i(4)
+			repeat cnt
+				num_ /= alldim_(cnt)
+			loop
+			i(cnt) = num_ \ alldim_(cnt)
+		loop
+		noteget hogeline, i(5)
+
+		if      (type == 2) {hoge =    str(hogeline)}
+		else:if (type == 3) {hoge = double(hogeline)}
+		else:if (type == 4) {hoge =    int(hogeline)}
+
+		gosub jump_(prinfo_, 4)      ; ラベルジャンプで分岐
+		i(5)++
+	loop
+	return
+
+//-------------------------------  配列書き出し  -------------------------------//
+
+*not_varcnv@myarray
+	return
+
+; 1次元配列 jump_(1, 4)
+*cnvarray_1@myarray
+	ary(i(0)) = hoge
+	return
+
+; 2次元配列 jump_(2, 4)
+*cnvarray_2@myarray
+	ary(i(0), i(1)) = hoge
+	return
+
+; 3次元配列 jump_(3, 4)
+*cnvarray_3@myarray
+	ary(i(0), i(1), i(2)) = hoge
+	return
+
+; 4次元配列 jump_(4, 4)
+*cnvarray_4@myarray
+	ary(i(0), i(1), i(2), i(3)) = hoge
+	return
+
+
+
+//----------------------------------------------------------
+// 配列連続代入内部命令
+//----------------------------------------------------------
+
+// 配列連続代入内部命令
+//
+// hyouj  : 書き出し先の複数行文字列型変数
+// ary    : 書き出す文字列型配列変数
+// in_val : 代入値またはそれを格納した変数
+// index  : 増減値 (str, double, int)
+#deffunc local labarray_ var hyouj, array ary, var in_val, var index, var coment, str vname
+	dim i, 6
+
+	ainfo_@myarray hyouj, ary, vname, 0, coment, -2
+	; インデックス付与のために一旦退避
+	strbuf_ = in_val  :  indexbuf_ = index
+
+	; 配列数合計
+	sum_ = 1
+	repeat 4
+		if (alldim_(cnt) == 0)  :  break
+		sum_ *= alldim_(cnt)
+	loop
+
+	repeat sum_
+		i(4) = cnt
+		repeat prinfo_
+			num_ = i(4)
+			repeat cnt
+				num_ /= alldim_(cnt)
+			loop
+			i(cnt) = num_ \ alldim_(cnt)
+		loop
+		gosub jump_(prinfo_, 5)    ; ラベルジャンプで分岐
+		; 文字列に対してインデックスの付与
+		in_val = strbuf_                ; 足される方を元データに上書き
+		in_val += "" + indexbuf_        ; インデックスの追加
+		indexbuf_ += index              ; インデックスカウントアップ
+	loop
+
+	hyouj += "\n"
+	return
+
+//---------------------------------  配列代入  ---------------------------------//
+
+; 未対応の型はこちらへ jump_(0, 5)
+*not_varlab@myarray
+	return
+
+; 1次元配列 jump_(1, 5)
+*labarray_1@myarray
+	ary(i(0)) = in_val
+	hyouj += strf("\t%s" + srfor(0, 1), hogestr, i(0), in_val)
+	return
+
+; 2次元配列 jump_(2, 5)
+*labarray_2@myarray
+	ary(i(0), i(1)) = in_val
+	hyouj += strf("\t%s" + srfor(1, 1), hogestr, i(0), i(1), in_val)
+	return
+
+; 3次元配列 jump_(3, 5)
+*labarray_3@myarray
+	ary(i(0), i(1), i(2)) = in_val
+	hyouj += strf("\t%s" + srfor(2, 1), hogestr, i(0), i(1), i(2), in_val)
+	return
+
+; 4次元配列 jump_(4, 5)
+*labarray_4@myarray
+	ary(i(0), i(1), i(2), i(3)) = in_val
+	hyouj += strf("\t%s" + srfor(3, 1), hogestr, i(0), i(1), i(2), i(3), in_val)
+	return
 
 
 //##############################################################################
@@ -444,15 +865,41 @@ you tried to enter a value into unsupported variable types
 // __line__ : 行数   (エラーレポート用)
 
 	// increase_@myarray
-	//          増減値用の中間変数
-	//          midlevar_と同様、実数型、整数型（以下、数値型）、文字列型のそれぞれに
-	//          対応するためのものです
-	//          正の値で増加、負の値で減少、文字列型にもインデックスの付与が可能です
 	//
-	//          ※ただし、数値型を基準としているので初期値（スタート）はp2となり、
-	//          数値型の場合、例えば
-	//          0, 1, 2, ... や、0.0, 0.1, 0.2, ...  となりますが、文字列型の場合、
-	//          abc, abc1, abc2, abc3,...   という感じで0スターにはなりません
+	// 増減値用の中間変数
+	// midlevar_と同様、実数型、整数型（以下、数値型）、文字列型のそれぞれに対応するためのものです
+	// 正の値で増加、負の値で減少、文字列型にもインデックスの付与が可能です
+	//
+	// ※ただし、数値型を基準としているので初期値（スタート）はp2となり、
+	// 数値型の場合、例えば
+	// 0, 1, 2, ... や、0.0, 0.1, 0.2, ...  となりますが、文字列型の場合、
+	// abc, abc1, abc2, abc3,...   という感じで0スターにはなりません
+
+
+// あらゆるものを多次元配列に変換する
+//
+// %1 : 変数名（dim系で初期化していなくてもOK）
+// %2 : 読み込む複数行文字列若しくは多次元配列変数
+// %3 : 変換先の型を表す数値  (= 2) (2:文字列型, 3:実数型, 4:整数型) vartype
+// %4 : 第1次元要素数 (= 0)
+// %5 : 第2次元要素数 (= 0)
+// %6 : 第3次元要素数 (= 0)
+// %7 : 第4次元要素数 (= 0)
+#define global cnvarray(%1,%2,%3=2,%4=0,%5=0,%6=0,%7=0) cnvarray_@myarray %1,%2,%3,%4,%5,%6,%7
+
+
+// ラベル型多次元配列生成
+//
+// %1 : 書き出し先の複数行文字列型変数
+// %2 : 書き出す文字列型配列変数
+// %3 : 代入値またはそれを格納した変数
+// %4 : 増減値 (= 1)
+// %5 : コメント
+#define global labarray(%1,%2,%3,%4=1,%5="")\
+	midlevar_@myarray=%3:\
+	increase_@myarray=%4:\
+	labcoment@myarray=%5:\
+	labarray_@myarray %1,%2,midlevar_@myarray,increase_@myarray,labcoment@myarray,"%2"
 
 
 #global // myarray
@@ -465,8 +912,7 @@ you tried to enter a value into unsupported variable types
 	; と思ってつけてみたのですがこの程度の量では体感できるほどの変化があるわけ無いですよね
 	; すみません。要望があれば必要十分な範囲にします。
 
-	; モジュール内の管理用変数の初期化です
-	_myarray_init_@myarray
+	_myarray_init_@myarray    ; モジュール内の管理用変数の初期化です
+	_load_hsphed_@myarray     ; ラベル型変数のラベル名取得用
 
-
-#endif // __myarray__
+#endif //__myarray__
