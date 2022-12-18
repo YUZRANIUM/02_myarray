@@ -1,0 +1,209 @@
+// INFO ************************************************************************
+// FileName : 02_myarray_smpl2.hsp
+// Version  : 0.26.1
+// Date     : 2022/12/18
+// Author   : YUZRANIUM（ゆずらにうむ）
+// Twitter  : https://twitter.com/YUZRANIUM
+// GitHub   : https://github.com/YUZRANIUM/02_myarray
+//******************************************************************************
+/* Description
+多次元配列変数をなんやかんやするモジュールのサンプル兼実験･検証施設です。
+
+どちらかというと、紹介というよりも動作確認が強めです。
+********************************************************************************/
+
+	// #include "02_myarray.hsp"
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+
+	; デバッグ用です knowbug-v2.2.0専用オプション
+	; 必要ないなら消して頂いても挙動に影響はありません
+	#addition "WrapCall.as"
+
+	#const bufsize0 1024
+	#const bufsize1 bufsize0 * 10
+
+//----------------------------------------------------------
+// 使用する変数
+//----------------------------------------------------------
+
+	/***  わかりやすいようにフォルダをば  ***/
+	sdim fname     :  dirlist fname, "output_text", 5
+	if fname = ""  :  mkdir "output_text"
+
+	; 出力用ファイル
+	sdim fname, 64, 5
+	fname(0) = "output_text\\text_ary0.txt"
+	fname(1) = "output_text\\text_ary1.txt"
+	fname(2) = "output_text\\text_ary2.txt"
+	fname(3) = "output_text\\text_ary3.hsp"
+	fname(4) = "output_text\\output_log.txt"
+
+	/*****  変数の用意  *****/
+	dim hmes, 3  :  dim hButton, 3      ; オブジェクトハンドル用
+	sdim lmoni1, bufsize1          ; 表示用1
+	sdim lmoni2, bufsize1          ; 表示用2
+	sdim text_ary0, bufsize0            ; 書き出し用 複数行文字列型
+	sdim text_ary1, bufsize0            ; 書き出し用 複数行文字列型
+	sdim text_ary2, bufsize0            ; 書き出し用 複数行文字列型
+	sdim text_ary3, bufsize0            ; 書き出し用 複数行文字列型
+
+	sdim labl_ary, bufsize0, 10, 2
+	sdim str_ary0, bufsize0, 50    ; テスト用配列
+	ddim dobl_ary1, 10, 10, 2      ; テスト用配列
+	dim int_ary2, 10, 10, 10       ; テスト用配列
+	dim dim_id, 4                       ; input
+	dim_id(0) = 10, 0, 0, 0
+
+	ldim sub_labl, 3      :  sub_labl = *ary_dim, *fileload, *type_change, *loop_ch
+	sdim loadfile, 64, 3  :  loadfile = "text_ary0", "text_ary1", "text_ary2"
+	sdim convtype, 32, 5  :  convtype = "", "", "STRING", "DOUBLE", "INTEGER"
+	ctrlloop = "STOP", "START"
+
+	// 配列要素管理
+	dim id, 4
+	id(0) = 0       ; combox: 読み込むファイル名の配列 fname の第1次元
+	id(1) = 2       ; 型変換ボタンの表示文字列の配列 convtype
+	id(2) = 0       ; メインループ制御
+	id(3) = 0       ; メインループ制御ボタンの表示変更完了フラグ
+
+	/*** おまけ ***/
+	a = 1 : b = 0
+	logpri a & b
+	logpri a | b
+
+
+//----------------------------------------------------------
+// ウィンドウオブジェクト関連
+//----------------------------------------------------------
+	screen 0, 980, 500, 2
+	font "MyricaM M", 16 : objmode 2, 1
+
+	pos 0, 0    : mes "TEXT to ARRAY"
+	pos 370, 0  : mes "ARRAY to ARRAY"
+	pos 0, 20   : mesbox lmoni1, 370, 480, 0 : hmes(0) = objinfo(stat, 2)
+	pos 370, 20 : mesbox lmoni2, 370, 480, 0 : hmes(1) = objinfo(stat, 2)
+
+	objsize 132, 25, 20
+	pos 750, 20 : button gosub loadfile(id(0)), sub_labl(1) : hButton(0) = objinfo(stat, 2)
+	pos 750,    : button gosub convtype(id(1)), sub_labl(2) : hButton(1) = objinfo(stat, 2)
+	objsize 132, 45, 20
+	pos 750,    : button gosub ctrlloop(id(2)), sub_labl(3) : hButton(2) = objinfo(stat, 2)
+
+
+//----------------------------------------------------------
+// 以下サンプル
+//----------------------------------------------------------
+
+	priarray lmoni1, sub_labl, "ラベル名表示テスト"
+
+	/*****  配列の準備  *****/
+	setarray str_ary0, "ABC_", 1, 1
+	priarray lmoni1, str_ary0
+
+	setarray dobl_ary1, 100.0, 1, -0.5
+	priarray lmoni1, dobl_ary1
+
+	setarray int_ary2, 0, 1, 1
+	priarray lmoni1, int_ary2
+
+	labarray text_ary3, labl_ary, "*labl_", 1, "とりあえず作ってみた\n後はサブルーチン作ってこのファイルをインクルード"
+	priarray lmoni1, labl_ary
+
+	/*****  複数行に変換･格納  *****/
+	outarray text_ary0, str_ary0
+	outarray text_ary1, dobl_ary1
+	outarray text_ary2, int_ary2
+
+	/*****  テキストファイルとして出力  *****/
+	notesel text_ary0  :  notesave fname(0)
+	notesel text_ary1  :  notesave fname(1)
+	notesel text_ary2  :  notesave fname(2)
+	notesel text_ary3  :  notesave fname(3)
+	notesel lmoni1     :  notesave fname(4)
+	sdim lmoni1, bufsize1
+
+	/*****  表示用変数  *****/
+	sdim memodata, bufsize0
+	/*****  ファイルロード  *****/
+	notesel memodata  :  noteload fname(id(0))
+
+	gsel 0, 1
+//==============================================================================
+
+
+
+///////////////////////////  メインループ ここから  /////////////////////////////
+*ary_dim
+	wait 120
+	; メインループ一時停止用
+	if      (id(2) == 1) & (id(3) == 0) {objprh hButton(2), ctrlloop(id(2)) : id(3) = 1 : goto sub_labl(0)}
+	else:if (id(2) == 1) & (id(3) == 1) {goto sub_labl(0)}
+	else:if (id(2) == 0) & (id(3) == 1) {objprh hButton(2), ctrlloop(id(2)) : id(3) = 0}
+
+
+	dim dim_id, 4
+	randomize
+	dim_id(0) = rnd(20) + 1
+	repeat , 1
+		ran_ = rnd(10)
+		if (cnt > 3) | (ran_ == 0) : break
+		dim_id(cnt) = ran_
+	loop
+	sortval dim_id, 1
+
+	; 複数行文字列から多次元配列へ
+	cnvarray read_data, memodata, id(1), dim_id(0), dim_id(1), dim_id(2), dim_id(3)
+	priarray lmoni1, read_data, "複数行文字列から多次元配列へ"
+
+
+	randomize dim_id(1)
+	dim dim_id, 4
+	dim_id(0) = rnd(20) + 1
+	repeat , 1
+		ran_ = rnd(10)
+		if (cnt > 3) | (ran_ == 0)  : break
+		dim_id(cnt) = ran_
+	loop
+	sortval dim_id, 1
+
+	; 多次元配列から多次元配列へ
+	cnvarray conv_ary, read_data, id(1), dim_id(0), dim_id(1), dim_id(2), dim_id(3)
+	priarray lmoni2, conv_ary, "多次元配列から別の多次元配列へ"
+
+
+	/*****  結果表示  *****/
+	objprh hmes(0), lmoni1
+	objprh hmes(1), lmoni2
+	sdim lmoni1, bufsize1
+	sdim lmoni2, bufsize1
+
+	goto sub_labl(0)
+///////////////////////////  メインループ ここまで  /////////////////////////////
+
+// メインループ制御
+*loop_ch
+	id(2)++
+	if (id(2) == 2)  :  id(2) = 0
+
+	return
+
+// ファイルの切り替え
+*fileload
+	id(0)++
+	if id(0) == 3 : id(0) = 0
+
+	/*****  表示用変数  *****/
+	sdim memodata, bufsize0
+	/*****  ファイルロード  *****/
+	notesel memodata  :  noteload fname(id(0))
+
+	objprh hButton(0), loadfile(id(0))
+	return
+
+// 型の変換
+*type_change
+	id(1)++
+	if id(1) == 5 : id(1) = 2
+
+	objprh hButton(1), convtype(id(1))
+	return
