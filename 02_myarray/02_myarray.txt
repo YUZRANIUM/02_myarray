@@ -1,8 +1,8 @@
 
 „ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 	Module   : 02_myarray.hsp
-	Version  : 0.25.1
-	Date     : 2022/12/07
+	Version  : 0.26.1
+	Date     : 2022/12/18
 	Author   : YUZRANIUMi‚ä‚¸‚ç‚É‚¤‚Şj
 	Twitter  : https://twitter.com/YUZRANIUM
 	Git Hub  : https://github.com/YUZRANIUM/02_myarray

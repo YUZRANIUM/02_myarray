@@ -1,7 +1,7 @@
 // INFO ************************************************************************
 // FileName : 02_myarray.hsp
-// Version  : 0.25.1
-// Date     : 2022/12/07
+// Version  : 0.26.1
+// Date     : 2022/12/18
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -47,8 +47,8 @@
 
 
 
-	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
 	// #include "02_myarray.hsp"
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
 	font "MyricaM M", 16 : objmode 2, 1
 
 	/*****  変数の用意  *****/
@@ -121,7 +121,7 @@
 
 	priarray lmoni, aray3, "ラベル型も扱えます\n表示できるとは言っていない"
 	setarray aray3, *main
-	priarray lmoni, aray3, "varuse と varptr を表示していますが何か意味があるのでしょうか?\n掲示板でご要望頂ければ表示機能を削除いたします"
+	priarray lmoni, aray3
 	lablvar = *chk
 	setarray aray3, lablvar, 1, 1
 	priarray lmoni, aray3, "↓のような表示が出た場合はその行の代入が行われなかったことを意味します\n\"あなたは未サポートの型への代入を試みた\""
@@ -131,42 +131,19 @@
 	setarray aray4, 100, 1, -10
 	priarray lmoni, aray4, "負の値も指定可"
 
-	// // COMオブジェクト
-	// setarray ie, "test"
-	// setarray ie2, "test"
-
-	// // モジュール変数(struct)
-	// setarray v, "test"
-	// priarray lmoni, v, "エラーレポート機能のテストです"
-	// viewmod v(0), lmoni
-	// viewmod v(1), lmoni
-
-	// newmod v, hoge_mod_, 9, 3.14159265358979, "モジュール変数の表示命令と合わせるといい感じ?", "モジュール変数に\n\n"
-	// newmod v, hoge_mod_, 1, 1.0, "a", "b"
-	// v2 = v(2)
-
-	// priarray lmoni, v2
-	// priarray lmoni, v, "モジュール変数の使い方まだよくわかっていませんね"
-	// viewmod v(0), lmoni
-	// viewmod v(1), lmoni
-	// viewmod v(2), lmoni
-	// viewmod v(3), lmoni
-
-	// lmoni += "\n==================================================\n"
-
-	// outarray lmoni, aa
-	// outarray lmoni, 使い方
-	// outarray lmoni, aray0
-	// outarray lmoni, aray1
-	// outarray lmoni, aray2
-	// outarray lmoni, aray4
+	outarray lmoni, aa
+	outarray lmoni, 使い方
+	outarray lmoni, aray0
+	outarray lmoni, aray1
+	outarray lmoni, aray2
+	outarray lmoni, aray4
 
 
 	// スクリプトの途中でテキストファイルに出力
 	notesel lmoni
 	notesave dir_cur + "\\log2.txt"
 
-	sendmsg hmes, $C, 0, lmoni          // 表示・確認
+	objprh hmes, lmoni          // 表示・確認
 	stop
 
 *main
