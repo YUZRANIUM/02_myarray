@@ -47,8 +47,7 @@
 
 
 
-	// #include "02_myarray.hsp"
-	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	#include "02_myarray.hsp"
 	font "MyricaM M", 16 : objmode 2, 1
 
 	/*****  •Ï”‚Ì—pˆÓ  *****/

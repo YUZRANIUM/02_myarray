@@ -1,0 +1,48 @@
+	// #include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	#include "02_myarray.hsp"
+
+	#define fname "output_text\\testary.txt"
+
+	/***  わかりやすいようにフォルダをば  ***/
+	sdim fname     :  dirlist fname, "output_text", 5
+	if fname = ""  :  mkdir "output_text"
+
+	sdim moni, 1024
+	sdim text_data, 1024
+	dim testary, 10, 10
+
+	// 確認用
+	mesbox moni, 640, 480, 0
+	hmes = objinfo(stat, 2)
+
+
+	// 配列作成
+	setarray testary, 0, 1, 1
+	priarray moni, testary
+
+	// 値のみ複数行文字列に
+	outarray text_data, testary
+
+
+	// 保存
+	notesel text_data  :  notesave fname
+	// 初期化
+	sdim text_data, 1024
+	// 読込
+	notesel text_data  :  noteload fname
+
+
+	// 複数行文字列から多次元配列へ
+	cnvarray ary1, text_data, 2, 10, 5, 2
+	priarray moni, ary1
+
+	// 多次元配列のコピーと型変換
+	cnvarray ary2, ary1, 3
+	priarray moni, ary2
+
+	// 多次元配列どうしの次元を超えた変換
+	cnvarray ary3, ary2, 4, 10, 10
+	priarray moni, ary3
+
+	objprh hmes, moni
+	stop

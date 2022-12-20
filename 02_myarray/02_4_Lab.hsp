@@ -1,0 +1,37 @@
+	// #include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	#include "02_myarray.hsp"
+
+	/***  わかりやすいようにフォルダをば  ***/
+	sdim fname     :  dirlist fname, "output_text", 5
+	if fname = ""  :  mkdir "output_text"
+
+	sdim moni, 1024
+	sdim text_data, 1024
+	sdim test_ary1, 512, 10
+	sdim test_ary2, 512, 5, 2
+
+	mesbox moni, 640, 480, 0
+	hmes = objinfo(stat, 2)
+
+
+	labarray text_data, test_ary1, "*main_lab_", 1, "A B Cの処理用"
+	labarray text_data, test_ary2, "*sub_lab_", 1, "X Y Zのサブルーチン用"
+
+	priarray moni, test_ary1
+	priarray moni, test_ary2
+
+	notesel text_data
+	notesave "output_text\\lab_only.hsp"
+
+	moni += text_data
+	objprh hmes, moni
+
+	outarray text_data, test_ary1, 1
+	outarray text_data, test_ary2, 1
+
+	notesel text_data
+	notesave "output_text\\lab_out.hsp"
+
+	moni += text_data
+	objprh hmes, moni
+	stop
