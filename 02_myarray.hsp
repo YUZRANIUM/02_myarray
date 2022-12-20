@@ -27,8 +27,7 @@
 #define global __my_tools__
 	; 私が普段使っているお供です
 	; つーるず、と言ってもご覧の通り2つしかないですが...
-	; まぁ、そこまで良いものではありませんが、お役に立てれば幸いです。
-	;
+	; そこまで良いものではありませんが、お役に立てれば幸いです。
 #module "mytool"
 // objprm のハンドル指定版(内部命令)
 //
@@ -61,7 +60,7 @@
 // vname   : 変数名 (マクロから)
 // linenum : 行  数 (マクロから)
 #deffunc local logpri_ var p1, str vname, int lineunm
-	logmes "" + strf("\n/*** %d ***/\n%s = %s", lineunm, vname, p1)
+	logmes "" + strf("/*** %d ***/\n%s = %s\n", lineunm, vname, p1)
 	return
 	;
 	; 変数名の表示と言うかp1に指定したものが表示されます。
@@ -131,7 +130,7 @@
 	* 以降の命令・関数内で使用する strf関数の書式指定文字列は下の変数で管理しています
 	* 書式の変更を行いたい場合はこちらを編集して下さい
 ------------------------------------------------------------------------------*/
-	sdim srfor@myarray, 512, 4, 4
+	sdim srfor@myarray, 512, 4, 5
 /*==============================================================================
 	*** 配列の情報表示 ***
 	[ 変数名 ] 型名(1次元要素, 2次元要素, 3次元要素, 4次元要素) L=行数
@@ -174,6 +173,19 @@
 
 
 /*==============================================================================
+	*** 配列の情報表示 labarray仕様 *** コメントアウト用に"//"と行数ダミーの%d
+	//[ 変数名 ] 型名(1次元要素, 2次元要素, 3次元要素, 4次元要素)
+	例）//[ ary ] str(5, 4, 3, 2)
+
+* 使用箇所: 配列の情報表示 ainfo_    分岐ラベル *D1_aryinfo ～ *D4_aryinfo
+------------------------------------------------------------------------------*/
+	srfor@myarray(0, 3) = "//[ %s ] %s(%d)%d"
+	srfor@myarray(1, 3) = "//[ %s ] %s(%d, %d)%d"
+	srfor@myarray(2, 3) = "//[ %s ] %s(%d, %d, %d)%d"
+	srfor@myarray(3, 3) = "//[ %s ] %s(%d, %d, %d, %d)%d"
+
+
+/*==============================================================================
 	*** コメント & エラーレポート機能 ***
 ((  配列情報  ))
 / *------------------------------
@@ -188,13 +200,13 @@ you tried to enter a value into unsupported variable types
 * 使用箇所: 配列書き出し priarray_dx
 * 使用箇所: 配列連続代入 setarray_    分岐ラベル *not_varset (エラーレポートの発行場所)
 ------------------------------------------------------------------------------*/
-	srfor@myarray(0, 3) = "/*------------------------------\n%s\n------------------------------*/\n"
+	srfor@myarray(0, 4) = "/*------------------------------\n%s\n------------------------------*/\n"
 
 	// エラーレポートメッセージ
 	reportmes_@myarray = "\nyou tried to enter a value into unsupported variable types"
 
 	// エラーレポートの書式
-	srfor@myarray(1, 3) = "\n->name:[ %s ] line:%d"
+	srfor@myarray(1, 4) = "\n->name:[ %s ] line:%d"
 
 /*============================================================================*/
 	/*****  以下、特にここに置く必要もないのですが私的な理由で置いています  *****/
@@ -289,7 +301,10 @@ you tried to enter a value into unsupported variable types
 	repeat length(m_label_ofs_list)
 		if (clone == m_label_ofs_list(cnt))  :  res = m_label_name_list(cnt)  :  break
 	loop
-	return "*" + res
+
+	if (res != "") {return "*" + res} else {return "<null-label>"}
+
+	return
 
 
 
@@ -306,7 +321,7 @@ you tried to enter a value into unsupported variable types
 	; 半角スペースのトリミング
 	hogestr = vname  :  hogestr = strtrim(hogestr, 3,)
 
-	/***  以降の if～else での未対応の型分岐用  ****/
+	/***  以降の if～else での未対応の型分岐用  ***/
 	; 未対応型 (ラベル型、モジュール型、COMオブジェクト型)
 	type_ch(0) = (vartype(ary) == 1) | (vartype(ary) == 5) | (vartype(ary) == 6)
 	type_ch(1) = (vartype(ary) == 1)    ; label
@@ -321,21 +336,29 @@ you tried to enter a value into unsupported variable types
 	alldim_ = length(ary), length2(ary), length3(ary), length4(ary)
 	; 使用次元の確認
 	prinfo_ = (alldim_(0) != 0) + (alldim_(1) != 0) + (alldim_(2) != 0) + (alldim_(3) != 0)
-
-	; setarray
+	; setarray, outarrayから呼び出された場合はここで return
 	if cl == -1 : goto jump_(0, 0)
-	; labarray から呼び出される場合はコメントアウトしておく
-	if cl == -2 : hyouj += ";"
+
+	/***  書式の変更  ***/
+	; priarray から呼び出される場合はsrfor(0, 0) labarray から呼び出される場合はsrfor(0, 3)
+	if cl == 0 : hoge = 0  : else:if cl == -2 : hoge = 3
 
 
-	gosub jump_(prinfo_, 0)
+	; ラベルジャンプで分岐
+	gosub jump_(prinfo_, 0)//-------------------------------------------------//
+
+
+	; 書式の変更は終えたので初期化してOK
+	hoge = 0
+
+	if cl == -2  :  hyouj = strtrim(hyouj, 2, '0')  :  hyouj += "\n"
 
 	; hoge(0) = コメントのみの場合, hoge(1) = コメント、エラーレポートの両方がある場合
 	hoge = ((coment != "") & (error_report_ == "")), ((coment != "") | (error_report_ != ""))
 
 	; エラーレポートを使用しない場合はelse以降をコメントアウトして下さい
-	if      hoge(0) {hyouj += strf(srfor(0, 3), coment)}
-	else:if hoge(1) {hyouj += strf(srfor(0, 3), coment + reportmes_ + error_report_) : error_report_ = ""}
+	if      hoge(0) {hyouj += strf(srfor(0, 4), coment)}
+	else:if hoge(1) {hyouj += strf(srfor(0, 4), coment + reportmes_ + error_report_) : error_report_ = ""}
 
 	return
 
@@ -348,22 +371,22 @@ you tried to enter a value into unsupported variable types
 
 ; jump_(1, 0)
 *D1_aryinfo@myarray
-	hyouj += strf(srfor(0, 0), hogestr, tinfo_(vartype(ary)), length(ary), linenum)
+	hyouj += strf(srfor(0, hoge), hogestr, tinfo_(vartype(ary)), length(ary), linenum)
 	return
 
 ; jump_(2, 0)
 *D2_aryinfo@myarray
-	hyouj += strf(srfor(1, 0), hogestr, tinfo_(vartype(ary)), length(ary), length2(ary), linenum)
+	hyouj += strf(srfor(1, hoge), hogestr, tinfo_(vartype(ary)), length(ary), length2(ary), linenum)
 	return
 
 ; jump_(3, 0)
 *D3_aryinfo@myarray
-	hyouj += strf(srfor(2, 0), hogestr, tinfo_(vartype(ary)), length(ary), length2(ary), length3(ary), linenum)
+	hyouj += strf(srfor(2, hoge), hogestr, tinfo_(vartype(ary)), length(ary), length2(ary), length3(ary), linenum)
 	return
 
 ; jump_(4, 0)
 *D4_aryinfo@myarray
-	hyouj += strf(srfor(3, 0), hogestr, tinfo_(vartype(ary)), length(ary), length2(ary), length3(ary), length4(ary), linenum)
+	hyouj += strf(srfor(3, hoge), hogestr, tinfo_(vartype(ary)), length(ary), length2(ary), length3(ary), length4(ary), linenum)
 	return
 
 
@@ -475,7 +498,7 @@ you tried to enter a value into unsupported variable types
 // linenum : 行数（マクロから）
 #deffunc local setarray_ array ary, var in_val, int iflg, var index, str vname, int linenum
 	dim i, 6
-
+	strbuf_ = ""  :  indexbuf_ = ""   ; ダミー
 	ainfo_@myarray strbuf_, ary, vname, linenum, indexbuf_, -1
 
 // (  (フラグ = 1) かつ (未対応型)  ) または ( モジュール型 ) または ( COMオブジェクト型 ) //
@@ -520,7 +543,7 @@ you tried to enter a value into unsupported variable types
 ; 未対応の型はこちらへ jump_(0, 2)
 *not_varset@myarray
 /////////////////////////////  エラーレポートの発行  /////////////////////////////
-	error_report_ += strf(srfor(1, 3), hogestr, linenum)
+	error_report_ += strf(srfor(1, 4), hogestr, linenum)
 	return
 
 ; 1次元配列 jump_(1, 2)
@@ -553,14 +576,15 @@ you tried to enter a value into unsupported variable types
 
 // n次元配列の生値出力
 //
-// hyouj   : 配列変数の中身を受け取る文字列型変数
-// ary     : 配列変数
-#deffunc outarray var hyouj, array ary
+// hyouj : 配列変数の中身を受け取る文字列型変数
+// ary   : 配列変数
+// iflg  : ラベルモードフラグ (= 0)
+#deffunc local outarray_ var hyouj, array ary, int iflg
 	dim i, 6
-	; 各次元要素の保持
-	alldim_ = length(ary), length2(ary), length3(ary), length4(ary)
-	; 次元の使用状況
-	prinfo_ = (alldim_(0) != 0) + (alldim_(1) != 0) + (alldim_(2) != 0) + (alldim_(3) != 0)
+	hoge = ""    ; ダミー
+	ainfo_@myarray hyouj, ary, "", 0, hoge, -1
+	hoge = "\n", "\n\treturn\n"
+
 	; 配列数合計
 	sum_ = 1
 	repeat 4
@@ -591,22 +615,26 @@ you tried to enter a value into unsupported variable types
 
 ; 1次元配列 jump_(1, 3)
 *outarray_1@myarray
-	hyouj += "" + ary(i(0)) + "\n"
+	if type_ch(1) {hyouj += "" + label2str_@myarray(ary(i.0)) + hoge.1}
+	else          {hyouj += "" + ary(i.0) + hoge.iflg}
 	return
 
 ; 2次元配列 jump_(2, 3)
 *outarray_2@myarray
-	hyouj += "" + ary(i(0), i(1)) + "\n"
+	if type_ch(1) {hyouj += "" + label2str_@myarray(ary(i.0, i.1)) + hoge.1}
+	else          {hyouj += "" + ary(i.0, i.1) + hoge.iflg}
 	return
 
 ; 3次元配列 jump_(3, 3)
 *outarray_3@myarray
-	hyouj += "" + ary(i(0), i(1), i(2)) + "\n"
+	if type_ch(1) {hyouj += "" + label2str_@myarray(ary(i.0, i.1, i.2)) + hoge.1}
+	else          {hyouj += "" + ary(i.0, i.1, i.2) + hoge.iflg}
 	return
 
 ; 4次元配列 jump_(4, 3)
 *outarray_4@myarray
-	hyouj += "" + ary(i(0), i(1), i(2), i(3)) + "\n"
+	if type_ch(1) {hyouj += "" + label2str_@myarray(ary(i.0, i.1, i.2, i.3)) + hoge.1}
+	else          {hyouj += "" + ary(i.0, i.1, i.2, i.3) + hoge.iflg}
 	return
 
 
@@ -618,9 +646,9 @@ you tried to enter a value into unsupported variable types
 
 // あらゆるものを多次元配列に変換する
 //
-// ary    : 変数名（dim系で初期化していなくてもOK）
+// ary    : 変数名
 // in_val : 読み込む複数行文字列若しくは多次元配列変数
-// type   : 変換先の型を表す数値  (= 2) (2:文字列型, 3:実数型, 4:整数型) vartype
+// type   : 変換先の型を表す数値  (= 2) (2:文字列型, 3:実数型, 4:整数型)
 // d1     : 第1次元要素数 (= 0)
 // d2     : 第2次元要素数 (= 0)
 // d3     : 第3次元要素数 (= 0)
@@ -633,7 +661,8 @@ you tried to enter a value into unsupported variable types
 	;		今のところ、私の思いついた最善手です
 	;		これがないと配列同士の次元を超えた変換ができない
 	;
-	if length(in_val) > 1 : outarray hogestr, in_val : else : hogestr = in_val
+	if (length(in_val) > 1) {outarray_@myarray hogestr, in_val, 0}
+	else                    {hogestr = in_val}
 
 	notesel hogestr
 
@@ -709,10 +738,10 @@ you tried to enter a value into unsupported variable types
 
 
 //----------------------------------------------------------
-// 配列連続代入内部命令
+// ラベル型配列変数生成
 //----------------------------------------------------------
 
-// 配列連続代入内部命令
+// ラベル型配列変数生成
 //
 // hyouj  : 書き出し先の複数行文字列型変数
 // ary    : 書き出す文字列型配列変数
@@ -842,6 +871,15 @@ you tried to enter a value into unsupported variable types
 	// 数値型の場合、例えば
 	// 0, 1, 2, ... や、0.0, 0.1, 0.2, ...  となりますが、文字列型の場合、
 	// abc, abc1, abc2, abc3,...   という感じで0スターにはなりません
+
+
+// n次元配列の生値出力
+//
+// hyouj : 配列変数の中身を受け取る文字列型変数
+// ary   : 配列変数
+// iflg  : ラベル生成フラグ (= 0)
+#define global outarray(%1,%2,%3=0) outarray_@myarray %1,%2,%3
+
 
 
 // あらゆるものを多次元配列に変換する

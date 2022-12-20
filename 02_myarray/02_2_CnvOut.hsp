@@ -47,7 +47,7 @@
 	sdim text_ary2, bufsize0            ; 書き出し用 複数行文字列型
 	sdim text_ary3, bufsize0            ; 書き出し用 複数行文字列型
 
-	sdim labl_ary, bufsize0, 10, 2
+	sdim labl_ary, bufsize0, 5, 5
 	sdim str_ary0, bufsize0, 50    ; テスト用配列
 	ddim dobl_ary1, 10, 10, 2      ; テスト用配列
 	dim int_ary2, 10, 10, 10       ; テスト用配列
@@ -113,13 +113,16 @@
 	outarray text_ary0, str_ary0
 	outarray text_ary1, dobl_ary1
 	outarray text_ary2, int_ary2
+	; labarrayで出力した変数に対して、同じくlabarrayで作成した配列を
+	; ラベルモードで書き出すとサブルーチンまで作成できます。(なお、stopは追加しません。)
+	outarray text_ary3, labl_ary, 1
 
 	/*****  テキストファイルとして出力  *****/
-	notesel text_ary0  :  notesave fname(0)
-	notesel text_ary1  :  notesave fname(1)
-	notesel text_ary2  :  notesave fname(2)
-	notesel text_ary3  :  notesave fname(3)
-	notesel lmoni1     :  notesave fname(4)
+	notesel text_ary0  :  notesave fname(0) ; output_text\\text_ary0.txt
+	notesel text_ary1  :  notesave fname(1) ; output_text\\text_ary1.txt
+	notesel text_ary2  :  notesave fname(2) ; output_text\\text_ary2.txt
+	notesel text_ary3  :  notesave fname(3) ; output_text\\text_ary3.hsp
+	notesel lmoni1     :  notesave fname(4) ; output_text\\output_log.txt
 	sdim lmoni1, bufsize1
 
 	/*****  表示用変数  *****/
