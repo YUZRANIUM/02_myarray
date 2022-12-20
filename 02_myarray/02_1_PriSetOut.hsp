@@ -1,13 +1,13 @@
 // INFO ************************************************************************
-// FileName : 02_myarray.hsp
+// FileName : 02_1_PriSetOut.hsp
 // Version  : 0.26.1
-// Date     : 2022/12/18
+// Date     : 2022/12/20
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
 // *****************************************************************************
 /* Description
- 多次元配列を確認用に書き出すモジュールです。
+ 多次元配列をなんやかんやするモジュールです。
 
 	このモジュールはHSPTV!掲示板の皆様によって支えられております。
 	この場を借りて感謝申し上げます。誠に有難うございます。

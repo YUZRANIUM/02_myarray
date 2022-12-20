@@ -2,7 +2,7 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 	Module   : 02_myarray.hsp
 	Version  : 0.26.1
-	Date     : 2022/12/18
+	Date     : 2022/12/20
 	Author   : YUZRANIUM（ゆずらにうむ）
 	Twitter  : https://twitter.com/YUZRANIUM
 	Git Hub  : https://github.com/YUZRANIUM/02_myarray
@@ -101,8 +101,10 @@ labarray hyouj, ary, in_val, index
 │
 ├── 02_myarray
 │   ├── 02_myarray.hs
-│   ├── 02_myarray_smpl1.hsp
-│   ├── 02_myarray_smpl2.hsp
+│   ├── 02_1_PriSetOut.hsp
+│   ├── 02_2_CnvOut.hsp
+│   ├── 02_3_Cnv.hsp
+│   ├── 02_4_Lab.hsp
 │   └── 02_myarray.txt
 │
 ├── README.md
@@ -144,7 +146,7 @@ labarray hyouj, ary, in_val, index
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ver 0.26.1
-2022/12/18
+2022/12/20
 priarray命令にラベル型配列変数のラベル名表示機能を追加（2022/12/18現在、最適化できておらず）
 
 /*** 新規追加命令 ***/

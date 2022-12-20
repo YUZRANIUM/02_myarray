@@ -1,3 +1,16 @@
+// INFO ****************************************************
+// FileName : 02_4_Lab.hsp
+// Version  : 0.26.1
+// Date     : 2022/12/20
+// Author   : YUZRANIUM（ゆずらにうむ）
+// Twitter  : https://twitter.com/YUZRANIUM
+// GitHub   : https://github.com/YUZRANIUM/02_myarray
+//**********************************************************
+/* Description
+多次元配列をなんやかんやするモジュールです。
+主にlabarrayのテストサンプルです.
+************************************************************/
+
 	// #include "C:\\gitproject\\doclib\\02_myarray.hsp"
 	#include "02_myarray.hsp"
 

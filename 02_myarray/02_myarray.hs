@@ -1,7 +1,7 @@
 ; INFO „ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 ; FileName : 02_myarray.hs
 ; Version  : 0.26.1
-; Date     : 2022/12/18
+; Date     : 2022/12/20
 ; Author   : YUZRANIUMi‚ä‚¸‚ç‚É‚¤‚Şj
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -24,7 +24,7 @@
 %ver
 0.26.1
 %date
-2022/12/18
+2022/12/20
 %author
 YUZRANIUM
 %url
