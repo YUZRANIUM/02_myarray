@@ -25,7 +25,6 @@
 
 /*****  テスト用モジュール変数  *****/
 #module "hoge_mod_" a, b, c
-
 #modinit int p1, double p2, str p3, str p4
 	sdim c, 64
 	a = p1  :  b = p2  :  c = p3, p4
@@ -39,15 +38,12 @@
 	// テキトーにモジュール型変数
 	newmod v, hoge_mod_, 15, 3.140, "初めてのモジュール変数です。", "大丈夫かな?(;ﾟ∀ﾟ)=3ﾊｧﾊｧ\n\n"
 	newmod v, hoge_mod_, 12345, 9.8765, "こんな風にモジュール型変数も表示できたらいいなぁ～", "無理かぁ～w\n\n"
-
 	// テキトーにCOMオブジェクト型変数
 	newcom ie, "InternetExplorer.Application"
-
 //==============================================================================//
 
-
-
-	#include "02_myarray.hsp"
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	// #include "02_myarray.hsp"
 	font "MyricaM M", 16 : objmode 2, 1
 
 	/*****  変数の用意  *****/
@@ -118,7 +114,7 @@
 	priarray lmoni, aray2, "増減値に文字列を指定することも可能です(｀･ω･´)ゞ"
 
 
-	priarray lmoni, aray3, "ラベル型も扱えます\n表示できるとは言っていない"
+	priarray lmoni, aray3
 	setarray aray3, *main
 	priarray lmoni, aray3
 	lablvar = *chk

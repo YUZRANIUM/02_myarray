@@ -11,8 +11,8 @@
 主にlabarrayのテストサンプルです.
 ************************************************************/
 
-	// #include "C:\\gitproject\\doclib\\02_myarray.hsp"
-	#include "02_myarray.hsp"
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	; #include "02_myarray.hsp"
 
 	/***  わかりやすいようにフォルダをば  ***/
 	sdim fname     :  dirlist fname, "output_text", 5
@@ -20,8 +20,8 @@
 
 	sdim moni, 1024
 	sdim text_data, 1024
-	sdim test_ary1, 512, 10
-	sdim test_ary2, 512, 5, 2
+	sdim test_ary1, 512, 10, 10, 10
+	sdim test_ary2, 512, 5, 5, 5
 
 	mesbox moni, 640, 480, 0
 	hmes = objinfo(stat, 2)
