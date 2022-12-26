@@ -18,10 +18,12 @@
 	sdim fname     :  dirlist fname, "output_text", 5
 	if fname = ""  :  mkdir "output_text"
 
-	sdim moni, 1024
-	sdim text_data, 1024
-	sdim test_ary1, 512, 10, 10, 10
-	sdim test_ary2, 512, 5, 5, 5
+	#const bufsize 2048
+
+	sdim moni, bufsize
+	sdim text_data, bufsize
+	sdim test_ary1, bufsize, 10, 10, 10, 10
+	sdim test_ary2, bufsize, 5, 5, 5
 
 	mesbox moni, 640, 480, 0
 	hmes = objinfo(stat, 2)
