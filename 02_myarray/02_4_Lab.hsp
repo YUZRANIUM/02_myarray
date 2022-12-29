@@ -15,25 +15,25 @@
 	; #include "02_myarray.hsp"
 
 	/***  わかりやすいようにフォルダをば  ***/
-	sdim fname     :  dirlist fname, "output_text", 5
-	if fname = ""  :  mkdir "output_text"
+	sdim fname    : dirlist fname, "output_text", 5
+	if fname = "" : mkdir "output_text"
 
 	#const bufsize 2048
 
 	sdim moni, bufsize
 	sdim text_data, bufsize
-	sdim test_ary1, bufsize, 10, 10, 10, 10
-	sdim test_ary2, bufsize, 5, 5, 5
+	; sdim test_ary1, bufsize, 10, 10, 10, 10
+	sdim test_str2, bufsize, 5, 5, 5
 
 	mesbox moni, 640, 480, 0
 	hmes = objinfo(stat, 2)
 
 
-	labarray text_data, test_ary1, "*main_lab_", 1, "A B Cの処理用"
-	labarray text_data, test_ary2, "*sub_lab_", 1, "X Y Zのサブルーチン用"
+	; labarray text_data, test_ary1, "*main_lab_", 1, "A B Cの処理用"
+	labarray text_data, test_str2, "*sub_lab_", 1, "X Y Zのサブルーチン用"
 
-	priarray moni, test_ary1
-	priarray moni, test_ary2
+	; priarray moni, test_ary1
+	priarray moni, test_str2
 
 	notesel text_data
 	notesave "output_text\\lab_only.hsp"
@@ -41,8 +41,8 @@
 	moni += text_data
 	objprh hmes, moni
 
-	outarray text_data, test_ary1, 1
-	outarray text_data, test_ary2, 1
+	; outarray text_data, test_ary1, 1
+	outarray text_data, test_str2, 1
 
 	notesel text_data
 	notesave "output_text\\lab_out.hsp"
