@@ -1,7 +1,7 @@
 // INFO ****************************************************
 // FileName : 02_4_Lab.hsp
-// Version  : 0.26.1
-// Date     : 2022/12/20
+// Version  : 0.26.3
+// Date     : 2023/01/02
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -22,14 +22,14 @@
 
 	sdim moni, bufsize
 	sdim text_data, bufsize
-	; sdim test_ary1, bufsize, 10, 10, 10, 10
+	sdim test_ary1, bufsize, 10, 10, 10, 10
 	sdim test_str2, bufsize, 5, 5, 5
 
 	mesbox moni, 640, 480, 0
 	hmes = objinfo(stat, 2)
 
 
-	; labarray text_data, test_ary1, "*main_lab_", 1, "A B Cの処理用"
+	labarray text_data, test_ary1, "*main_lab_", 1, "A B Cの処理用"
 	labarray text_data, test_str2, "*sub_lab_", 1, "X Y Zのサブルーチン用"
 
 	; priarray moni, test_ary1
@@ -42,7 +42,7 @@
 	objprh hmes, moni
 
 	; outarray text_data, test_ary1, 1
-	outarray text_data, test_str2, 1
+	; outarray text_data, test_str2, 1
 
 	notesel text_data
 	notesave "output_text\\lab_out.hsp"

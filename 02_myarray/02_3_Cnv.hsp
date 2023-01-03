@@ -1,7 +1,7 @@
 // INFO ****************************************************
 // FileName : 02_3_cnv.hsp
-// Version  : 0.26.1
-// Date     : 2022/12/20
+// Version  : 0.26.3
+// Date     : 2023/01/02
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -19,6 +19,8 @@
 	/***  わかりやすいようにフォルダをば  ***/
 	sdim file_name     :  dirlist file_name, "output_text", 5
 	if file_name = ""  :  mkdir "output_text"
+
+	font myricaM, 16  :  objmode 2, 1
 
 	sdim moni, 1024
 	sdim text_data, 1024
