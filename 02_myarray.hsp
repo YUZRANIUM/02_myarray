@@ -1,7 +1,7 @@
 // INFO ************************************************************************
 // FileName : 02_myarray.hsp
-// Version  : 0.26.1
-// Date     : 2022/12/20
+// Version  : 0.26.3
+// Date     : 2023/01/02
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -18,7 +18,7 @@
 	person  : Yuzranium
 	content : 多次元配列変数を複数行文字列に
 ********************************************************************************/
-
+#cmpopt ppout 0
 
 /////////////////////////////  ちょびっとつーるず  //////////////////////////////
 #ifndef __my_tools__
@@ -46,20 +46,32 @@
 ;===============================================================================
 // 変数名と行数表示
 //
-// p1      : 表示させたい値
-// ---------
 // vname   : 変数名 (マクロから)
 // linenum : 行  数 (マクロから)
-#deffunc local logpri_ var p1, str vname, int lineunm
-	logmes "" + strf("/*** %d ***/\n%s = %s\n", lineunm, vname, p1)
+// ----------------------------
+// p1      : 表示させたい値
+// idx_lst : ループ内で使用する際のインデックス(配列の要素数を格納した変数やcntなど)
+#deffunc local logpri_ str vname, int lineunm, var p1, array idx_lst
+	; 左端の半角スペースのトリミング
+	hoge = vname : hoge = strtrim(hoge, 1,)
+	repeat 4:   idx_lst(cnt + 4) = strtrim(idx_lst(cnt + 4), 1,)   :loop
+
+	hyouj = strf("/*** %d ***/\n%s = %s\n", lineunm, hoge, p1)
+
+	; ループ内でよく用いられる cnt, i++, j++, k++ 等のカウンタを数値に置換
+	repeat 4:   strrep hyouj, str(idx_lst(cnt + 4)), str(idx_lst(cnt))   :loop
+
+	logmes hyouj
 	return
 /*--------------------------------------------------------*/
 // 変数名と行数表示
 //
 // p1 : 表示させたい値
-#define global logpri(%1)\
+#define global logpri(%1,%2=-1,%3=-1,%4=-1,%5=-1)\
 	midlevar_@mytool=%1:\
-	logpri_@mytool midlevar_@mytool,"%1",__line__
+	indexvar_@mytool(0)=str(%2),str(%3),str(%4),str(%5):\
+	indexvar_@mytool(4)="%2","%3","%4","%5":\
+	logpri_@mytool "%1",__line__,midlevar_@mytool,indexvar_@mytool
 
 #global // mytool
 #endif  //__my_tools__
@@ -147,10 +159,10 @@
 		;
 		; * 使用箇所: 配列書き出し priarray_dx   分岐ラベル *priarray_1 ～ *priarray_4
 		;
-	sfrmt(0, 2) = "(%d) : %s\t[%d]\n"
-	sfrmt(1, 2) = "(%d, %d) : %s\t[%d]\n"
-	sfrmt(2, 2) = "(%d, %d, %d) : %s\t[%d]\n"
-	sfrmt(3, 2) = "(%d, %d, %d, %d) : %s\t[%d]\n"
+	sfrmt(0, 2) = "(%d) = %s\t[%d]\n"
+	sfrmt(1, 2) = "(%d, %d) = %s\t[%d]\n"
+	sfrmt(2, 2) = "(%d, %d, %d) = %s\t[%d]\n"
+	sfrmt(3, 2) = "(%d, %d, %d, %d) = %s\t[%d]\n"
 
 		; ==========================================================================
 		; *** 配列の情報表示 labarray仕様 *** 行数ダミーの%d
@@ -177,9 +189,18 @@
 	sfrmt(0, 4) = "/*------------------------------\n%s\n------------------------------*/\n"
 
 		; ======================================================================
-		; *** モジュール型変数情報表示用 *** (2022/12/29 現在工事中) ※使用可能
+		; *** モジュール型変数情報表示用 *** (2023/01/04 現在工事中) ※使用可能
 		;
 		; STRUCTDAT構造体
+		; --------------------------------------------------
+		; index     = SD & $FF ; base LIBDAT index
+		; subid     = SD >> 16 ; struct index
+		; primindex = SD.1     ; STRUCTPRM index(MINFO)
+		; prmmax    = SD.2     ; number of STRUCTPRM
+		; nameidx   = SD.3     ; name index  (DS)
+		; size      = SD.4     ; struct size (stack)
+		; otindex   = SD.5     ; OT index    (Module)
+		; --------------------------------------------------
 	sfrmt(0, 5) = {"
 		----------------STRUCTDAT
 		index     %d
@@ -213,19 +234,18 @@
 	"}
 	sfrmt(3, 5) = "%08X\n"
 
-	return
+	; ======================================================================
+	; ラベルリスト作成の際、除外したいラベルに含まれている文字列を登録する
+	; こちらに登録した文字列が含まれているラベル名はアドレスポインタ共々除外されます。
+	;
+	excld_list = "_exit", "_boot", "@"
 
 
-//##############################################################################
-	;
-	; ラベル名取得用 (このファイルの最下部で使用しておりますので特別、呼び出す必要はありません)
-	;
+	;###########################################################################
 	; 構造体の詳細はhspsdkフォルダのhsp3code.txt,hspdll.txtを参考
 	; ※言語仕様としての注意※
 	; 1) リリース時にはデバック情報はobj(ax)ファイルに書き込まれない(#cmpopt varname 1は使えない？)
 	; ※hsp3_64未対応※
-	;
-#deffunc local _load_hsphed_
 
 	/*****  hspctx構造体、hsphed構造体の準備  *****/
 
@@ -238,8 +258,9 @@
 	dupptr FI, hspctx(210), hsphed(15)
 
 	sdim lab_names, 2048    ; ラベル名のリスト用
-	dim lab_ofset           ; ラベル名に対応するアドレスポインタ用
 	sdim mod_names, 2048    ; モジュール名のリスト
+	dim lab_ofset           ; ラベル名に対応するアドレスポインタ用
+	sdim hoge, 64
 	dim i, 7
 
 	/*****  ラベルリストの作成準備  *****/
@@ -250,60 +271,66 @@
 		else:if (peek(DI, i) == 255) {i++    : break}
 		else                         {i++    : continue}
 	loop
+
 	/*****  ラベルリストの作成  *****/
 	repeat , i
 		if peek(DI, cnt) = 255 : break
-		lab_names(i.2) = namegetc@myarray(lpeek(DI, cnt + 1) & $00FFFFFF)
+		hoge = namegetc@myarray(lpeek(DI, cnt + 1) & $00FFFFFF)
+
+		; 除外リストに登録されている文字列と部分一致した場合はスキップ
+		if srch_list_@myarray(hoge, excld_list) : continue cnt + 6
+
+		lab_names(i.2) = hoge
 		lab_ofset(i.2) = ofstgetc@myarray(wpeek(DI, cnt + 4))
 		i(2)++
 		continue cnt + 6
 	loop
+
 	/***  二分木探索用ソート  ***/
 	twinsortary lab_ofset, lab_names, 0
 
 
-	/*****  モジュール･関数関連  *****/
-		; --------------------------------------------------
-		; index     = SD & $FF ; base LIBDAT index
-		; subid     = SD >> 16 ; struct index
-		; primindex = SD.1     ; STRUCTPRM index(MINFO)
-		; prmmax    = SD.2     ; number of STRUCTPRM
-		; nameidx   = SD.3     ; name index  (DS)
-		; size      = SD.4     ; struct size (stack)
-		; otindex   = SD.5     ; OT index    (Module)
-		; --------------------------------------------------
+	/*****  モジュール･関数関連 (2023/01/04 現在工事中) ※使用可能 *****/
 	dim i, 7
-	dim MInfo_, 7, int(hsphed.15 / STRUCTDAT_SIZE)
+	dim midlevar_, 7, int(hsphed.15 / STRUCTDAT_SIZE)
 
 	repeat hsphed(15) / STRUCTDAT_SIZE
 		dupptr SD, varptr(FI) + cnt * STRUCTDAT_SIZE, STRUCTDAT_SIZE
 		if (SD & $FF) != 253 : continue
 
 		m_primindex(i) = SD.1
-		MInfo_(0, i) = (SD & $FF), (SD >> 16), SD.1, SD.2, SD.3, SD.4, SD.5
-		mod_names(i) = namegetc@myarray(MInfo_(4, i))
+		midlevar_(0, i) = (SD & $FF), (SD >> 16), SD.1, SD.2, SD.3, SD.4, SD.5
+		mod_names(i) = namegetc@myarray(midlevar_(4, i))
 		i++
 	loop
-	cnvarray_@myarray MInfo, MInfo_, 4, 7, i
-	dim MInfo_
+	cnvarray_@myarray MInfo, midlevar_, 4, 7, i, 0, 0
+	midlevar_ = 0
+
 	return
 
 
-;===============================================================================
-	; ラベル名･モジュール名文字列取得内部関数
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					ポインタ関連
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+						;===================================
+						; ラベル名、モジュール名取得関連
+						;===================================
+
+	; ラベル名･モジュール名文字列取得
 	;
 	; p1 : バッファのインデックス
 #defcfunc local namegetc int p1
 	getstr res, DS, p1
 	return res
 
-;-------------------------------------------------------------------------------
 	; ラベルポインタ取得
 #defcfunc local ofstgetc int p1
 	return hspctx(2) + OT(p1) * 2
 
-;===============================================================================
-
+						;===================================
+						; PVAL, APTR 関連
+						;===================================
 
 	; PVALのポインタとAPTRを取得
 #defcfunc local PVAL_ptr_ var v1, int p1
@@ -324,7 +351,19 @@
 	return
 
 
-;===============================================================================
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					検索関連
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	; 文字列リストとの単純検索
+#defcfunc local srch_list_ var v1, array ary, local found_
+	found_ = 0
+	repeat length(ary)
+		if (instr(v1, 0, ary.cnt) != -1) {found_ = 1 : break}
+	loop
+	return found_
+
+
 	; sortgetの関数バージョン
 	;
 	; p1 : index No.
@@ -332,7 +371,7 @@
 	sortget sortget_res, p1
 	return sortget_res
 
-;-------------------------------------------------------------------------------
+
 	; 一方の配列のソートに合わせて他方もソート
 	;
 	; ary1 : 主配列(メイン)
@@ -341,25 +380,21 @@
 #deffunc twinsortary array ary1, array ary2, int p1, local _my_tmp_
 	dimtype _my_tmp_, vartype(ary2), length(ary2)
 	; 一時保存
-	foreach ary2
-		_my_tmp_(cnt) = ary2(cnt)
-	loop
+	foreach ary2:    _my_tmp_(cnt) = ary2(cnt)    :loop
+
 	; 変数型に合わせて分岐･メインの配列ソート実行
 	if      (vartype(ary1) == 4) {sortval ary1, p1}
 	else:if (vartype(ary1) == 2) {sortstr ary1, p1}
 
-	foreach ary2
-		ary2(cnt) = _my_tmp_(sortgetc(cnt))
-	loop
+	foreach ary2:    ary2(cnt) = _my_tmp_(sortgetc(cnt))    :loop
 	return
 
 
-;===============================================================================
 	; 二分木探索命令
 	;
 	; item_    : 探す値
-	; srch_lis : 探す場所（1次元配列変数)     ※注意!※ 昇順ソートされている事が前提!!
-	; srch_ : 探す場所の配列要素数を受け取る変数
+	; srch_lis : 探す場所（1次元配列変数) ※注意!※ 昇順ソートされている事が前提!!
+	; srch_    : 探す場所の配列要素数を受け取る変数
 #deffunc bisrch var item_, array srch_lis, array srch_
 
 	dim srch_, 3 : srch_(2) = length(srch_lis) - 1
@@ -375,11 +410,10 @@
 	loop
 	return
 
-
-;===============================================================================
 	; ラベル名･モジュール名取得関数
 	;
 	; modlab_var : ラベル型もしくはモジュール型変数
+	;
 #defcfunc modlabget var modlab_var
 	if      vartype(modlab_var) == 1 {
 		dupptr clone, varptr(modlab_var), 4
@@ -397,8 +431,101 @@
 	}
 
 
-//##############################################################################
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					多次元配列の下処理関連
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	; モジュール内で多次元配列を扱うための準備
 	;
+#deffunc local dim_info_ array ary, array all_dim_ary, array use_dim_ary, var sum_dim_
+
+	; 配列の各次元要素数
+	all_dim_ary(0) = length(ary), length2(ary), length3(ary), length4(ary)
+	; 使用次元の確認
+	use_dim_ary(0) = (all_dim_ary(0) != 0) + (all_dim_ary(1) != 0) + (all_dim_ary(2) != 0) + (all_dim_ary(3) != 0)
+	; 配列合計数
+	sum_dim_ = 1
+	repeat use_dim_ary:    sum_dim_ *= all_dim_ary(cnt)    :loop
+
+	return
+
+	; 配列の各次元要素数から直線番号へ(多次元配列の平坦化)
+	;
+#defcfunc local dim_num_line_ array all_dim_ary, int d1, int d2, int d3, int d4
+	return (d1 + (all_dim_ary.0 * d2) + (all_dim_ary.0 * all_dim_ary.1 * d3) + (all_dim_ary.0 * all_dim_ary.1 * all_dim_ary.2 * d4))
+
+
+	; 配列の直線番号から各次元要素数へ
+	;
+#deffunc local dim_line_num_ array all_dim_ary, array use_dim_ary, array i_, int dim_line_
+
+	repeat use_dim_ary
+		num_ = dim_line_
+		repeat cnt
+			num_ /= all_dim_ary(cnt)
+		loop
+		i_(cnt) = num_ \ all_dim_ary(cnt)
+	loop
+
+	return
+
+
+	;
+	;
+	;
+#defcfunc linedim array ary, int p1, int dim_line_
+
+	dim j, 4 : dim all_dim, 4 : dim use_dim, 2
+	dim_info_@myarray ary, all_dim, use_dim, sum_dim
+
+	if sum_dim < dim_line_ : return -1
+
+	dim_line_num_@myarray all_dim, use_dim, j, dim_line_
+
+	return j(p1)
+
+
+	; 多次元配列を平坦化(1次元に変換した際の要素数を返す)
+	; (長いので直線番号と呼称)
+	;
+	; ary         : 多次元配列変数
+	; d1,d2,d3,d4 : 各次元要素数
+#defcfunc dimline array ary, int d1, int d2, int d3, int d4
+	dim all_dim, 4 : dim use_dim : dim prm_ch, 4
+
+	dim_info_@myarray ary, all_dim, use_dim, sum_dim
+
+	/*****  条件分岐用  *****/
+	; 各パラメータが(0以上)または(length値未満) (0 < d1 < all_dim.0)
+	prm_ch(0) = ((0 <  d1) & (d1 < all_dim.0)) & ((0 <= d2) | (d2 < all_dim.1))
+	prm_ch(1) = ((0 <= d3) | (d3 < all_dim.2)) & ((0 <= d4) | (d4 < all_dim.3))
+
+	prm_ch(2) = (d1 == 0) & (d2 == 0) & (d3 == 0) & (d4 == 0)
+	prm_ch(3) = (prm_ch.0 & prm_ch.1)
+
+	; prm_ch(2) 配列の "長さ" を返す
+	; prm_ch(3) 配列の "直線番号" を返す
+	if      prm_ch(2) {return sum_dim}
+	else:if prm_ch(3) {return dim_num_line_@myarray(all_dim, d1, d2, d3, d4)}
+	else              {return -1}
+
+
+
+//##############################################################################
+	; 動作制御命令
+	;
+	; _strat_, _end_ : 情報表示、連続代入、書き出し動作を行う範囲の直線番号
+#deffunc ctlarray int _start_, int _end_
+	dim ctl_ary, 8
+	ctl_ary(0) = (length(ctl_ary) == 8)
+	ctl_ary(1) = _start_, _end_ + 1
+	ctl_ary(3)++                        ; 制御ID (自分(ctrarray)が呼び出された回数)
+	; ctl_ary(4) = 0                    ; 動作ID (制御される側の命令が呼び出された回数)
+	; ctl_ary(5) = 0                    ; 制御ID == 動作ID
+	ctl_ary(6) = (0 <= _start_) & (_start_ <= _end_)
+	return
+
+//##############################################################################
 	; 配列の情報表示 と その他 雑多な処理
 	;
 	; -変数名文字列の半角スペース除去 (マクロ展開による取得の弊害(?)として原因不明の半角スペースが混入するため)
@@ -409,46 +536,40 @@
 	; vname   : 変数名
 	; linenum : 行数
 	; coment  : コメント
-	;
-#deffunc local ainfo_ var hyouj, array ary, str vname, var linenum, var coment, int cl
-
+#deffunc local ainfo_ var hyouj, array ary, str vname, var linenum, var coment, int cl, local header
 	; 半角スペースのトリミング
 	hogestr = vname  :  hogestr = strtrim(hogestr, 3,)
 
-	/***  以降の if-else での型分岐用  ***/
+	/*****  以降の if-else での型分岐用  *****/
 	vtype(0) = (vartype(ary) == 1) | (vartype(ary) == 5)
-	repeat 6, 1
-		vtype(cnt) = (vartype(ary) == cnt)
-	loop
+
+	repeat 6, 1:    vtype(cnt) = (vartype(ary) == cnt)    :loop
 
 	/*****  配列分解処理ループの下準備  *****/
-	; 各次元要素の保持
-	all_dim = length(ary), length2(ary), length3(ary), length4(ary)
-	; 使用次元の確認
-	use_dim = (all_dim(0) != 0) + (all_dim(1) != 0) + (all_dim(2) != 0) + (all_dim(3) != 0)
+	dim all_dim, 4 : dim use_dim
+	dim_info_@myarray ary, all_dim, use_dim, sum_dim
 
 
-	if cl == -1 : goto jump_(0, 0) ; setarray, outarrayから呼び出された場合はここで return
-	//
-	//######################################################
+	; setarray, outarrayから呼び出された場合はここで return
+	if cl == -1 : goto jump_(0, 0)
+	;_______________________________________________________ ここから下は priarray と labarray のみ
 
 
 	/*****  priarray, labarrayの出力複数行文字列の冒頭書式の処理  *****/
-	; 書式の変更
-	; priarrayから呼び出される場合はsfrmt(0, 0) labarrayはsfrmt(0, 3)
-	;
-	if (cl == 0) {hoge = 0 } else:if (cl == -2) { hoge = 3}
+
+	; 書式の変更 priarrayから呼び出される場合はsfrmt(0, 0) labarrayはsfrmt(0, 3)
+	if (cl == 0) {hoge = 0} else:if (cl == -2) {hoge = 3}
 
 	gosub jump_(use_dim, 0)    ; ラベルジャンプで分岐 (冒頭文字列の記述実行)
-	//
-	//######################################################
+	;_______________________________________________________
 
 
 	/*****  labarray専用処理  *****/
-	if (linenum == "") {hyouj = strtrim(hyouj, 2,) : strrep hyouj, "\"str\"", "\"label\"" : hyouj += "\n"}
+	if (linenum == "") {header = strtrim(header, 2,) : strrep header, "\"str\"", "\"label\"" : header += "\n"}
 
 	/*****  コメント･エラーレポート機能の処理  *****/
-	if (coment != "") {hyouj += strf(sfrmt(0, 4), coment)}
+	if (coment != "") {header += strf(sfrmt(0, 4), coment)}
+	hyouj += header
 
 	return
 
@@ -464,42 +585,26 @@
 
 ; jump_(1, 0)
 *D1_aryinfo@myarray
-	hyouj += strf(sfrmt(0, hoge), hogestr, vtype_names(vartype(ary)), length(ary), linenum)
+	header = strf(sfrmt(0, hoge), hogestr, vtype_names(vartype(ary)), length(ary), linenum)
 	return
 
 ; jump_(2, 0)
 *D2_aryinfo@myarray
-	hyouj += strf(sfrmt(1, hoge), hogestr, vtype_names(vartype(ary)), length(ary), length2(ary), linenum)
+	header = strf(sfrmt(1, hoge), hogestr, vtype_names(vartype(ary)), length(ary), length2(ary), linenum)
 	return
 
 ; jump_(3, 0)
 *D3_aryinfo@myarray
-	hyouj += strf(sfrmt(2, hoge), hogestr, vtype_names(vartype(ary)), length(ary), length2(ary), length3(ary), linenum)
+	header = strf(sfrmt(2, hoge), hogestr, vtype_names(vartype(ary)), length(ary), length2(ary), length3(ary), linenum)
 	return
 
 ; jump_(4, 0)
 *D4_aryinfo@myarray
-	hyouj += strf(sfrmt(3, hoge), hogestr, vtype_names(vartype(ary)), length(ary), length2(ary), length3(ary), length4(ary), linenum)
+	header = strf(sfrmt(3, hoge), hogestr, vtype_names(vartype(ary)), length(ary), length2(ary), length3(ary), length4(ary), linenum)
 	return
 
 
 //##############################################################################
-	; 動作制御命令
-	;
-	; d1,d2 : 情報表示、連続代入、書き出し動作の開始次元
-	;
-#deffunc ctlarray int d1, int d2
-	dim ctl_ary, 6
-	ctl_ary(0) = d1, d2     ; 各命令の動作開始
-	ctl_ary(2) = 0          ; 制御ID == 動作ID
-	ctl_ary(3) = ((0 <= d1) & (0 <= d2) & (d1 <= d2))
-	ctl_ary(4)++            ; 制御ID (自分(ctrarray_)が呼び出された回数)
-	ctl_ary(5) = 0          ; 動作ID (制御される側の命令が呼び出された回数)
-	return
-
-
-//##############################################################################
-	;
 	; n次元配列の書き出し
 	;
 	; vname   : 変数名 (マクロから)
@@ -508,36 +613,26 @@
 	; hyouj   : 配列変数の中身を受け取る文字列型変数
 	; ary     : 配列変数
 	; coment  : コメント
-	;
 #deffunc local priarray_dx str vname, var linenum, var hyouj, array ary, var coment
-	dim i, 7
 	; 配列情報表示用の内部命令
 	ainfo_@myarray hyouj, ary, vname, linenum, coment, 0
 
 	if vtype(6) : goto jump_(0, 0) ; COMオブジェクト型はreturn
-	//######################################################
+	;_______________________________________________________
 
-	sum_dim = 1     ; 配列数合計
-	repeat 4
-		if (all_dim(cnt) == 0)  :  break
-		sum_dim *= all_dim(cnt)
-	loop
-
-	; 動作ID : 制御IDと動作IDが一致しているか
-	ctl_ary(5)++ : ctl_ary(2) = (ctl_ary(4) == ctl_ary(5))
+	dim i, 7
 	; ctrarray(動作制御命令)による離脱設定
-	if (ctl_ary(2) & ctl_ary(3)) {i(4) = ctl_ary(0) : sum_dim = (ctl_ary(1) - i(4))}
+	if  ctl_ary.0 {
+		ctl_ary.4++
+		ctl_ary.5 = (ctl_ary.3 == ctl_ary.4)
+		ctl_ary.7 = (ctl_ary.5 &  ctl_ary.6)
+		if ctl_ary.7 {i.4 = ctl_ary.1 : sum_dim = ctl_ary.2 - ctl_ary.1} else {sum_dim = 0}
+	}
 
 	; 書き出し
 	repeat sum_dim
-		repeat use_dim
-			num_ = i(4)
-			repeat cnt
-				num_ /= all_dim(cnt)
-			loop
-			i(cnt) = num_ \ all_dim(cnt)
-		loop
-		gosub jump_(use_dim, 1)      ; ラベルジャンプで分岐
+		dim_line_num_@myarray all_dim, use_dim, i, i(4)
+		gosub jump_(use_dim, 1)         ; ラベルジャンプで分岐
 		i(4)++
 	loop
 
@@ -586,13 +681,11 @@
 
 
 //##############################################################################
-	;
 	; 多次元配列書き出しマクロ
 	;
 	; %1 : 配列変数の中身を受け取る文字列型変数
 	; %2 : 配列変数
 	; %3 : コメント
-	;
 #define global priarray(%1,%2,%3="")\
 	midlevar_@myarray=%3:\
 	clinevar_@myarray=__line__:\
@@ -600,7 +693,6 @@
 
 
 //##############################################################################
-	;
 	; 配列連続代入内部命令
 	;
 	; vname   : 変数名（マクロから）
@@ -610,39 +702,31 @@
 	; in_val  : 代入値またはそれを格納した変数
 	; iflg    : indexフラグ(=0) (0 : OFF, 1 : ON)
 	; index   : 増減値
-	;
 #deffunc local setarray_ str vname, var linenum, array ary, var in_val, int iflg, var index
-	dim i, 7
+
 	inpt_buf = ""  :  indexbuf_ = ""   ; ダミー
+
 	ainfo_@myarray inpt_buf, ary, vname, linenum, indexbuf_, -1
 
 	if (vtype(0) | vtype(6)) : goto jump_(0, 2)
-	//######################################################
+	;_______________________________________________________
+
 
 	; 代入値が文字列の場合、インデックス付与のために一旦退避
 	if (iflg == 1) & (vtype(2))  :  inpt_buf = in_val  :  indexbuf_ = index
 
-	; 配列数合計
-	sum_dim = 1
-	repeat 4
-		if (all_dim(cnt) == 0)  :  break
-		sum_dim *= all_dim(cnt)
-	loop
-
-	; 動作ID : 制御IDと動作IDが一致しているか
-	ctl_ary(5)++ : ctl_ary(2) = (ctl_ary(4) == ctl_ary(5))
+	dim i, 7
 	; ctrarray(動作制御命令)による離脱設定
-	if (ctl_ary(2) & ctl_ary(3)) {i(4) = ctl_ary(0) : sum_dim = (ctl_ary(1) - i(4))}
+	if  ctl_ary.0 {
+		ctl_ary.4++
+		ctl_ary.5 = (ctl_ary.3 == ctl_ary.4)
+		ctl_ary.7 = (ctl_ary.5 &  ctl_ary.6)
+		if ctl_ary.7 {i.4 = ctl_ary.1 : sum_dim = ctl_ary.2 - ctl_ary.1} else {sum_dim = 0}
+	}
 
 	repeat sum_dim
-		repeat use_dim
-			num_ = i(4)
-			repeat cnt
-				num_ /= all_dim(cnt)
-			loop
-			i(cnt) = num_ \ all_dim(cnt)
-		loop
-		gosub jump_(use_dim, 2)         ; ラベルジャンプで分岐
+		dim_line_num_@myarray all_dim, use_dim, i, i(4)
+		gosub jump_(use_dim, 2)
 
 		; 文字列に対してインデックスの付与
 		if (iflg == 1) & (vtype(2)) {
@@ -701,41 +785,30 @@
 
 
 //##############################################################################
-	;
 	; n次元配列の生値出力
 	;
 	; hyouj : 配列変数の中身を受け取る文字列型変数
 	; ary   : 配列変数
 	; iflg  : 機能フラグ (= 0, 1: ラベルモード, 2: 16進数大文字モード)
-	;
 #deffunc local outarray_ var hyouj, array ary, int iflg
-	dim i, 7
 	hoge = ""       ; ダミー
+
 	ainfo_@myarray hyouj, ary, "", hoge, hoge, -1
 	hoge = "\n", "\n\treturn\n"
 
-	; 配列数合計
-	sum_dim = 1
-	repeat 4
-		if (all_dim(cnt) == 0)  :  break
-		sum_dim *= all_dim(cnt)
-	loop
-
-	; 動作ID : 制御IDと動作IDが一致しているか
-	ctl_ary(5)++ : ctl_ary(2) = (ctl_ary(4) == ctl_ary(5))
+	dim i, 7
 	; ctrarray(動作制御命令)による離脱設定
-	if (ctl_ary(2) & ctl_ary(3)) {i(4) = ctl_ary(0) : sum_dim = (ctl_ary(1) - i(4))}
+	if  ctl_ary.0 {
+		ctl_ary.4++
+		ctl_ary.5 = (ctl_ary.3 == ctl_ary.4)
+		ctl_ary.7 = (ctl_ary.5 &  ctl_ary.6)
+		if ctl_ary.7 {i.4 = ctl_ary.1 : sum_dim = ctl_ary.2 - ctl_ary.1} else {sum_dim = 0}
+	}
 
 	; 書き出し
 	repeat sum_dim
-		repeat use_dim
-			num_ = i(4)
-			repeat cnt
-				num_ /= all_dim(cnt)
-			loop
-			i(cnt) = num_ \ all_dim(cnt)
-		loop
-		gosub jump_(use_dim, 3)         ; ラベルジャンプで分岐
+		dim_line_num_@myarray all_dim, use_dim, i, i(4)
+		gosub jump_(use_dim, 3)
 		i(4)++
 	loop
 
@@ -776,28 +849,24 @@
 
 
 //##############################################################################
-	;
 	; n次元配列の値のみを書き出すマクロ
 	;
 	; hyouj : 配列変数の中身を受け取る文字列型変数
 	; ary   : 配列変数
 	; iflg  : 機能フラグ (= 0, 1: ラベルモード, 2: 16進数大文字モード)
-	;
 #define global outarray(%1,%2,%3=0) outarray_@myarray %1,%2,%3
 
 
 
 //##############################################################################
-	;
 	; あらゆるものを多次元配列に変換する
 	;
 	; ary         : 変数名
 	; in_val      : 読み込む複数行文字列若しくは多次元配列変数
 	; type        : 変換先の型を表す数値  (= 2) (2:文字列型, 3:実数型, 4:整数型)
 	; d1,d2,d3,d4 : 変換後の各配列次元要素数
-	;
 #deffunc local cnvarray_ array ary, array in_val, int type, int d1, int d2, int d3, int d4
-	dim i, 7  :  sdim hogestr, 4096
+	sdim hogestr, 4096
 
 	; 複数行文字列、多次元配列の判別
 	; 要素数が2以上あれば多次元配列とみなしてoutarrayにて複数行文字列化
@@ -815,28 +884,22 @@
 
 	; 次元の使用状況
 	use_dim = (all_dim(0) != 0) + (all_dim(1) != 0) + (all_dim(2) != 0) + (all_dim(3) != 0)
-
-	sum_dim = 1    ; 配列数合計
-	repeat 4
-		if (all_dim(cnt) == 0) : break
-		sum_dim *= all_dim(cnt)
-	loop
+	; 配列合計数
+	sum_dim = 1
+	repeat use_dim:    sum_dim *= all_dim(cnt)    :loop
 
 	dim i, 7
-	; 動作ID : 制御IDと動作IDが一致しているか
-	ctl_ary(5)++ : ctl_ary(2) = (ctl_ary(4) == ctl_ary(5))
 	; ctrarray(動作制御命令)による離脱設定
-	if (ctl_ary(2) & ctl_ary(3)) {i(4) = ctl_ary(0) : sum_dim = (ctl_ary(1) - i(4))}
+	if  ctl_ary.0 {
+		ctl_ary.4++
+		ctl_ary.5 = (ctl_ary.3 == ctl_ary.4)
+		ctl_ary.7 = (ctl_ary.5 &  ctl_ary.6)
+		if ctl_ary.7 {i.4 = ctl_ary.1 : sum_dim = ctl_ary.2 - ctl_ary.1} else {sum_dim = 0}
+	}
 
 	; 書き出し
 	repeat sum_dim
-		repeat use_dim
-			num_ = i(4)
-			repeat cnt
-				num_ /= all_dim(cnt)
-			loop
-			i(cnt) = num_ \ all_dim(cnt)
-		loop
+		dim_line_num_@myarray all_dim, use_dim, i, i(4)
 		noteget hogeline, i(5)
 
 		if      (type == 2) {hoge =    str(hogeline)}
@@ -874,53 +937,41 @@
 
 
 //##############################################################################
-	;
 	; あらゆるものを多次元配列に変換する
 	;
 	; %1          : 変数名（dim系で初期化していなくてもOK）
 	; %2          : 読み込む複数行文字列若しくは多次元配列変数
 	; %3          : 変換先の型を表す数値 (= 2) (2:文字列型, 3:実数型, 4:整数型)
 	; %4,%5,%6,%7 : 変換後の各次元要素数
-	;
 #define global cnvarray(%1,%2,%3=2,%4=0,%5=0,%6=0,%7=0) cnvarray_@myarray %1,%2,%3,%4,%5,%6,%7
 
 
 //##############################################################################
-	;
 	; ラベル型多次元配列生成
 	;
 	; hyouj  : 書き出し先の複数行文字列型変数
 	; ary    : 書き出す文字列型配列変数
 	; in_val : 代入値またはそれを格納した変数
 	; index  : 増減値
-	;
 #deffunc local labarray_ str vname, var hyouj, array ary, var in_val, var index, var coment
-	dim i, 7
 	inpt_buf = ""
 	ainfo_@myarray hyouj, ary, vname, inpt_buf, coment, -2
+
 	; インデックス付与のために一旦退避
 	inpt_buf = in_val  :  indexbuf_ = index
 
-	sum_dim = 1    ; 配列数合計
-	repeat 4
-		if (all_dim(cnt) == 0)  :  break
-		sum_dim *= all_dim(cnt)
-	loop
-
-	; 動作ID : 制御IDと動作IDが一致しているか
-	ctl_ary(5)++ : ctl_ary(2) = (ctl_ary(4) == ctl_ary(5))
+	dim i, 7
 	; ctrarray(動作制御命令)による離脱設定
-	if (ctl_ary(2) & ctl_ary(3)) {i(4) = ctl_ary(0) : sum_dim = (ctl_ary(1) - i(4))}
+	if  ctl_ary.0 {
+		ctl_ary.4++
+		ctl_ary.5 = (ctl_ary.3 == ctl_ary.4)
+		ctl_ary.7 = (ctl_ary.5 &  ctl_ary.6)
+		if ctl_ary.7 {i.4 = ctl_ary.1 : sum_dim = ctl_ary.2 - ctl_ary.1} else {sum_dim = 0}
+	}
 
 	repeat sum_dim
-		repeat use_dim
-			num_ = i(4)
-			repeat cnt
-				num_ /= all_dim(cnt)
-			loop
-			i(cnt) = num_ \ all_dim(cnt)
-		loop
-		gosub jump_(use_dim, 5)         ; ラベルジャンプで分岐
+		dim_line_num_@myarray all_dim, use_dim, i, i(4)
+		gosub jump_(use_dim, 5)
 
 		; 文字列に対してインデックスの付与
 		in_val = inpt_buf               ; 足される方を元データに上書き
@@ -963,7 +1014,6 @@
 
 
 //##############################################################################
-	;
 	; ラベル型多次元配列生成
 	;
 	; %1 : 書き出し先の複数行文字列型変数
@@ -971,7 +1021,6 @@
 	; %3 : 代入値またはそれを格納した変数
 	; %4 : 増減値 (= 1)
 	; %5 : コメント
-	;
 #define global labarray(%1,%2,%3,%4=1,%5="")\
 	midlevar_@myarray=%3:\
 	increase_@myarray=%4:\
@@ -981,6 +1030,5 @@
 #global // myarray
 
 	_myarray_init_@myarray    ; モジュール内の管理用変数の初期化です
-	_load_hsphed_@myarray     ; ラベル型変数のラベル名取得用
 
 #endif //__myarray__
