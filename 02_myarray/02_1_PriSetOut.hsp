@@ -1,7 +1,7 @@
 // INFO ************************************************************************
 // FileName : 02_1_PriSetOut.hsp
-// Version  : 0.26.3
-// Date     : 2023/01/02
+// Version  : 0.27
+// Date     : 2023/01/09
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -42,8 +42,7 @@
 	newcom ie, "InternetExplorer.Application"
 //==============================================================================//
 
-	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
-	// #include "02_myarray.hsp"
+	#include "02_myarray.hsp"
 	font "MyricaM M", 16 : objmode 2, 1
 
 	/*****  変数の用意  *****/
@@ -117,10 +116,6 @@
 	priarray lmoni, aray3
 	setarray aray3, *main
 	priarray lmoni, aray3
-	lablvar = *chk
-	setarray aray3, lablvar, 1, 1
-	priarray lmoni, aray3, "↓のような表示が出た場合はその行の代入が行われなかったことを意味します\n\"あなたは未サポートの型への代入を試みた\""
-
 
 	priarray lmoni, aray4
 	setarray aray4, 100, 1, -10

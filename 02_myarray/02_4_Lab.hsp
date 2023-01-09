@@ -1,7 +1,7 @@
 // INFO ****************************************************
 // FileName : 02_4_Lab.hsp
-// Version  : 0.26.3
-// Date     : 2023/01/02
+// Version  : 0.27
+// Date     : 2023/01/09
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -11,8 +11,7 @@
 主にlabarrayのテストサンプルです.
 ************************************************************/
 
-	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
-	; #include "02_myarray.hsp"
+	#include "02_myarray.hsp"
 
 	/***  わかりやすいようにフォルダをば  ***/
 	sdim fname    : dirlist fname, "output_text", 5

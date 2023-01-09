@@ -1,0 +1,71 @@
+; INFO *****************************************************
+; FileName : 02_5_Ctl.hsp
+; Version  : 0.27
+; Date     : 2023/01/09
+; Author   : YUZRANIUM（ゆずらにうむ）
+; Twitter  : https://twitter.com/YUZRANIUM
+; GitHub   : https://github.com/YUZRANIUM/02_myarray
+;***********************************************************
+/* Description
+多次元配列をなんやかするモジュールです。
+ctlarray命令による動作制御で多次元配列の部分処理を可能にします。
+************************************************************/
+
+	#cmpopt ppout 0
+	#include "02_myarray.hsp"
+	#const buf_size 4096
+	dim hMes, 2				; オブジェクトハンドル用
+	sdim moni0, buf_size	; 表示用
+	dim i, 4
+	/*****  表示用  *****/
+	screen 0, 640, 480 : font myricaMM, 16  :  objmode 2, 1
+	pos 0, 0  :  mesbox moni0, 640, 480, 12 : hMes(0) = objinfo(stat, 2)
+
+	;===================================
+	; 適当に変数の準備
+
+	sdim sary, 1024, 10, 10
+	ddim fary, 12, 8, 4
+	dim  iary, 17, 7, 5, 4
+
+	setarray sary, "XYZ", 1, 1
+	setarray fary, 33.0, 1, -1.25
+	setarray iary, 0, 1, 1
+
+	;===================================
+	; 以下実践
+
+	; 配列の先頭からオフセット値25番目から50番目までを表示
+	ctlarray 25, 50
+	priarray moni0, sary
+
+	; 配列の各次元要素数で動作範囲を指定することも可能
+	ctlarray dimlinec(sary, 7, 6), dimlinec(sary)    ; 次元の指定を省略すると最後までになる
+	priarray moni0, sary
+
+	range(0) = 55
+	range(1) = 120
+
+	; start - end 間は複数処理をまとめて制御することができる (※ ネスト未対応)
+	ctlarray_start      // ctrl array start
+	ctlarray range(0), range(1)    ; startの直後にctlarray命令で動作範囲を指定する必要がある
+
+	priarray moni0, iary
+	setarray iary, 25, 1, -2
+	priarray moni0, iary, "配列の途中から代入"
+	priarray moni0, sary, "配列の長さを超えて終了値が設定された場合は\n配列の終端で動作を停止する"
+
+	linedim fary, i, range(0)
+	ctl_excld : priarray moni0, i, "linedim命令は配列のオフセット値から\n配列の要素数を読み出すものです"
+
+	priarray moni0, fary
+
+	linedim fary, i, range(1)
+	ctl_excld : priarray moni0, i, "終了値からfaryの各次元要素数を算出"
+
+	ctlarray_end       // ctrl array end
+
+
+	objprh hMes(0), moni0
+
+	stop

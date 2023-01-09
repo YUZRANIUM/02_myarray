@@ -1,7 +1,7 @@
 // INFO ****************************************************
 // FileName : 02_3_cnv.hsp
-// Version  : 0.26.3
-// Date     : 2023/01/02
+// Version  : 0.27
+// Date     : 2023/01/09
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -11,16 +11,13 @@
 主にcnvarrayのテストサンプルです.
 ************************************************************/
 
-	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
-	// #include "02_myarray.hsp"
+	#include "02_myarray.hsp"
 
 	#define fname "output_text\\testary.txt"
 
 	/***  わかりやすいようにフォルダをば  ***/
 	sdim file_name     :  dirlist file_name, "output_text", 5
 	if file_name = ""  :  mkdir "output_text"
-
-	font myricaM, 16  :  objmode 2, 1
 
 	sdim moni, 1024
 	sdim text_data, 1024
