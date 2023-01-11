@@ -1,8 +1,8 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 	Module   : 02_myarray.hsp
-	Version  : 0.26.1
-	Date     : 2022/12/20
+	Version  : 0.27
+	Date     : 2023/01/09
 	Author   : YUZRANIUM（ゆずらにうむ）
 	Twitter  : https://twitter.com/YUZRANIUM
 	Git Hub  : https://github.com/YUZRANIUM/02_myarray
@@ -49,6 +49,45 @@
 # 追加される命令・関数
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+
+
+// 各次元要素数から多次元配列の先頭からのオフセット値を返す
+//
+// ary         : 多次元配列変数
+// d1,d2,d3,d4 : 各次元要素数
+dimlinec(ary, d1, d2, d3, d4)
+
+
+// 多次元配列変数の先頭からのオフセット値を各次元要素数に変換
+//
+// ary       : 多次元配列変数
+// i_        : 各次元要素数を受け取る配列変数
+// dim_ofset : 配列の先頭からのオフセット値
+linedim ary, i_, dim_ofset
+
+
+// 動作制御命令
+//
+// d1 : 情報表示、連続代入、書き出し動作の開始位置
+// d2 : 各動作の終了位置
+ctlarray d1, d2
+
+
+// 複数制御開始命令
+//
+ctlarray_start
+
+
+// 動作制御除外命令
+//
+ctlexcld
+
+
+// 複数制御終了命令
+//
+ctlarray_end
+
+
 // 多次元配列変数の書き出し
 //
 // p1 : 中身を受け取る文字列型変数
@@ -94,6 +133,35 @@ cnvarray ary, in_val, type, d1, d2, d3, d4
 labarray hyouj, ary, in_val, index
 
 
+// sortgetの関数バージョン
+//
+// p1 : インデックスNO.
+sortgetc p1
+
+
+// 一方の配列のソートに合わせて他方もソート
+//
+// ary1 : 主配列(メイン)
+// ary2 : 副配列(ary1に合わせてソートする配列)
+// p1   : 昇降順
+twinsortary ary1, ary2, p1
+
+
+// 二分木探索命令
+//
+// item_    : 探す値
+// srch_lis : 探す場所（1次元配列変数)     ※注意!※ 昇順ソートされている事が前提!!
+// srch_    : 探す場所の配列要素数を受け取る変数
+bisrch item_, srch_lis, srch_
+
+
+// ラベル名･モジュール名取得関数
+//
+// modlab_var : ラベル型もしくはモジュール型変数
+modlabget modlab_var
+
+
+
 # 導入方法
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 .
@@ -105,6 +173,7 @@ labarray hyouj, ary, in_val, index
 │   ├── 02_2_CnvOut.hsp
 │   ├── 02_3_Cnv.hsp
 │   ├── 02_4_Lab.hsp
+│   ├── 02_5_Ctl.hsp
 │   └── 02_myarray.txt
 │
 ├── README.md
@@ -114,13 +183,13 @@ labarray hyouj, ary, in_val, index
 * 02_myarray.hspをユーザースクリプトのディレクトリか、HSPのインストールディレクトリ下の
 	commonフォルダ内において、02_myarray.hspをインクルードしてください。
 
-	例） hsp36/common/02_myarray.hsp
+	例） hsp37/common/02_myarray.hsp
 
 
 * 02_myarrayフォルダをHSPのインストールディレクトリ下にあるdoclibフォルダ内に02_myarray
 	フォルダごと置いて下さい。サンプルファイルもそのままで構いません。
 
-	例） hsp36/doclib/02_myarray
+	例） hsp37/doclib/02_myarray
 
 
 # ライセンス等
@@ -144,6 +213,71 @@ labarray hyouj, ary, in_val, index
 
 # 更新履歴
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+var 0.27
+2023/01/09
+
+/*** 新規追加命令･関数 ***/
+
+* dimlinec 関数
+	* 各次元要素数から配列の先頭からのオフセット値を返す
+* linedim 命令
+	* 配列の先頭からのオフセット値を各次元要素数に変換
+
+* ctlarray_start 命令
+	* ctlarrayの動作制御フィールドの開始
+* ctlarray_end 命令
+	* ctlarrayの動作制御フィールドの終了
+* ctlexcld 命令
+	* 動作制御フィールド内で制御の除外を行う
+
+
+/*** その他 ***/
+
+動作制御命令 ctlarray命令の調整
+よく使う処理やイテレーター等の関数･命令化
+モジュール内で使用する変数の一部変数名を修正
+スクリプトの整備･修正
+
+
+
+var 0.26.3
+2022/12/30
+
+priarray命令のラベル名取得機能完成
+また、同命令にモジュール型変数の指定時、モジュール名及び関連情報の表示機能を仮搭載 (※未完成)
+
+labarray命令の追加に伴い、setarray命令をラベル型変数非対応に
+このバージョンからラベル型変数対応命令は priarray, outarray の2つとなる
+
+エラーレポート機能の廃止
+
+/*** 新規追加命令･関数 ***/
+
+ * ctlarray 命令
+	* priarray, setarray, outarray, labarray命令の各動作範囲を制御する
+	(※試作段階のもので、本バージョンから試験導入)
+
+(※以下、本モジュールの～array命令を補佐する付随命令･関数)
+
+ * sortgetc 関数
+	* sortgetの関数バージョン
+
+ * twinsortary 命令
+	* 一方の配列のソートに合わせて他方もソート
+
+ * bisrch 命令
+	* 二分木探索を行う
+
+ * modlabget 関数
+	* ラベル名･モジュール名取得
+
+#その他#
+
+モジュール内で使用する変数の変数名及び各命令･関数のエイリアス名の見直し
+strf関数用書式文字列格納変数にモジュール情報用の書式追加（仮）
+スクリプトの整備･修正
+
 
 ver 0.26.1
 2022/12/20

@@ -56,12 +56,12 @@ ctlarray命令による動作制御で多次元配列の部分処理を可能にします。
 	priarray moni0, sary, "配列の長さを超えて終了値が設定された場合は\n配列の終端で動作を停止する"
 
 	linedim fary, i, range(0)
-	ctl_excld : priarray moni0, i, "linedim命令は配列のオフセット値から\n配列の要素数を読み出すものです"
+	ctlexcld : priarray moni0, i, "linedim命令は配列のオフセット値から\n配列の要素数を読み出すものです"
 
 	priarray moni0, fary
 
 	linedim fary, i, range(1)
-	ctl_excld : priarray moni0, i, "終了値からfaryの各次元要素数を算出"
+	ctlexcld : priarray moni0, i, "終了値からfaryの各次元要素数を算出"
 
 	ctlarray_end       // ctrl array end
 
