@@ -1,7 +1,7 @@
 ; INFO *****************************************************
 ; FileName : 02_5_Ctl.hsp
-; Version  : 0.27
-; Date     : 2023/01/09
+; Version  : 0.27.1
+; Date     : 2023/01/16
 ; Author   : YUZRANIUM（ゆずらにうむ）
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -15,11 +15,11 @@ ctlarray命令による動作制御で多次元配列の部分処理を可能にします。
 	#include "02_myarray.hsp"
 	#const buf_size 4096
 	dim hMes, 2				; オブジェクトハンドル用
-	sdim moni0, buf_size	; 表示用
+	sdim moni, buf_size		; 表示用
 	dim i, 4
 	/*****  表示用  *****/
-	screen 0, 640, 480 : font myricaMM, 16  :  objmode 2, 1
-	pos 0, 0  :  mesbox moni0, 640, 480, 12 : hMes(0) = objinfo(stat, 2)
+	screen 0, 640, 480 : font "MyricaM M", 16 : objmode 2, 1
+	pos 0, 0  :  mesbox moni, 640, 480, 12 : hMes(0) = objinfo(stat, 2)
 
 	;===================================
 	; 適当に変数の準備
@@ -37,35 +37,62 @@ ctlarray命令による動作制御で多次元配列の部分処理を可能にします。
 
 	; 配列の先頭からオフセット値25番目から50番目までを表示
 	ctlarray 25, 50
-	priarray moni0, sary
+	priarray moni, sary
 
 	; 配列の各次元要素数で動作範囲を指定することも可能
 	ctlarray dimlinec(sary, 7, 6), dimlinec(sary)    ; 次元の指定を省略すると最後までになる
-	priarray moni0, sary
 
-	range(0) = 55
-	range(1) = 120
+	mesans moni, dimlinec(sary, 7, 6)
+	moni += "\n"
 
-	; start - end 間は複数処理をまとめて制御することができる (※ ネスト未対応)
-	ctlarray_start      // ctrl array start
-	ctlarray range(0), range(1)    ; startの直後にctlarray命令で動作範囲を指定する必要がある
+	priarray moni, sary
 
-	priarray moni0, iary
-	setarray iary, 25, 1, -2
-	priarray moni0, iary, "配列の途中から代入"
-	priarray moni0, sary, "配列の長さを超えて終了値が設定された場合は\n配列の終端で動作を停止する"
-
-	linedim fary, i, range(0)
-	ctlexcld : priarray moni0, i, "linedim命令は配列のオフセット値から\n配列の要素数を読み出すものです"
-
-	priarray moni0, fary
-
-	linedim fary, i, range(1)
-	ctlexcld : priarray moni0, i, "終了値からfaryの各次元要素数を算出"
-
-	ctlarray_end       // ctrl array end
+	mesans moni, dimlinec(sary)
+	moni += "\n"
 
 
-	objprh hMes(0), moni0
+	; start - end 間は複数処理をまとめて制御することができる
+	;
+	ctlarray_start      // 制御フィールド 開始 //
+	;=======================================================
+	ctlarray dimlinec(iary, 4, 3), dimlinec(iary, 1, 0, 1, 0)    ; startの直後にctlarray命令で動作範囲を指定する必要がある
+	moni += "\n\t//// 制御フィールド 開始 ////\n\n"
 
+	priarray moni, iary, "比較用"
+	setarray iary, 0, 1, -3
+	priarray moni, iary, "配列の途中から代入"
+
+	cnvarray test_ary1, iary, 3, dimlinec(iary, 1, 0, 1) + 1 - dimlinec(iary, 4, 3)
+
+	; 制御の除外
+	ctlexcld : priarray moni, test_ary1, "配列の一部分型変換コピー\niary(4, 3, 0, 0) から iary(1, 0, 1, 0)の間"
+
+
+	;=======================================================
+	; 新たに制御範囲を設定し直す. 以降,新たなctlarrayかctlarray_endまで適用
+	;
+	ctlarray dimlinec(iary, 4, 3) - 3, dimlinec(iary, 1, 0, 1) + 3
+	priarray moni, iary, "制御フィールド内で制御範囲を再設定\n上下方向ともに3つずつ範囲を拡張"
+
+
+	;=======================================================
+	; 再再設定
+	;
+	ctlarray dimlinec(iary, 4, 3), dimlinec(iary, 1, 0, 1, 0)
+
+	priarray moni, sary, "配列の長さを超えて終了値が設定された場合は\n配列の終端で動作を停止する"
+
+	linedim fary, i, dimlinec(iary, 4, 3)
+	ctlexcld : priarray moni, i, "linedim命令は配列のオフセット値から\n配列の要素数を読み出すものです"
+
+	priarray moni, fary
+
+	linedim fary, i, dimlinec(iary, 1, 0, 1, 0)
+	ctlexcld : priarray moni, i, "終了値からfaryの各次元要素数を算出"
+
+
+	;=======================================================
+	ctlarray_end       // 制御フィールド 終了 //
+
+	objprh hMes(0), moni
 	stop
