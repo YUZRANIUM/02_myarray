@@ -1,8 +1,8 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 	Module   : 02_myarray.hsp
-	Version  : 0.27
-	Date     : 2023/01/09
+	Version  : 0.27.1
+	Date     : 2023/01/16
 	Author   : YUZRANIUM（ゆずらにうむ）
 	Twitter  : https://twitter.com/YUZRANIUM
 	Git Hub  : https://github.com/YUZRANIUM/02_myarray
@@ -16,8 +16,12 @@
 
 	***  掲示板情報  ***
 	kind    : 宣伝
-	date    : 2022/11/26
+	date    : 2023/01/16
 	person  : Yuzranium
+	content : 多次元配列をなんやかんやする
+
+	***  掲示板情報 (過去ログ)  ***
+	date    : 2022/11/26
 	content : 多次元配列変数を複数行文字列に
 
  ※注意事項※
