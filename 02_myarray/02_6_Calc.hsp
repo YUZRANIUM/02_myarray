@@ -1,0 +1,97 @@
+; INFO *****************************************************
+; FileName : 02_6_Calc.hsp
+; Version  : 0.27.3
+; Date     : 2023/01/21
+; Author   : YUZRANIUM（ゆずらにうむ）
+; Twitter  : https://twitter.com/YUZRANIUM
+; GitHub   : https://github.com/YUZRANIUM/02_myarray
+;***********************************************************
+/* Description
+Calc_aryのサンプルとテスト
+************************************************************/
+	#cmpopt ppout 0                     ; ←はコメントアウトしても構いません
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	; #include "02_myarray.hsp"           ; ここと↑のコメントアウトを切り替えて下さい
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					管理用変数
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	#const buf_size 4096
+	sdim moni0, buf_size    ; 表示用
+	sdim moni1, buf_size    ; 表示用
+	sdim moni2, buf_size    ; 表示用
+
+	; オブジェクトハンドル用
+	;
+	dim hMes, 4     ;mesbox
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;				ウィンドウオブジェクト
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	screen 0, 900, 480 : font "メイリオ", 12 : objmode 2, 1
+	pos 0, 0   : mesbox moni0, 300, 480, 12 : hMes(0) = objinfo(stat, 2)
+	pos 300, 0 : mesbox moni1, 300, 480, 12 : hMes(1) = objinfo(stat, 2)
+	pos 600, 0 : mesbox moni2, 300, 480, 12 : hMes(2) = objinfo(stat, 2)
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					検証用変数
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	ddim value1, 5, 5, 2
+	setarray value1, 50.0, 1, 0.25
+
+	dim tax, 50
+	ctlarray 0, 25  : setarray tax, 0.25, 1, 0.15 ;  0～25番目だけ連続代入
+	ctlarray 26, 50 : setarray tax, 1.5, 1, 0.75  ; 26～50番目だけ連続代入
+
+
+	priarray moni1, value1
+	priarray moni2, tax
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					処理
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	calc_ary value2, value1, tax, 5
+	priarray moni0, value2, "value1をtaxだけ割り増し計算"
+
+	a = 8
+	calc_ary value3, value2, a, 7
+	priarray moni0, value3, "消費税8%の割り増し計算"
+
+	cnvarray value4, value3, 3   ; 配列コピー
+
+	moni0 += "\n\n\t//// 動作制御フィールド開始 ////\n\n"
+	ctlarray_start
+
+	;-----------------------------------
+	b = 10
+	ctlarray 25, 45
+
+	calc_continue   ; 配列演算継続命令 (配列コピーを利用するために初期化を避ける)
+	calc_ary value4, value3, b, 8
+	priarray moni0, value4, "25～45番目まで\n10%の割り引き計算"
+
+	;-----------------------------------
+	b = 25
+	ctlarray 46, dimlinec(value3)
+	calc_continue
+	calc_ary value4, value3, b, 8
+	priarray moni0, value4, "25%OFFセールは 46番目～最後まで"
+
+	ctlarray_end
+	moni0 += "\n\n\t//// 動作制御フィールド終了 ////\n\n"
+
+	priarray moni2, value4
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					表示内容更新
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	objprh hMes(0), moni0
+	objprh hMes(1), moni1
+	objprh hMes(2), moni2
+	stop

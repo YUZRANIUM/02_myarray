@@ -1,8 +1,8 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 	Module   : 02_myarray.hsp
-	Version  : 0.27.1
-	Date     : 2023/01/16
+	Version  : 0.27.3
+	Date     : 2023/01/21
 	Author   : YUZRANIUM（ゆずらにうむ）
 	Twitter  : https://twitter.com/YUZRANIUM
 	Git Hub  : https://github.com/YUZRANIUM/02_myarray
@@ -69,6 +69,7 @@ dimlinec(ary, d1, d2, d3, d4)
 // dim_ofset : 配列のオフセット値
 linedim ary, i_, dim_ofset
 
+------------------------------------------------------------
 
 // 動作制御命令
 //
@@ -91,6 +92,22 @@ ctlexcld
 //
 ctlarray_end
 
+------------------------------------------------------------
+
+// 配列演算命令
+//
+// ans_ary    : 解答を受け取る変数名
+// ary1, ary2 : 変数名
+// calc_type  : 演算タイプ
+// error_stop : 0除算フラグ (= 0, 0:停止しない / 1:停止する)
+calc_ary ans_ary, ary1, ary2, calc_type, error_stop
+
+
+// 配列演算継続命令
+//
+calc_continue
+
+------------------------------------------------------------
 
 // 多次元配列変数の書き出し
 //
@@ -104,8 +121,8 @@ priarray p1, p2, p3
 //
 // p1 : 代入先の配列変数
 // p2 : 代入したい値
-// p3 : indexフラグ(=0)
-// p4 : 増減値(str, double, int)
+// p3 : indexフラグ(= 0)
+// p4 : 増減値
 setarray p1, p2, p3, p4
 
 
@@ -113,18 +130,16 @@ setarray p1, p2, p3, p4
 //
 // p1 : 配列変数の中身を受け取る文字列型変数
 // p2 : 配列変数
+// iflag : ラベルフラグ
 outarray p1, p2
 
 
 // 多次元配列に変換する
 //
-// ary    : 変数名
-// in_val : 読み込む複数行文字列若しくは多次元配列変数
-// type   : 変換先の型を表す数値  (= 2) (2:文字列型, 3:実数型, 4:整数型)
-// d1     : 第1次元要素数 (= 0)
-// d2     : 第2次元要素数 (= 0)
-// d3     : 第3次元要素数 (= 0)
-// d4     : 第4次元要素数 (= 0)
+// ary    : 変換先 変数名
+// in_val : 変換元 変数名
+// type   : 変換先の型を表す数値  (= 2, 2:文字列型 / 3:実数型 / 4:整数型)
+// d1,d2,d3,d4 : 変換後の各次元要素数 (= 0)
 cnvarray ary, in_val, type, d1, d2, d3, d4
 
 
@@ -133,9 +148,10 @@ cnvarray ary, in_val, type, d1, d2, d3, d4
 // hyouj  : 書き出し先の複数行文字列型変数
 // ary    : 書き出す文字列型配列変数
 // in_val : 代入値またはそれを格納した変数
-// index  : 増減値 (str, double, int)
+// index  : 増減値
 labarray hyouj, ary, in_val, index
 
+------------------------------------------------------------
 
 // sortgetの関数バージョン
 //
@@ -178,10 +194,10 @@ modlabget modlab_var
 │   ├── 02_3_Cnv.hsp
 │   ├── 02_4_Lab.hsp
 │   ├── 02_5_Ctl.hsp
+│   ├── 02_6_Calc.hsp
 │   └── 02_myarray.txt
 │
 ├── README.md
-├── README.html
 └── License.txt
 
 * 02_myarray.hspをユーザースクリプトのディレクトリか、HSPのインストールディレクトリ下の
@@ -218,7 +234,24 @@ modlabget modlab_var
 # 更新履歴
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-var 0.27
+ver 0.27.3
+2023/01/21
+
+/*** 新規追加命令･関数 ***/
+
+ * calc_ary 命令
+	* 配列演算 (四則演算、剰余、割増･割引計算、カスタム可)
+ * calc_continue命令
+	* 演算継続命令
+
+
+/*** その他 ***/
+
+スクリプトの整備･修正
+
+
+
+ver 0.27
 2023/01/09
 
 /*** 新規追加命令･関数 ***/
@@ -245,7 +278,7 @@ var 0.27
 
 
 
-var 0.26.3
+ver 0.26.3
 2022/12/30
 
 priarray命令のラベル名取得機能完成
