@@ -357,6 +357,40 @@ cnvarray
 ;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 %index
+uniary
+1次元として扱う
+%prm
+(ary, dim_ofset)
+ary       : 多次元配列
+dim_ofset : 配列のオフセット値
+%inst
+この関数はあらゆる多次元配列を1次元配列として扱うものです。
+^
+* ary は、文字列型、実数型、整数型のみ対応しています。
+* dim_ofset には、配列のオフセット値を指定して下さい。
+^
+
+%sample
+    :
+    dim ary1, 10, 5, 4, 3
+    setarray ary1, 0, 1, 2
+
+    ; すべて書き出し
+    repeat dimlinec(ary1)
+        mes uniary(ary1, cnt)
+    loop
+
+%group
+配列操作命令
+%type
+ユーザー拡張入出力制御命令
+%href
+dimlinec
+linedim
+
+;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+%index
 calc_ary
 配列演算
 %prm

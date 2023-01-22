@@ -146,7 +146,7 @@
 	; 分岐用ラベル
 	; *未対応の型, *1次元, *2次元, *3次元, *4次元
 	;
-	ldim jump_, 5, 7
+	ldim jump_, 5, 8
 		; (0, 0) 配列雑多処理 * 使用箇所 : ainfo_
 		; (0, 1) 配列情報書出 * 使用箇所 : priarray_dx
 		; (0, 2) 配列連続代入 * 使用箇所 : setarray_
@@ -154,13 +154,15 @@
 		; (0, 4) 配列読み込み * 使用箇所 : cnvarray_
 		; (0, 5) ラベル型量産 * 使用箇所 : labarray_
 		; (0, 6) 配列四則演算 * 使用箇所 : calc_ary_
+		; (0, 7) 配列辞書     * 使用箇所 : uniary
 	jump_(0, 0) = *notvarinfo@myarray, *D1_aryinfo@myarray, *D2_aryinfo@myarray, *D3_aryinfo@myarray, *D4_aryinfo@myarray
 	jump_(0, 1) = *not_varpri@myarray, *priarray_1@myarray, *priarray_2@myarray, *priarray_3@myarray, *priarray_4@myarray
 	jump_(0, 2) = *not_varset@myarray, *setarray_1@myarray, *setarray_2@myarray, *setarray_3@myarray, *setarray_4@myarray
 	jump_(0, 3) = *not_varout@myarray, *outarray_1@myarray, *outarray_2@myarray, *outarray_3@myarray, *outarray_4@myarray
 	jump_(0, 4) = *not_varcnv@myarray, *cnvarray_1@myarray, *cnvarray_2@myarray, *cnvarray_3@myarray, *cnvarray_4@myarray
 	jump_(0, 5) = *not_varlab@myarray, *labarray_1@myarray, *labarray_2@myarray, *labarray_3@myarray, *labarray_4@myarray
-	jump_(0, 6) = *not_varcal@myarray, *calc_ary_1@myarray, *calc_ary_2@myarray, *calc_ary_3@myarray, *calc_ary_4@myarray
+	jump_(0, 6) = *not_varuni@myarray, *uniarray_1@myarray, *uniarray_2@myarray, *uniarray_3@myarray, *uniarray_4@myarray
+	jump_(0, 7) = *not_varcal@myarray, *calc_ary_1@myarray, *calc_ary_2@myarray, *calc_ary_3@myarray, *calc_ary_4@myarray
 
 	; ##########################################################################
 	; *** 変数の型名表示 ***
@@ -659,6 +661,81 @@
 	if      prm_ch(0) {return ary_inf(5)}
 	else:if prm_ch(1) {return dim_num_linec_@myarray(ary_inf, d1, d2, d3, d4)}
 	else              {return 0}
+
+
+
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;                  辞書関連 2023/01/22 試作中
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+	; 文字列をアスキーコードに変換
+	;
+#deffunc local str_to_ascii_code array ary1, var str_v1, int notesize_p1_
+	repeat notesize_p1_:   ary1(cnt + 1) = peek(str_v1, cnt)   :loop
+	return
+
+	; アスキーコードから文字列に復元
+	;
+#deffunc local ascii_code_to_str array get_ary_, array ary, int notesize_p1_
+	repeat notesize_p1_:   getstr get_ary_(cnt), ary, 0   :loop
+	return
+
+
+	; 辞書名情報
+	; ------------------------------------------------------
+	; dict_v(0)   : 辞書名の文字数
+	; dict_v(1～) : 以降辞書名のアスキーコードが1文字ずつ保管
+	;
+	; 辞書情報
+	; ------------------------------------------------------
+	; dict_inf(0)  : 辞書名の文字数
+	;
+	;
+	; ------------------------------------------------------
+
+
+
+	; 辞書の新規作成
+	;
+	; dict_v    : 変数名
+	; dict_name : 辞書の名前
+	;
+#deffunc dictinit array dict_v, str dict_name
+
+	sdim hogestr : hogestr = dict_name
+	notesel hogestr
+
+	; 辞書情報
+	dim dict_v, notesize + 1
+	dict_v(0) = notesize
+
+	; 文字列の数値化 (アスキーコードとして保持)
+	str_to_ascii_code dict_v, hogestr, notesize
+
+	return
+
+
+#deffunc dictadd array dict_v, str vname, array ary1
+
+
+	return
+
+
+#defcfunc dict
+
+	return
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1231,6 +1308,43 @@
 
 
 ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;                   uniary (多次元配列を1次元配列として扱う)
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	;
+	; ary : 変数名
+	; d1  : 配列のオフセット値 (1次元化要素数)
+	;
+#defcfunc uniary array ary, int dim_ofset
+	dim j, 7
+	linedim ary, j, dim_ofset
+	gosub jump_(ary_inf(4), 6)
+	return
+//-------------------------------  配列書き出し  -------------------------------//
+*not_varuni@myarray
+	return
+
+; junp_(1, 6)
+*uniarray_1@myarray
+	return ary(j.0)
+
+; junp_(2, 6)
+*uniarray_2@myarray
+	return ary(j.0, j.1)
+
+; junp_(3, 6)
+*uniarray_3@myarray
+	return ary(j.0, j.1, j.2)
+
+; junp_(4, 6)
+*uniarray_4@myarray
+	return ary(j.0, j.1, j.2, j.3)
+
+
+
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ;                   calc_ary_ (配列の四則演算)
 ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1277,9 +1391,9 @@
 		dim_line_num_@myarray ary_inf2, k, k(4) ; 右辺の右側 (～する数)
 		dim_line_num_@myarray ans_inf, i, i(4)  ; 左辺 (計算結果)
 
-		i(5) = 0 : gosub jump_(ary_inf1(4), 6)  ; ary1の代入
-		i(5) = 1 : gosub jump_(ary_inf2(4), 6)  ; ary2の代入
-		i(5) = 2 : gosub jump_(ans_inf(4), 6)   ; 配列演算 (ans_aryの代入)
+		i(5) = 0 : gosub jump_(ary_inf1(4), 7)  ; ary1の代入
+		i(5) = 1 : gosub jump_(ary_inf2(4), 7)  ; ary2の代入
+		i(5) = 2 : gosub jump_(ans_inf(4), 7)   ; 配列演算 (ans_aryの代入)
 
 		i(4)++ : j(4)++ : k(4)++
 	loop
@@ -1291,28 +1405,28 @@
 *not_varcal@myarray
 	return
 
-; 1次元配列 jump_(1, 6)
+; 1次元配列 jump_(1, 7)
 *calc_ary_1@myarray
 	if      (i.5 == 0) {ary1_ = ary1(j.0)}
 	else:if (i.5 == 1) {ary2_ = ary2(k.0)}
 	else:if (i.5 == 2) {ans_ary(i.0) = calc_var_ary_@myarray(ary1_, ary2_, calc_type, error_stop)}
 	return
 
-; 2次元配列 jump_(2, 6)
+; 2次元配列 jump_(2, 7)
 *calc_ary_2@myarray
 	if      (i.5 == 0) {ary1_ = ary1(j.0, j.1)}
 	else:if (i.5 == 1) {ary2_ = ary2(k.0, k.1)}
 	else:if (i.5 == 2) {ans_ary(i.0, i.1) = calc_var_ary_@myarray(ary1_, ary2_, calc_type, error_stop)}
 	return
 
-; 3次元配列 jump_(3, 6)
+; 3次元配列 jump_(3, 7)
 *calc_ary_3@myarray
 	if      (i.5 == 0) {ary1_ = ary1(j.0, j.1, j.2)}
 	else:if (i.5 == 1) {ary2_ = ary2(k.0, k.1, k.2)}
 	else:if (i.5 == 2) {ans_ary(i.0, i.1, i.2) = calc_var_ary_@myarray(ary1_, ary2_, calc_type, error_stop)}
 	return
 
-; 4次元配列 jump_(4, 6)
+; 4次元配列 jump_(4, 7)
 *calc_ary_4@myarray
 	if      (i.5 == 0) {ary1_ = ary1(j.0, j.1, j.2, j.3)}
 	else:if (i.5 == 1) {ary2_ = ary2(k.0, k.1, k.2, k.3)}
