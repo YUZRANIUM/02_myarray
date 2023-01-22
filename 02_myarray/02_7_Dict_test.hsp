@@ -71,8 +71,8 @@
 	names(0, 9) = "‚è‚ñ‚²9", "‚İ‚©‚ñ9", "‚Ô‚Ç‚¤9", "‚¢‚¿‚²9", "‚·‚¢‚©9", "‚Î‚È‚È9", "‚ê‚à‚ñ9", "‚Æ‚Ü‚Æ9", "‚â‚Ü‚Æ9", "‚Å‚±‚Û‚ñ9"
 
 	/***  ’PˆÊ  ***/
-	sdim units, 1024, 10
-	units(0) = "kg", "g", "L", "mL", "ŒÂ", "‹Ê", "–‡", "•C", "”ö", "”t"
+	sdim units, 1024, 11
+	units(0) = "‰~", "kg", "g", "L", "mL", "ŒÂ", "‹Ê", "–‡", "•C", "”ö", "”t"
 
 	/***  Œ´‰¿  ***/
 	ddim value1, 10, 5
@@ -95,13 +95,22 @@
 	; ‚Æ‚è‚ ‚¦‚¸ (”„‰¿) = (Œ´‰¿) + ( (Œ´‰¿) * (Å) )
 	;
 	calc_ary value2, value1, v_tax, 5
-	priarray moni0, value2, "v_taxŠ„‘ŒvZ\nvalue2 = value1 + ( value1 * v_tax )"
+
+	yen = "‰~"
+	moni0 += union(names, value2, yen, 0) + "\n"
 
 
-	dictinit dict1, "Syouhin_list_1"
+	unifrmt "¤•i–¼\t: %s\n”Ì”„‰¿Ši\t : %d ‰~\nŠÖÅ\t: %f\n----------------------\n"
+	repeat 100
+		moni0 += union(names, value2, v_tax, cnt)
+	loop
 
+	moni1 += "¤•i–¼\t”Ì”„‰¿Ši\tŠÖÅ\n"
+	unifrmt "%s   :   %d ‰~   :   %f\n"
+	repeat 100
+		moni1 += "" + cnt + " |" + union(names, value2, v_tax, cnt)
+	loop
 
-	priarray moni2, dict1
 
 
 

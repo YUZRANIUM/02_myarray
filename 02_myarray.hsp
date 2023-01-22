@@ -666,80 +666,6 @@
 
 
 
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-;                  辞書関連 2023/01/22 試作中
-;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-	; 文字列をアスキーコードに変換
-	;
-#deffunc local str_to_ascii_code array ary1, var str_v1, int notesize_p1_
-	repeat notesize_p1_:   ary1(cnt + 1) = peek(str_v1, cnt)   :loop
-	return
-
-	; アスキーコードから文字列に復元
-	;
-#deffunc local ascii_code_to_str array get_ary_, array ary, int notesize_p1_
-	repeat notesize_p1_:   getstr get_ary_(cnt), ary, 0   :loop
-	return
-
-
-	; 辞書名情報
-	; ------------------------------------------------------
-	; dict_v(0)   : 辞書名の文字数
-	; dict_v(1～) : 以降辞書名のアスキーコードが1文字ずつ保管
-	;
-	; 辞書情報
-	; ------------------------------------------------------
-	;
-	;
-	; ------------------------------------------------------
-
-
-
-	; 辞書の新規作成
-	;
-	; dict_v    : 変数名
-	; dict_name : 辞書の名前
-	;
-#deffunc dictinit array dict_v, str dict_name
-
-	sdim hogestr : hogestr = dict_name
-	notesel hogestr
-
-	; 辞書情報
-	dim dict_v, notesize + 1
-	dict_v(0) = notesize
-
-	; 文字列の数値化 (アスキーコードとして保持)
-	str_to_ascii_code dict_v, hogestr, notesize
-
-	return
-
-
-#deffunc dictadd array dict_v, str vname, array ary1
-
-
-	return
-
-
-#defcfunc dict
-
-	return
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ;					配列処理動作制御関連
 ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1315,8 +1241,11 @@
 	; d1  : 配列のオフセット値 (1次元化要素数)
 	;
 #defcfunc uniary array ary, int dim_ofset
+
+	dim ary_inf : dim_info_@myarray ary, ary_inf
 	dim j, 7
-	linedim ary, j, dim_ofset
+	dim_line_num_@myarray ary_inf, j, dim_ofset
+
 	gosub jump_(ary_inf(4), 6)
 	return
 //-------------------------------  配列書き出し  -------------------------------//
@@ -1339,6 +1268,22 @@
 *uniarray_4@myarray
 	return ary(j.0, j.1, j.2, j.3)
 
+
+;###############################################################################
+	; フォーマット定義命令
+	;
+#deffunc unifrmt str uni_format
+	sdim uni_frmt : uni_frmt = uni_format
+	return
+
+
+;###############################################################################
+	;
+	;
+#defcfunc union array ary1, array ary2, array ary3, int dim_ofset
+
+	if (uni_frmt == "") {uni_frmt = "%s\n%s\n%s\n"}
+	return strf(uni_frmt, uniary(ary1, dim_ofset), uniary(ary2, dim_ofset), uniary(ary3, dim_ofset))
 
 
 
