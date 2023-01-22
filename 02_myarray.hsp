@@ -1,7 +1,7 @@
 // INFO ************************************************************************
 // FileName : 02_myarray.hsp
-// Version  : 0.27.3
-// Date     : 2023/01/21
+// Version  : 0.27.3.1
+// Date     : 2023/01/22
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -153,8 +153,8 @@
 		; (0, 3) 配列書き出し * 使用箇所 : outarray_
 		; (0, 4) 配列読み込み * 使用箇所 : cnvarray_
 		; (0, 5) ラベル型量産 * 使用箇所 : labarray_
-		; (0, 6) 配列四則演算 * 使用箇所 : calc_ary_
-		; (0, 7) 単位配列     * 使用箇所 : uniary
+		; (0, 6) 単位配列     * 使用箇所 : uniary
+		; (0, 7) 配列四則演算 * 使用箇所 : calc_ary_
 	jump_(0, 0) = *notvarinfo@myarray, *D1_aryinfo@myarray, *D2_aryinfo@myarray, *D3_aryinfo@myarray, *D4_aryinfo@myarray
 	jump_(0, 1) = *not_varpri@myarray, *priarray_1@myarray, *priarray_2@myarray, *priarray_3@myarray, *priarray_4@myarray
 	jump_(0, 2) = *not_varset@myarray, *setarray_1@myarray, *setarray_2@myarray, *setarray_3@myarray, *setarray_4@myarray
@@ -691,7 +691,6 @@
 	;
 	; 辞書情報
 	; ------------------------------------------------------
-	; dict_inf(0)  : 辞書名の文字数
 	;
 	;
 	; ------------------------------------------------------

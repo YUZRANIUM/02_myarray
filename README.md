@@ -1,4 +1,6 @@
-# マイ・アレイ ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YUZRANIUM/02_myarray?include_prereleases&style=flat-square)
+<!-- # マイ・アレイ ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YUZRANIUM/02_myarray?include_prereleases&style=flat-square) -->
+
+# myarray テスト版 v0.27.3.1
 
 多次元配列変数をなんやかんやする、なんてことないモジュール
 
@@ -9,9 +11,7 @@
 
 
 ## 今後の予定
-* [x] 追加分のヘルプファイル
-* [x] 多次元配列変数どうし、もしくは多次元配列変数と通常変数の連続的な四則演算 (※calc_ary命令, calc_continue命令として追加)
-* [ ] 辞書的なもの (※半分妄想)
+* [ ] 辞書的なもの
 * [ ] `ctlarray`命令をはじめとした制御系命令の調整
 * [ ] モジュール型変数への対応
 * [ ] 多次元配列の結合と分離 (※半分妄想)
@@ -202,6 +202,7 @@ labarray string_var, ary, in_val, index
 <!--  -->
 * 多次元配列を1次元化した要素数を返す `dimlinec` 関数
 * 1次元化した要素数から元の各次元要素数を返す `linedim` 命令
+* 多次元配列を1次元配列として扱う `uniary` 関数
 <!--  -->
 * 配列演算 `calc_ary` 命令
 * 演算継続 `calc_continue` 命令
@@ -229,6 +230,7 @@ labarray string_var, ary, in_val, index
 │   ├── 02_4_Lab.hsp
 │   ├── 02_5_Ctl.hsp
 │   ├── 02_6_Calc.hsp
+│   ├── 02_7_Dict_test.hsp
 │   └── 02_myarray.txt
 │
 ├── README.md
@@ -299,6 +301,19 @@ labarray string_var, ary, in_val, index
 <br>
 
 ## 更新履歴（Change Log）
+
+### ver 0.27.3.1
+2023/01/22
+
+**新規追加命令･関数**
+
+* `uniary` 関数
+	* 多次元配列を1次元配列として扱う
+
+
+<!----------------------------------------------------------------------------->
+
+---
 
 ### ver 0.27.3
 2023/01/21
