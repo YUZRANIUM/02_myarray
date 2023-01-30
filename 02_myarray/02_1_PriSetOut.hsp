@@ -46,18 +46,15 @@
 	newcom ie, "InternetExplorer.Application"
 //==============================================================================//
 
-	#include "02_myarray.hsp"
+	#cmpopt ppout 0                     ; ←はコメントアウトしても構いません
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	; #include "02_myarray.hsp"           ; ここと↑のコメントアウトを切り替えて下さい
+
 	font "MyricaM M", 16 : objmode 2, 1
 
 	/*****  変数の用意  *****/
 
 	aa = "ちゃんと変数名も型も行数も表示できますよ", "そう、マクロならね"
-
-	comment = {"
-		コメントの表示形式についてどうでしょうか?
-		デバッグ用、確認用と謳っているにも関わらず
-		コメントできないというのはどうなんだろう...
-		と思いまして。もう少し表示形式を練ってみます"}
 
 	sdim 使い方, 128, 13
 	使い方 = "第一パラメータには文字列型変数を指定して下さい。"
@@ -117,13 +114,14 @@
 	priarray lmoni, aray2, "増減値に文字列を指定することも可能です(｀･ω･´)ゞ"
 
 
-	priarray lmoni, aray3
-	setarray aray3, *main
-	priarray lmoni, aray3
-
 	priarray lmoni, aray4
 	setarray aray4, 100, 1, -10
 	priarray lmoni, aray4, "負の値も指定可"
+
+	priarray lmoni, v
+	priarray lmoni, ie
+
+	lmoni += "\n"
 
 	outarray lmoni, aa
 	outarray lmoni, 使い方

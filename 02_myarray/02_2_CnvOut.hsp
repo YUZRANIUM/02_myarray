@@ -12,8 +12,9 @@
 どちらかというと、紹介というよりも動作確認が強めです。
 ********************************************************************************/
 
-	#include "02_myarray.hsp"
-
+	#cmpopt ppout 0                     ; ←はコメントアウトしても構いません
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	; #include "02_myarray.hsp"           ; ここと↑のコメントアウトを切り替えて下さい
 	#const bufsize0 1024
 	#const bufsize1 bufsize0 * 10
 
@@ -71,7 +72,7 @@
 // ウィンドウオブジェクト関連
 //----------------------------------------------------------
 	screen 0, 980, 500, 2
-	font "MyricaM M", 16 : objmode 2, 1
+	font "メイリオ", 14 : objmode 2, 1
 
 	pos 0, 0    : mes "TEXT to ARRAY"
 	pos 370, 0  : mes "ARRAY to ARRAY"

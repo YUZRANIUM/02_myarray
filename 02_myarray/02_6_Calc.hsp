@@ -45,7 +45,7 @@ Calc_aryのサンプルとテスト
 	setarray value1, 50.0, 1, 0.25
 
 	dim tax, 50
-	ctlarray 0, 25  : setarray tax, 0.25, 1, 0.15 ;  0～25番目だけ連続代入
+	ctlarray 0, 25  : setarray tax, 0.0, 1, 0.15 ;  0～25番目だけ連続代入
 	ctlarray 26, 50 : setarray tax, 1.5, 1, 0.75  ; 26～50番目だけ連続代入
 
 
@@ -54,6 +54,10 @@ Calc_aryのサンプルとテスト
 ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ;					処理
 ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+	calc_ary value2, value1, tax, 3
+	priarray moni0, value2
 
 	calc_ary value2, value1, tax, 5
 	priarray moni0, value2, "value1をtaxだけ割り増し計算"

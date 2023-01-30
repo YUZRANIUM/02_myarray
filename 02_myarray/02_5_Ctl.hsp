@@ -11,8 +11,9 @@
 ctlarray命令による動作制御で多次元配列の部分処理を可能にします。
 ************************************************************/
 
-	#cmpopt ppout 0
-	#include "02_myarray.hsp"
+	#cmpopt ppout 0                     ; ←はコメントアウトしても構いません
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	; #include "02_myarray.hsp"           ; ここと↑のコメントアウトを切り替えて下さい
 	#const buf_size 4096
 	dim hMes, 2				; オブジェクトハンドル用
 	sdim moni, buf_size		; 表示用
