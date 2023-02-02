@@ -1,0 +1,284 @@
+; INFO *************************************************************************
+; FileName : 02_myarray_srch.hsp
+; Version  : 0.28
+; Date     : 2023/02/01
+; Author   : YUZRANIUM（ゆずらにうむ）
+; Twitter  : https://twitter.com/YUZRANIUM
+; GitHub   : https://github.com/YUZRANIUM/02_myarray
+;*******************************************************************************
+/* Description
+
+このモジュールはソートや線形探索･二分木探索など、ユーザーに提供する一部機能の
+前処理を行う、local指定を含む7つの命令･関数郡からなるモジュールです。
+
+元々、内部命令･関数だったものですがあると便利なものかなと思い、
+改良して公開することになったものです。
+
+	*** スコープ情報 ***
+
+- 輸入品 -
+		myarray_core から
+			* dim_info_  (MDALiSrch_, MDABiSrch_)
+
+		myarray_list から
+			* uniary_    (MDALiSrch_, MDABiSrch_)
+
+- 輸出品 -
+		myarray へ
+			* LiSrchc_    (_myarray_init_)
+			* twinsortary (_myarray_init_)
+			* bisrch_     (mlgetc)
+********************************************************************************/
+
+
+#ifndef __myarray_srch__
+#define global __myarray_srch__
+
+	; このモジュールは myarrayモジュール内で使用していた命令･関数の中でも
+	; 特に汎用性が高く、補助的なものを集めて分離させたものです。
+	;
+#module "myarray_srch"
+
+	; myarray_srchモジュールの内部変数の初期化
+	; このファイルの最下部で呼び出しておりますので、特別呼び出す必要はありません。
+	;
+#deffunc local _myarray_srch_init_
+
+	midlevar_ = ""
+	dim _my_tmp_         ; twinsortary命令 一時保存用
+	dim sortgetc_res_    ; sortgetc関数    返り値用変数
+	dim found_           ; LiSrchc_関数    返り値用変数
+
+	dim srch_ary_inf_, 7     ; MDALiSrch関数    配列情報用
+	dim srch_ary_var_, 2     ; MDALiSrch関数    型変換用
+
+	dim i, 6                 ; MDALiSrch関数    多目的
+	; i(0), i(1), i(2), i(3) : 4分割で探索するための要素数用
+	; i(4) : 発見フラグ
+	; i(5) : 戻り値用変数
+	return
+
+
+;-------------------------------------------------------------------------------
+	;
+	; sortgetの関数バージョン
+	;
+	;	sortgetc index
+	;
+	;	[ int ] index : インデックス
+	;
+	; *** 返り値 ***
+	;	stat : 1次元配列の要素数
+	;
+#defcfunc sortgetc int index
+	sortget sortgetc_res_, index
+	return sortgetc_res_
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 一方の配列のソートに合わせて他方もソート
+	;
+	;	twinsortary ary1, ary2, p1
+	;
+	;	[array] ary1     : メインでソートする配列変数名
+	;	[array] ary2     : 配列変数名 (ary1に合わせてソート)
+	;	[ int ] p1       : 昇降順
+	;
+#deffunc twinsortary array ary1, array ary2, int p1
+
+	; 一時保存
+	dimtype _my_tmp_, vartype(ary2), length(ary2)
+	foreach ary2:   _my_tmp_(cnt) = ary2(cnt)   :loop
+
+	; 変数型に合わせて分岐･メインの配列ソート実行
+	if      (vartype(ary1) == 4) {sortval ary1, p1}
+	else:if (vartype(ary1) == 2) {sortstr ary1, p1}
+
+	foreach ary2:   ary2(cnt) = _my_tmp_(sortgetc(cnt))   :loop
+	return
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 文字列リストとの線形探索
+	;
+	;	val = LiSrchc_(item_, srch_ary)
+	;
+	;	[ var ] item_    : 探索値
+	;	[array] srch_ary : 変数名 (探索場所)
+	;
+	; *** 返り値 ***
+	;	stat : 1次元配列の要素
+	;
+#defcfunc local LiSrchc_ var item_, array srch_ary
+
+	found_ = 0
+	repeat length(srch_ary)
+		if (instr(item_, 0, srch_ary.cnt) != -1) {found_ = 1 : break}
+	loop
+	return found_
+
+
+;-------------------------------------------------------------------------------
+	;
+	; リストとの線形探索 (多次元配列仕様) (由来 : Multi Dimensional Array Line Search)
+	;
+	;	MDALiSrch item_, srch_ary
+	;
+	;	[ str ] item_    : 探索値
+	;	[array] srch_ary : 変数名 (探索場所)
+	;
+	; *** 戻り値 ***
+	;	stat : 配列のオフセット値 (1次元化要素数)
+	;
+#defcfunc local MDALiSrch_ str item_, array srch_ary
+
+	dim_info_@myarray_core srch_ary, srch_ary_inf_ ; 配列情報の取得
+
+	; 型変換
+	if      (vartype(srch_ary) == 2) {srch_ary_var_(0) =    str(item_)}
+	else:if (vartype(srch_ary) == 3) {srch_ary_var_(0) = double(item_)}
+	else:if (vartype(srch_ary) == 4) {srch_ary_var_(0) =    int(item_)}
+
+	dim i, 6
+	repeat int(srch_ary_inf_(5) / 2) ; 探索ループ ここから ======================
+
+		i(0) = 0 +                           cnt  ; 先頭から 下へ : ↓
+		i(1) = 0 + ((srch_ary_inf_(5) / 2) - cnt) ; 中央から 上へ : ↑
+		i(2) = 0 + ((srch_ary_inf_(5) / 2) + cnt) ; 中央から 下へ : ↓
+		i(3) = 0 + ((srch_ary_inf_(5) - 1) - cnt) ; 後尾から 上へ : ↑
+
+		; 4分ループ
+		repeat 4
+			srch_ary_var_(1) = uniary_@myarray_list(srch_ary, i(cnt), srch_ary_inf_)
+			if (srch_ary_var_(0) == srch_ary_var_(1)) {i(5) = i(cnt) : i(4) = 1 : break} ; ここは4分ループのbreak
+		loop
+		if i(4) == 1 : break ; こっちは探索ループのbreak
+
+	loop                            ; 探索ループ ここまで =======================
+
+	if i(4) == 1 {return i(5)} else {return -1}
+
+
+;-------------------------------------------------------------------------------
+	;
+	; リストとの線形探索 (多次元配列仕様) (由来 : Multi Dimensional Array Line Search)
+	;
+	;	val = MDALiSrch(item_, srch_ary)
+	;
+	;	[ str ] item_    : 探索値
+	;	[array] srch_ary : 変数名 (探索場所)
+	;
+	; *** 戻り値 ***
+	;	stat : 配列のオフセット値 (1次元化要素数)
+	;
+#define global ctype MDALiSrch(%1,%2) MDALiSrch_@myarray_srch(str(%1),%2)
+
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 二分木探索命令
+	;
+	;	bisrch_ item_, srch_ary, srch_
+	;
+	;	[ var ] item_    : 探す値
+	;	[array] srch_ary : 探す場所（1次元配列変数) ※注意!※ 昇順ソートされている事が前提!!
+	;	[array] srch_    : 探す場所の配列要素数を受け取る変数
+	;
+	; 要素数格納用
+	; srch_(0) : midle
+	; srch_(1) : low
+	; srch_(2) : high
+	;
+#deffunc local bisrch_ var item_, array srch_ary, array srch_
+
+	dim srch_, 3
+	srch_(2) = length(srch_ary) - 1
+
+	repeat
+		srch_.0 = (srch_.1 + srch_.2) / 2
+		if      ((srch_.1 <= srch_.2) != 1) {srch_.0 = -1 : break}
+		else:if (item_ = srch_ary(srch_.0)) {break}
+		else:if (item_ < srch_ary(srch_.0)) {srch_.2 = srch_.0 - 1}
+		else                                {srch_.1 = srch_.0 + 1}
+	loop
+	return
+
+;-------------------------------------------------------------------------------
+	;
+	; 二分木探索命令
+	;
+	;	bisrch_ item_, srch_ary, srch_
+	;
+	;	[ var ] item_    : 探す値
+	;	[array] srch_ary : 探す場所（1次元配列変数) ※注意!※ 昇順ソートされている事が前提!!
+	;	[array] srch_    : 探す場所の配列要素数を受け取る変数
+	;
+#define global bisrch(%1,%2,%3)\
+	midlevar_@myarray_srch=%1:\
+	bisrch_@myarray_srch midlevar_@myarray_srch,%2,%3
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 二分木探索命令 (多次元配列仕様) (由来 : Multi Dimensional Array Binary Search)
+	;
+	;	MDABiSrch_ item_, srch_ary, srch_
+	;
+	;	[ var ] item_    : 探す値
+	;	[array] srch_ary : 探す場所（多次元配列変数) ※注意! 昇順ソートされている事が前提!
+	;	[array] srch_    : 探す場所の配列要素数を受け取る変数
+	;
+	; 要素数格納用
+	; srch_(0) : midle
+	; srch_(1) : low
+	; srch_(2) : high
+	;
+	; ※注意※ 文字列型非対応
+	;
+#deffunc local MDABiSrch_ var item_, array srch_ary, array srch_
+
+	dim_info_@myarray_core srch_ary, srch_ary_inf_ ; 配列情報の取得
+
+	dim srch_, 4
+	srch_(2) = srch_ary_inf_(5) - 1
+
+	repeat
+		srch_.0 = (srch_.1 + srch_.2) / 2
+		srch_.3 = uniary_@myarray_list(srch_ary, srch_.0, srch_ary_inf_)
+
+		if      ((srch_.1 <= srch_.2) != 1) {srch_.0 = -1 : break}
+		else:if (item_ = srch_.3) {break}
+		else:if (item_ < srch_.3) {srch_.2 = srch_.0 - 1}
+		else                      {srch_.1 = srch_.0 + 1}
+	loop
+
+	return
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 二分木探索命令 (多次元配列仕様) (由来 : Multi Dimensional Array Binary Search)
+	;
+	;	MDABiSrch_ item_, srch_ary, srch_
+	;
+	;	[ var ] item_    : 探す値
+	;	[array] srch_ary : 探す場所（多次元配列変数) ※注意! 昇順ソートされている事が前提!
+	;	[array] srch_    : 探す場所の配列要素数を受け取る変数
+	;
+	; ※注意※ 文字列型非対応
+	;
+#define global MDABiSrch(%1,%2,%3)\
+	midlevar_@myarray_srch=%1:\
+	MDABiSrch_@myarray_srch midlevar_@myarray_srch,%2,%3
+
+
+
+#global // myarray_srch
+
+	; myarray_srch モジュール内部で使用する変数の初期化です。
+	_myarray_srch_init_@myarray_srch
+
+#endif  //__myarray_srch__

@@ -1,0 +1,215 @@
+; INFO *************************************************************************
+; FileName : myarray_core.hsp
+; Version  : 0.28
+; Date     : 2023/02/01
+; Author   : YUZRANIUM（ゆずらにうむ）
+; Twitter  : https://twitter.com/YUZRANIUM
+; GitHub   : https://github.com/YUZRANIUM/02_myarray
+;*******************************************************************************
+/* Description
+	このモジュールはHSPTV!掲示板の皆様によって支えられております。
+	この場を借りて感謝申し上げます。誠に有難うございます。
+
+	***  掲示板情報  ***
+	kind    : 宣伝
+	date    : 2023/01/16
+	person  : Yuzranium
+	content : 多次元配列をなんやかんやする
+
+このモジュールはほぼすべての命令・関数の中核を担うイテレータなどを
+内部命令化･関数化した本プロジェクト最重要モジュールとなっています。
+
+他モジュールの多くの命令･関数内で、...@myarray_core として利用しています。
+また、coreと言うだけあって手を加える予定はかなり少ないです。
+
+* 各モジュールの優先順位
+1. _core
+2. _list
+3. _srch
+4. myarray(無印)
+********************************************************************************/
+
+
+#ifndef __myarray_core__
+#define global __myarray_core__
+
+	; このモジュールは、myarrayモジュール内で
+	; 配列処理の中核を担う関数･命令を集めたものです
+	;
+#module "myarray_core"
+
+	; myarray_coreモジュールの内部変数の初期化
+	; このファイルの最下部で呼び出しておりますので、特別呼び出す必要はありません。
+	;
+#deffunc local _myarray_core_init_
+
+	dim prm_chk_, 5 ; dimlinec 関数    パラメータ監視･分岐用
+
+	; 配列情報
+	; ------------------------------------------------------
+	; ary_inf(0) : length()  (1次元要素数) (旧 : all_dim)
+	; ary_inf(1) : length2() (2次元要素数)
+	; ary_inf(2) : length3() (3次元要素数)
+	; ary_inf(3) : length4() (4次元要素数)
+	;
+	; ary_inf(4) : 使用次元数 (1, 2, 3, 4) (旧 : use_dim)
+	; ary_inf(5) : 配列の長さ              (旧 : sum_dim)
+	;
+	; ary_inf(6) : 配列の現在位置          (旧 : num_)
+	; ------------------------------------------------------
+	ary_inf = 0 : dim ary_inf, 7
+
+
+	; if-else での型分岐用
+	;-------------------------------------------------------
+	; vtype(0) : ラベル型 | モジュール型
+	; vtype(1) : ラベル型
+	; vtype(2) : 文字列型
+	; vtype(3) : 実数型
+	; vtype(4) : 整数型
+	; vtype(5) : モジュール型
+	; vtype(6) : COMオブジェクト型
+	;
+	vtype = 0 : dim vtype, 7
+
+	return
+
+
+;-------------------------------------------------------------------------------
+
+	; モジュール内で多次元配列を扱うための準備
+	;-------------------------------------------------------
+	; ary_inf(0) : length()  (1次元要素数) (旧 : all_dim)
+	; ary_inf(1) : length2() (2次元要素数)
+	; ary_inf(2) : length3() (3次元要素数)
+	; ary_inf(3) : length4() (4次元要素数)
+	;
+	; ary_inf(4) : 使用次元数 (1, 2, 3, 4) (旧 : use_dim)
+	; ary_inf(5) : 配列の長さ              (旧 : sum_dim)
+	;
+	; ary_inf(6) : 配列の現在位置          (旧 : num_)
+	;
+#deffunc local dim_info_ array ary, array ary_inf_
+
+	dim ary_inf_, 7
+
+	; 配列の各次元要素数
+	ary_inf_(0) = length(ary), length2(ary), length3(ary), length4(ary)
+
+	; 使用次元の確認
+	ary_inf_(4) = (ary_inf_(0) != 0) + (ary_inf_(1) != 0) + (ary_inf_(2) != 0) + (ary_inf_(3) != 0)
+
+	; 配列合計数
+	ary_inf_(5) = 1
+	repeat ary_inf_(4):   ary_inf_(5) *= ary_inf_(cnt)   :loop
+
+	return
+
+;===========================================================
+	; if-else での型分岐用
+	;-------------------------------------------------------
+	; vtype(0) : ラベル型 | モジュール型
+	; vtype(1) : ラベル型
+	; vtype(2) : 文字列型
+	; vtype(3) : 実数型
+	; vtype(4) : 整数型
+	; vtype(5) : モジュール型
+	; vtype(6) : COMオブジェクト型
+	;
+#deffunc local typ_info_ array ary, array vtype_
+
+	; 変数の型による分岐
+	vtype_(0) = (vartype(ary) == 1) | (vartype(ary) == 5)
+
+	repeat 6, 1:   vtype_(cnt) = (vartype(ary) == cnt)   :loop
+
+	return
+
+
+
+
+;###########################################################
+	; 配列の各次元要素からオフセット値 (1次元化要素数) へ
+	;
+#defcfunc local dim_num_linec_ array ary_inf_, int d1, int d2, int d3, int d4
+
+	return (d1 + (ary_inf_.0 * d2) + (ary_inf_.0 * ary_inf_.1 * d3) + (ary_inf_.0 * ary_inf_.1 * ary_inf_.2 * d4))
+
+
+; ----------------------------------------------------------
+	; 配列のオフセット値 (1次元化要素数) から各次元要素へ
+	;
+#deffunc local dim_line_num_ array ary_inf_, array dim_num, int dim_ofset
+
+	repeat ary_inf_(4)
+		ary_inf_(6) = dim_ofset
+		repeat cnt
+			ary_inf_(6) /= ary_inf_(cnt)
+		loop
+		dim_num(cnt) = ary_inf_(6) \ ary_inf_(cnt)
+	loop
+
+	return
+
+
+
+;###########################################################
+	; 配列のオフセット値 (1次元化要素数) から各次元要素を返す
+	;
+	; ary       : 多次元配列変数
+	; dim_num   : 次元要素数を受け取る変数
+	; dim_ofset : aryのオフセット値 (1次元化要素数)
+	;
+#deffunc linedim array ary, array dim_num, int dim_ofset
+
+	; 配列情報の取得
+	dim ary_inf : dim_info_@myarray_core ary, ary_inf
+
+	if ary_inf(5) < dim_ofset : return 0
+
+	dim dim_num, 4 : dim_line_num_@myarray_core ary_inf, dim_num, dim_ofset
+
+	return
+
+
+; ----------------------------------------------------------
+	; 配列の各次元要素から配列のオフセット値 (1次元化要素数) を返す
+	;
+	; ary         : 多次元配列変数
+	; d1,d2,d3,d4 : 各次元要素数
+	;
+#defcfunc dimlinec array ary, int d1, int d2, int d3, int d4
+
+	; 配列情報の取得
+	dim ary_inf, 7  : dim_info_@myarray_core ary, ary_inf
+
+	; 条件分岐用
+	dim prm_chk_, 5 : prm_chk_ = d1, d2, d3, d4
+
+	; 各次元要素数より指定値が大きい または 0より小さい
+	repeat 4
+		if      (prm_chk_.cnt == 0) {continue}
+		else:if (prm_chk_.cnt <  0) | (ary_inf.cnt <= prm_chk_.cnt) {prm_chk_.4 = 1}
+	loop
+	if prm_chk_(4) == 1 : return 0
+	;___________________________________
+
+
+	dim prm_chk_, 5
+	prm_chk_(0) = (d1 == 0) & (d2 == 0) & (d3 == 0) & (d4 == 0)
+	prm_chk_(1) = (d1 <= ary_inf.0) & (d2 <= ary_inf.1) & (d3 <= ary_inf.2) & (d4 <= ary_inf.3)
+
+	; prm_chk_(0) 配列の "長さ" を返す
+	; prm_chk_(1) 配列の "オフセット値" を返す
+	if      prm_chk_(0) {return ary_inf(5)}
+	else:if prm_chk_(1) {return dim_num_linec_@myarray_core(ary_inf, d1, d2, d3, d4)}
+	else                {return 0}
+
+
+
+#global // myarray_core
+
+	; myarray_core モジュール内部で使用する変数の初期化です。
+	_myarray_core_init_@myarray_core
+
+#endif //__myarray_core__
