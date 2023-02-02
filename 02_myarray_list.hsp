@@ -1,0 +1,201 @@
+; INFO *************************************************************************
+; FileName : 02_myarray_list.hsp
+; Version  : 0.28
+; Date     : 2023/02/01
+; Author   : YUZRANIUM（ゆずらにうむ）
+; Twitter  : https://twitter.com/YUZRANIUM
+; GitHub   : https://github.com/YUZRANIUM/02_myarray
+;*******************************************************************************
+/* Description
+
+このモジュールは主に多次元配列を1次元配列として扱うものや、
+配列をリストのように扱うといったデータ管理用途の機能を集めたものです。
+
+未だ開発途中で実験的なのもでもあり、今後の開発やアップデートの中心になリます。
+
+	*** スコープ情報 ***
+
+- 輸入品 -
+		myarray_core から
+			* dim_info_     (uniary)
+			* dim_line_num_ (uniary, uniary_)
+
+		myarray_srch から
+			* MDALiSrch_    (union_)
+
+- 輸出品 -
+		myarray_srch へ
+			* uniary_       (MDALiSrch_, MDABiSrch_)
+********************************************************************************/
+
+
+#ifndef __myarray_list__
+#define global __myarray_list__
+
+#module "myarray_list"
+
+	; myarray_coreモジュールの内部変数の初期化
+	; このファイルの最下部で呼び出しておりますので、特別呼び出す必要はありません。
+	;
+#deffunc local _myarray_list_init_
+
+	; ラベルジャンプの分岐用
+	ldim jump, 5, 1
+	; uniary
+	jump(0, 0) = *not_varuni@myarray_list, *uniarray_1@myarray_list, *uniarray_2@myarray_list, *uniarray_3@myarray_list, *uniarray_4@myarray_list
+
+	; strf関数用書式文字列
+	sfrmt = "" : sdim sfrmt, 128, 2
+	sfrmt(0) = "%s : %s : %s\n"
+	sfrmt(1) = "//// < %s > IS NOT FOUND! ////\n\n"
+
+	; union_d, union関数の書式のユーザー設定用
+	sdim uni_format, 512
+
+	dim i, 7
+	dim j, 7
+	return
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 多次元配列を1次元配列として扱う (業務用)
+	;
+	;	val = uniary_(ary1, dim_ofset, ary_inf_)
+	;
+	;	[ int ] ary1      : 変数名
+	;	[array] dim_ofset : 配列のオフセット値 (1次元化要素数)
+	;	[array] ary_inf_  : 配列情報変数名
+	;
+#defcfunc local uniary_ array ary1, int dim_ofset, array ary_inf_
+
+	; 配列のオフセット値(1次元化要素数)から本来の各次元要素数を復元
+	dim i, 7 : dim_line_num_@myarray_core ary_inf_, i, dim_ofset
+
+	gosub jump(ary_inf_(4), 0)         ; ラベルジャンプで分岐
+
+	return
+//============================================================================//
+
+	; 多次元配列を1次元配列として扱う (ユーザー用)
+	;
+	;	val = uniary(ary1, dim_ofset)
+	;
+	;	[ int ] ary1      : 変数名
+	;	[array] dim_ofset : 配列のオフセット値 (1次元化要素数)
+	;
+#defcfunc uniary array ary1, int dim_ofset
+
+	; 配列情報の取得
+	dim ary_inf : dim_info_@myarray_core ary1, ary_inf
+
+	; 配列のオフセット値(1次元化要素数)から本来の各次元要素数を復元
+	dim i, 7    : dim_line_num_@myarray_core ary_inf, i, dim_ofset
+
+	; ラベルジャンプで分岐
+	gosub jump(ary_inf(4), 0)
+
+	return
+//-------------------------------  配列書き出し  -------------------------------//
+*not_varuni@myarray_list
+	return
+
+; junp_(1, 6)
+*uniarray_1@myarray_list
+	return ary1(i(0))
+
+; junp_(2, 6)
+*uniarray_2@myarray_list
+	return ary1(i(0), i(1))
+
+; junp_(3, 6)
+*uniarray_3@myarray_list
+	return ary1(i(0), i(1), i(2))
+
+; junp_(4, 6)
+*uniarray_4@myarray_list
+	return ary1(i(0), i(1), i(2), i(3))
+
+
+;-------------------------------------------------------------------------------
+	;
+	; フォーマット定義命令
+	;
+	;	uniformat s_format
+	;
+	;	[ str ] s_format : 書式文字列
+	;
+#deffunc uniformat str s_format
+	sdim uni_format, 512
+	uni_format = s_format
+	return
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 複数の多次元配列を1次元配列として扱う (オフセット (1次元化要素数) 指定)
+	;
+	;	val = union_d(ary1, ary2, ary3, dim_ofset)
+	;
+	;	[array] ary1      : メインで管理する配列変数名
+	;	[array] ary2      : サブで管理する配列変数名 (通常変数可)
+	;	[array] ary3      : サブで管理する配列変数名 (通常変数可)
+	;	[ int ] dim_ofset : 配列のオフセット値 (1次元化要素数)
+	;
+#defcfunc union_d array ary1, array ary2, array ary3, int dim_ofset
+
+	; uni_formatが設定されていなければこちらで設定する
+	if (uni_format == "") {uni_format = sfrmt(0)}
+
+	return strf(uni_format, uniary(ary1, dim_ofset), uniary(ary2, dim_ofset), uniary(ary3, dim_ofset))
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 複数の多次元配列を1次元配列として扱う (ary1の値で直接指定)
+	;
+	;	val = union(ary1, ary2, ary3, ary1_val)
+	;
+	;	[array] ary1     : メインで管理する配列変数名
+	;	[array] ary2     : サブで管理する配列変数名 (通常変数可)
+	;	[array] ary3     : サブで管理する配列変数名 (通常変数可)
+	;	[ var ] ary1_val : ary1の値もしくはそれを格納した変数
+	;
+	; *** comment ***
+	;	理想は引数の型を気にしなくて良いよう変数で渡したかったが
+	;	関数形式だと今の私の技術では実現出来そうにないため
+	;	文字列から実数、整数への変換が可能であることを利用して
+	;	str関数を介することで文字列として(ary1_val)渡してもらうという方法を採っています
+	;
+#defcfunc local union_ array ary1, array ary2, array ary3, str ary1_val
+
+	; uni_formatが設定されていなければこちらで設定する
+	if (uni_format == "") {uni_format = sfrmt(0)}
+
+	dim j : j = MDALiSrch_@myarray_srch(ary1_val, ary1)
+
+	; MDALiSrch関数は探索に失敗した場合は-1を返してくるので、-1とそれ以外とで場合分け
+	if (j == -1) {return strf(sfrmt(1),   ary1_val)}
+	else:         return strf(uni_format, ary1_val, uniary(ary2, j), uniary(ary3, j))
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 複数の多次元配列を1次元配列として扱う (ary1の値で直接指定)
+	;
+	;	val = union(ary1, ary2, ary3, ary1_val)
+	;
+	;	[array] ary1     : メインで管理する配列変数名
+	;	[array] ary2     : サブで管理する配列変数名 (通常変数可)
+	;	[array] ary3     : サブで管理する配列変数名 (通常変数可)
+	;	[ var ] ary1_val : ary1の値もしくはそれを格納した変数
+	;
+#define global ctype union(%1,%2,%3,%4) union_@myarray_list(%1,%2,%3,str(%4))
+
+
+#global // myarray_list
+
+	; myarray_list モジュール内部で使用する変数の初期化です。
+	_myarray_list_init_@myarray_list
+
+#endif //__myarray_list__

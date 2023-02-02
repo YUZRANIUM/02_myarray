@@ -1,17 +1,16 @@
 # マイ・アレイ ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YUZRANIUM/02_myarray?include_prereleases&style=flat-square)
 
+<!-- # myarray テスト版 v0.28 -->
+
 多次元配列変数をなんやかんやする、なんてことないモジュール
 
 [HSPTV!掲示板]: http://hsp.tv/play/pforum.php
 
 不具合報告や要望等は [HSPTV!掲示板][HSPTV!掲示板] で頂けると幸いです。
 
-
-
 ## 今後の予定
-* [x] 追加分のヘルプファイル
-* [x] 多次元配列変数どうし、もしくは多次元配列変数と通常変数の連続的な四則演算 (※calc_ary命令, calc_continue命令として追加)
-* [ ] 辞書的なもの (※半分妄想)
+* [ ] 辞書的なもの
+* [ ] `bisrch`命令, `MDABiSrch`命令の文字列型対応
 * [ ] `ctlarray`命令をはじめとした制御系命令の調整
 * [ ] モジュール型変数への対応
 * [ ] 多次元配列の結合と分離 (※半分妄想)
@@ -73,7 +72,7 @@ priarray string_var, ary, coment
 
 ~~~c
 // ary      : 代入先の配列変数 (dim系での初期化 必須)
-// in_val   : 代入したい値 (初期値)
+// in_val   : 代入したい値
 // idx_flag : indexフラグ
 // idx      : 増減値
 setarray ary, in_val, idx_flag, idx
@@ -140,8 +139,8 @@ outarray string_var, ary, label_flag
 ```c
 // ary_name    : 変数名
 // in_val      : 読み込む 複数行文字列型変数 または 多次元配列変数
-// type        : 変換後の型を表す数値  (= 2) (2:文字列型, 3:実数型, 4:整数型)
-// d1,d2,d3,d4 : 変換後の各次元要素数 (= 0, 0, 0, 0)
+// type        : 変換後の型を表す数値  (= 2, 2:文字列型 / 3:実数型 / 4:整数型)
+// d1,d2,d3,d4 : 変換後の各次元要素数 (= 0)
 cnvarray ary_name, in_val, type, d1, d2, d3, d4
 ```
 
@@ -186,15 +185,50 @@ cnvarray hogehoge, str_tmp, 4, 10, 5, 3  // hogehoge を整数型、3次元配�
 labarray string_var, ary, in_val, index
 ```
 
+---
 
+</details>
+
+<!----------------------------------------------------------------------------->
+
+<details>
+
+<summary>計算する calc_ary</summary>
+
+<br>
+
+多次元配列どうしの計算を行う `calc_ary` 命令 &nbsp; (由来 : calculate array)
+
+``` c
+// ans_ary    : 計算結果を受け取る変数名
+// ary1, ary2 : 変数名
+// calc_type  : 演算タイプ
+// error_stop : 0除算フラグ (= 0, 0:停止しない / 1:停止する)
+calc_ary ans_ary, ary1, ary2, calc_type, error_stop
+```
+
+* 加算( + )、減算( - )、乗算( * )、除算( / )、剰余( \ )、実数指定での割増･割引計算、百分率指定での割増･割引計算が可能
+* 計算の種類はカスタム可能
+<!--  -->
+* HSP3の言語仕様に合わせて `ans_ary` は `ary1` の変数型と各次元要素数で初期化
+* 文字列型、実数型、整数型のみ対応
 
 ---
 
 </details>
 
+<!----------------------------------------------------------------------------->
+
+<!-- <br> -->
+
+<details>
+
+<summary>その他</summary>
+
 <br>
 
-**その他**
+<!----------------------------------------------------------------------------->
+
 * 配列動作制御 `ctlarray` 命令
 * 制御フィールド開始 `ctlarray_start` 命令
 * 制御フィールド終了 `ctlarray_end` 命令
@@ -203,13 +237,20 @@ labarray string_var, ary, in_val, index
 * 多次元配列を1次元化した要素数を返す `dimlinec` 関数
 * 1次元化した要素数から元の各次元要素数を返す `linedim` 命令
 <!--  -->
-* 配列演算 `calc_ary` 命令
-* 演算継続 `calc_continue` 命令
+* 多次元配列の線形探索 `MDALiSrch` 関数
+* 多次元配列の二分木探索 `MDABiSrch` 命令
 <!--  -->
 
+**試作中**
+* 多次元配列を1次元配列として扱う `uniary` 関数
+* 複数の多次元配列を オフセットで まとめて扱う `union_d` 関数
+* 複数の多次元配列を 値で&emsp;&emsp;&emsp;&emsp; まとめて扱う `union` 関数
+* `union`, `union_d` 関数の書式設定を行う `unifrmt` 命令
+<!--  -->
 
+---
 
-
+</details>
 
 <!----------------------------------------------------------------------------->
 
@@ -217,8 +258,43 @@ labarray string_var, ary, in_val, index
 
 ## 導入方法（Introduction）
 
+<br>
+
+<details>
+
+<summary>各モジュールの説明</summary>
+
+<br>
+
+* ### myarray_core モジュール (02_myarray_core.hsp)
+	ほぼすべての命令・関数の中核を担うイテレータなどを内部命令化･関数化し、定義する本プロジェクト最重要モジュール。
+	linedim命令、dimlinec関数やその他内部命令･関数を含む6つの命令･関数郡からなる。
+
+* ### myarray_list モジュール (02_myarray_list.hsp)
+	このモジュールは主に多次元配列を1次元配列として扱うものや、配列をリストのように扱うといったデータ管理用途の機能を集めたものです。
+	未だ開発途中で実験的なのもでもあり、今後の開発やアップデートの中心になリます。
+
+* ### myarray_srch モジュール (02_myarray_srch.hsp)
+	ソートや線形探索･二分木探索など、ユーザーに提供する一部機能の前処理を行う、local指定を含む7つの命令･関数郡からなるモジュール。
+	MDALiSrch関数、MDABiSrch命令等を含む。
+
+* ### myarray      モジュール (02_myarray.hsp)
+	これまで通り、ユーザー提供機能をまとめたモジュール。
+	ラベル型変数、モジュール型変数へのアクセスを行うポインタ関連、配列制御関連の内部命令、pri, set, out, cnv, labarray命令の各内部命令とマクロ、配列演算命令など。
+
+---
+
+</details>
+
+<!----------------------------------------------------------------------------->
+
+<br>
+
 ~~~
 .
+├─ 02_myarray_core.hsp
+├─ 02_myarray_list.hsp
+├─ 02_myarray_srch.hsp
 ├─ 02_myarray.hsp
 │
 ├── 02_myarray
@@ -229,19 +305,42 @@ labarray string_var, ary, in_val, index
 │   ├── 02_4_Lab.hsp
 │   ├── 02_5_Ctl.hsp
 │   ├── 02_6_Calc.hsp
+│   ├── 02_7_Dict_test.hsp
 │   └── 02_myarray.txt
 │
 ├── README.md
 └── License.txt
 ~~~
 
-* 02_myarray.hsp をユーザースクリプトのディレクトリか、HSP のインストールディレクトリ下の commonフォルダ内において、02_myarray.hspをインクルードしてください。
+* 02_myarray_core.hsp
+* 02_myarray_list.hsp
+* 02_myarray_srch.hsp
+* 02_myarray.hsp
+<!--  -->
+* 02_myarrayフォルダ
 
-		例） hsp37/common/02_myarray.hsp
+上記の4つのファイルをユーザースクリプトのディレクトリか、HSP のインストールディレクトリ下の commonフォルダ内において、`02_myarray.hsp` をインクルードしてください。02_myarrayフォルダをHSPのインストールディレクトリ下にある **doclibフォルダ内に02_myarrayフォルダごと** 置いて下さい。サンプルファイルもそのままで構いません。
 
-* 02_myarrayフォルダをHSPのインストールディレクトリ下にある **doclibフォルダ内に02_myarrayフォルダごと** 置いて下さい。サンプルファイルもそのままで構いません。
+```
+例）
+├─ hsp37
+    ├─ common
+    │  ├─
+    │  ├─ 02_myarray_core.hsp
+    │  ├─ 02_myarray_list.hsp
+    │  ├─ 02_myarray_srch.hsp
+    │  ├─ 02_myarray.hsp
+    │
+    ├─ doclib
+    │  ├─ 02_myarrayフォルダ
+```
 
-		例） hsp37/doclib/02_myarray
+``` c
+	// インクルードするのは 02_myarray ファイルだけ
+	#include "02_myarray.hsp"
+```
+
+<!----------------------------------------------------------------------------->
 
 <br>
 
@@ -300,6 +399,55 @@ labarray string_var, ary, in_val, index
 
 ## 更新履歴（Change Log）
 
+### ver 0.28
+2023/02/01
+
+**新規追加命令･関数**
+
+| 名称        | 種別 | 概要                                   |
+|:------------|:----:|----------------------------------------|
+| `uniary`    | 関数 | 多次元配列を １次元配列 として扱う     |
+| `uniformat` | 命令 | union_dとunion関数の出力書式の設定変更 |
+| `union_d`   | 関数 | 複数の配列を オフセット でまとめる     |
+| `union`     | 関数 | 複数の配列を 値         でまとめる     |
+
+<!--  -->
+
+| `MDALiSrch` | 関数 | 多次元配列の 線形探索   を行う |
+|-------------|------|--------------------------------|
+| `MDABiSrch` | 命令 | 多次元配列の 二分木探索 を行う |
+
+
+**修正･変更**
+
+* priarray命令のモジュール型変数の情報表示ができない不具合の修正
+* outarray命令のマクロ登録を削除 (今まで通り利用可)
+<!--  -->
+
+* calc_ary命令内で呼び出され、実際に配列どうしの計算を行うcalc_var_ary(local)関数の名称を cpu_ary_へ変更
+<!--  -->
+
+* cpu_ary_関数の計算内容の分岐方法を、if-else:if による比較から、gotoとラベル型変数を利用したラベルジャンプの分岐法に変更_myarray_init_(local)命令内で 管理用変数を ldim cpu_jump, 15 として定義( cpu_jump(0)～(8)までを使用、cpu_jump(9)以降は空き)
+<!--  -->
+
+* myarrayモジュールの肥大化に伴い、同モジュールを以下のようにファイルごと分割することとした。(それぞれ重要度順に記す)
+
+	* #### myarray_core モジュール (02_myarray_core.hsp)
+		ほぼすべての命令・関数の中核を担うイテレータなどを内部命令化･関数化し、定義する本プロジェクト最重要モジュール。linedim命令、dimlinec関数やその他内部命令･関数を含む6つの命令･関数郡からなる。
+
+	* #### myarray_list モジュール (02_myarray_list.hsp)
+		このモジュールは主に多次元配列を1次元配列として扱うものや、配列をリストのように扱うといったデータ管理用途の機能を集めたものです。未だ開発途中で実験的なのもでもあり、今後の開発やアップデートの中心になリます。
+
+	* #### myarray_srch モジュール (02_myarray_srch.hsp)
+		ソートや線形探索･二分木探索など、ユーザーに提供する一部機能の前処理を行う、local指定を含む7つの命令･関数郡からなるモジュール。MDALiSrch関数、MDABiSrch命令等を含む。
+
+	* #### myarray      モジュール (02_myarray.hsp)
+		ユーザー提供機能をまとめたモジュール。ラベル型変数、モジュール型変数へのアクセスを行うポインタ関連、配列制御関連の内部命令、pri, set, out, cnv, labarray命令の各内部命令とマクロ、配列演算命令など。
+
+<!----------------------------------------------------------------------------->
+
+---
+
 ### ver 0.27.3
 2023/01/21
 
@@ -319,6 +467,12 @@ labarray string_var, ary, in_val, index
 
 ---
 
+<details>
+
+<summary>以下略</summary>
+
+<br>
+
 ### ver 0.27.1
 2023/01/16
 
@@ -329,9 +483,9 @@ labarray string_var, ary, in_val, index
 * ヘルプファイルに新規追加分の命令･関数の項目を追記、一部文言の修正。
 * 一部ソースコードの修正
 
-<!----------------------------------------------------------------------------->
-
 ---
+
+<!----------------------------------------------------------------------------->
 
 ### ver 0.27
 2023/01/09
@@ -397,15 +551,7 @@ labarray string_var, ary, in_val, index
 
 ---
 
-
-<details>
-
-<summary>以下略</summary>
-
-<br>
-
 <!----------------------------------------------------------------------------->
-
 
 ### ver 0.26.1
 2022/12/20

@@ -1,7 +1,7 @@
 // INFO ****************************************************
 // FileName : 02_4_Lab.hsp
-// Version  : 0.27.3
-// Date     : 2023/01/21
+// Version  : 0.28
+// Date     : 2023/02/01
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -11,7 +11,13 @@
 主にlabarrayのテストサンプルです.
 ************************************************************/
 
-	#include "02_myarray.hsp"
+	#cmpopt ppout 0                     ; ←はコメントアウトしても構いません
+
+	#include "d3m.hsp"
+	a(0) = d3timer()
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	; #include "02_myarray.hsp"           ; ここと↑のコメントアウトを切り替えて下さい
+	a(1) = d3timer()
 
 	/***  わかりやすいようにフォルダをば  ***/
 	sdim fname    : dirlist fname, "output_text", 5
@@ -24,28 +30,40 @@
 	sdim test_ary1, bufsize, 10, 10, 10, 10
 	sdim test_str2, bufsize, 5, 5, 5
 
-	mesbox moni, 640, 480, 0
-	hmes = objinfo(stat, 2)
-
-
+	mesbox moni, 640, 480, 0 : hmes = objinfo(stat, 2)
+	a(2) = d3timer()
 	labarray text_data, test_ary1, "*main_lab_", 1, "A B Cの処理用"
+	a(3) = d3timer()
 	labarray text_data, test_str2, "*sub_lab_", 1, "X Y Zのサブルーチン用"
-
-	; priarray moni, test_ary1
-	priarray moni, test_str2
+	a(4) = d3timer()
 
 	notesel text_data
 	notesave "output_text\\lab_only.hsp"
 
-	moni += text_data
-	objprh hmes, moni
-
 	; outarray text_data, test_ary1, 1
 	; outarray text_data, test_str2, 1
 
-	notesel text_data
-	notesave "output_text\\lab_out.hsp"
+	; notesel text_data
+	; notesave "output_text\\lab_out.hsp"
 
 	moni += text_data
 	objprh hmes, moni
+	a(5) = d3timer()
+
+	repeat length(a)
+		logmes "a(" + cnt + ") = " + a(cnt)
+	loop
+
+	a(6) = d3timer()
+
+	repeat length(a) - 1
+		logpri a(cnt + 1) - a(cnt), cnt + 1, cnt
+	loop
+
+	a(7) = d3timer()
+
+	logmes "a(6) = " + a(6)
+	logmes "a(7) = " + a(7)
+	logmes "a(7) - a(6) = " + (a(7) - a(6))
+
 	stop

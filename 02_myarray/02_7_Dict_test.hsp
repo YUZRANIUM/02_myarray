@@ -1,0 +1,187 @@
+; INFO *************************************************************************
+; FileName : 02_7_Dict_test.hsp
+; Version  : 0.28
+; Date     : 2023/02/01
+; Author   : YUZRANIUM（ゆずらにうむ）
+; Twitter  : https://twitter.com/YUZRANIUM
+; GitHub   : https://github.com/YUZRANIUM/02_myarray
+;*******************************************************************************
+/* Description
+
+	HSP3辞書の実験 (制作中)
+
+********************************************************************************/
+	#cmpopt ppout 0                     ; ←はコメントアウトしても構いません
+	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
+	; #include "02_myarray.hsp"           ; ここと↑のコメントアウトを切り替えて下さい
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					管理用変数
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	#const buf_size 4096
+	sdim moni0, buf_size    ; 表示用
+	sdim moni1, buf_size    ; 表示用
+	sdim moni2, buf_size    ; 表示用
+
+	; オブジェクトハンドル用 (用意するだけ)
+	;
+	dim hMes, 4     ;mesbox
+	; dim hBut, 4     ;button
+	; dim hInp, 4     ;input
+	; dim hChk, 4     ;chkbox
+	; dim hCmb, 4     ;combox
+	; dim hLsb, 4     ;listbox
+	; dim hLay, 4     ;layerobj
+
+	; とりあえずサブルーチン作るとき用
+	;
+	ldim labl, 10, 3
+	labl(0, 0) = *main0, *main1, *main2, *main3, *main4, *main5, *main6, *main7, *main8, *main9
+	labl(0, 1) = *main10, *main11, *main12, *main13, *main14, *main15, *main16, *main17, *main18, *main19
+	labl(0, 2) = *main20
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;				ウィンドウオブジェクト
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	screen 0, 900, 480 : font "メイリオ", 12 : objmode 2, 1
+	pos 0, 0   : mesbox moni0, 300, 480, 12 : hMes.0 = objinfo(stat, 2)
+	pos 300, 0 : mesbox moni1, 300, 480, 12 : hMes.1 = objinfo(stat, 2)
+	pos 600, 0 : mesbox moni2, 300, 480, 12 : hMes.2 = objinfo(stat, 2)
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					検証用変数
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	/***  商品名  ***/
+	sdim names, buf_size, 10, 10
+	names(0, 0) = "0いちご", "0すいか", "0こたつ", "0とまと", "0みかん", "0ばなな", "0ぶどう", "0りんご", "0れもん", "0やまと"
+	names(0, 1) = "1いちご", "1すいか", "1こたつ", "1とまと", "1みかん", "1ばなな", "1ぶどう", "1りんご", "1れもん", "1やまと"
+	names(0, 2) = "2いちご", "2すいか", "2こたつ", "2とまと", "2みかん", "2ばなな", "2ぶどう", "2りんご", "2れもん", "2やまと"
+	names(0, 3) = "3いちご", "3すいか", "3こたつ", "3とまと", "3みかん", "3ばなな", "3ぶどう", "3りんご", "3れもん", "3やまと"
+	names(0, 4) = "4いちご", "4すいか", "4こたつ", "4とまと", "4みかん", "4ばなな", "4ぶどう", "4りんご", "4れもん", "4やまと"
+	names(0, 5) = "5いちご", "5すいか", "5こたつ", "5とまと", "5みかん", "5ばなな", "5ぶどう", "5りんご", "5れもん", "5やまと"
+	names(0, 6) = "6いちご", "6すいか", "6こたつ", "6とまと", "6みかん", "6ばなな", "6ぶどう", "6りんご", "6れもん", "6やまと"
+	names(0, 7) = "7いちご", "7すいか", "7こたつ", "7とまと", "7みかん", "7ばなな", "7ぶどう", "7りんご", "7れもん", "7やまと"
+	names(0, 8) = "8いちご", "8すいか", "8こたつ", "8とまと", "8みかん", "8ばなな", "8ぶどう", "8りんご", "8れもん", "8やまと"
+	names(0, 9) = "9いちご", "9すいか", "9こたつ", "9とまと", "9みかん", "9ばなな", "9ぶどう", "9りんご", "9れもん", "9やまと"
+
+
+	/***  単位  ***/
+	sdim units, 1024, 11
+	units(0) = "円", "kg", "g", "L", "mL", "個", "玉", "枚", "匹", "尾", "杯"
+
+	/***  原価  ***/
+	ddim value1, 10, 5
+	setarray value1, 75.8, 1, 0.175
+
+	/***  税  ***/
+	ddim v_tax, 50
+	ctlarray 0, 25  : setarray v_tax, 0.25, 1, 0.125
+	ctlarray 26, 50 : setarray v_tax, 0.37, 1, 0.7
+
+	/***  日付  ***/
+	; dim date, 30, 12
+
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					処理
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	; とりあえず (売価) = (原価) + ( (原価) * (税) )
+	;
+	calc_ary value2, value1, v_tax, 5
+
+	yen = "円"
+	moni0 += union_d(names, value2, yen, 0) + "\n"
+
+	uniformat "%s  :  %s 円  :  %s%%\n"
+	repeat dimlinec(names)
+		moni1 += "" + cnt + " |" + union_d(names, value2, v_tax, cnt)
+	loop
+	moni1 += "\n"
+
+
+	; 探索に失敗した場合のテスト
+	;
+	moni2 += union(names, value2, v_tax, "8ヤマト")
+	moni2 += "\n"
+
+	moni2 += union(names, value2, v_tax, "8やまと")
+	moni2 += union(names, value2, v_tax, "5みかん")
+	moni2 += union(value1, value2, v_tax, 75.8)
+	moni2 += union(value1, value2, v_tax, 75.975)
+	moni2 += "\n"
+
+	moni2 += union(names, value2, v_tax, "白いちご")
+	moni2 += "\n"
+
+	repeat dimlinec(names)
+		item = uniary(names, cnt)
+		moni2 += union(names, value2, v_tax, item)
+	loop
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					表示内容更新
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	priarray moni0, value2
+	priarray moni1, names
+
+	objprh hMes(0), moni0
+	objprh hMes(1), moni1
+	objprh hMes(2), moni2
+	stop
+
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;					サブルーチン
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+*main0
+	return
+*main1
+	return
+*main2
+	return
+*main3
+	return
+*main4
+	return
+*main5
+	return
+*main6
+	return
+*main7
+	return
+*main8
+	return
+*main9
+	return
+*main10
+	return
+*main11
+	return
+*main12
+	return
+*main13
+	return
+*main14
+	return
+*main15
+	return
+*main16
+	return
+*main17
+	return
+*main18
+	return
+*main19
+	return
+*main20
+	return
