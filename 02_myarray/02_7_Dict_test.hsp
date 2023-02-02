@@ -1,16 +1,16 @@
-; INFO *****************************************************
+; INFO *************************************************************************
 ; FileName : 02_7_Dict_test.hsp
-; Version  : 0.27.3.3
-; Date     : 2023/01/23
+; Version  : 0.28
+; Date     : 2023/02/01
 ; Author   : YUZRANIUM（ゆずらにうむ）
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
-;***********************************************************
+;*******************************************************************************
 /* Description
 
 	HSP3辞書の実験 (制作中)
 
-************************************************************/
+********************************************************************************/
 	; #cmpopt ppout 0                     ; ←はコメントアウトしても構いません
 	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
 	; #include "02_myarray.hsp"           ; ここと↑のコメントアウトを切り替えて下さい
@@ -113,6 +113,7 @@
 	moni2 += "\n"
 
 	moni2 += union(names, value2, v_tax, "8やまと")
+	moni2 += union(names, value2, v_tax, "5みかん")
 	moni2 += union(value1, value2, v_tax, 75.8)
 	moni2 += union(value1, value2, v_tax, 75.975)
 	moni2 += "\n"
