@@ -173,7 +173,7 @@ union関数ではary1の値で線形探索を行い1次元化要素数を求めるという処理がありました
     calc_ary selling_price, unit_price, purchase_quantity, 2  ; 乗算
 
     ; ぶどうの商品名と販売価格、仕入れ数を表示
-    mes union(fruits, selling_price, purchase_quantity, 2)
+    mes union_d(fruits, selling_price, purchase_quantity, 2)
 
     stop
 %group
