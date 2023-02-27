@@ -1,7 +1,7 @@
 ; INFO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ; FileName : 02_myarray_list.hs
-; Version  : 0.28
-; Date     : 2023/02/01
+; Version  : 0.28.1
+; Date     : 2023/02/27
 ; Author   : YUZRANIUM（ゆずらにうむ）
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -25,9 +25,9 @@
 %dll
 myarray_list
 %ver
-0.28
+0.28.1
 %date
-2023/02/01
+2023/02/27
 %author
 YUZRANIUM
 %url
@@ -41,7 +41,9 @@ Win
 ;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ; uniary
 ; union
+; union4
 ; union_d
+; union4d
 ; uniformat
 ;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -141,6 +143,32 @@ linedim
 ;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 %index
+union4
+配列を値でまとめる
+%prm
+(ary1, ary2, ary3, ary4, ary1_val)
+ary1, ary2, ary3, ary4 : 配列変数名
+ary1_val               : ary1の値
+%inst
+この関数はunion関数の上位版で4つの多次元配列変数をまとめて扱うものです。
+^
+各パラメータの解説はunion関数の項目を参考にして下さい。
+
+%sample
+
+%group
+配列特殊操作
+%type
+ユーザー定義関数
+%href
+uniary
+union
+union_d
+union4d
+
+;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+%index
 union_d
 配列をオフセットでまとめる
 %prm
@@ -186,6 +214,32 @@ union
 uniformat
 dimlinec
 linedim
+
+;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+%index
+union4d
+配列をオフセットでまとめる
+%prm
+(ary1, ary2, ary3, ary4, dim_ofset)
+ary1, ary2, ary3, ary4 : 配列変数名
+dim_ofset              : 配列のオフセット値
+%inst
+この関数はunion_d関数の上位版で4つの多次元配列変数をまとめて扱うものです。
+^
+各パラメータの解説はunion_d関数の項目を参考にして下さい。
+
+%sample
+
+%group
+配列特殊操作
+%type
+ユーザー定義関数
+%href
+uniary
+union
+union4
+union_d
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

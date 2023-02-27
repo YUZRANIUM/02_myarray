@@ -1,6 +1,6 @@
-# マイ・アレイ ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YUZRANIUM/02_myarray?include_prereleases&style=flat-square)
+<!-- # マイ・アレイ ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YUZRANIUM/02_myarray?include_prereleases&style=flat-square) -->
 
-<!-- # myarray テスト版 v0.28 -->
+# myarray テスト版 v0.28.1
 
 多次元配列変数をなんやかんやする、なんてことないモジュール
 
@@ -9,9 +9,11 @@
 不具合報告や要望等は [HSPTV!掲示板][HSPTV!掲示板] で頂けると幸いです。
 
 ## 今後の予定
+* [x] `ctlarray`命令をはじめとした制御系命令の調整
+* [x] `bisrch`命令, `MDABiSrch`命令の文字列型対応
+* [ ] 多次元配列変数のソート命令
+* [ ] 三角関数、数列機能の試作･追加
 * [ ] 辞書的なもの
-* [ ] `bisrch`命令, `MDABiSrch`命令の文字列型対応
-* [ ] `ctlarray`命令をはじめとした制御系命令の調整
 * [ ] モジュール型変数への対応
 * [ ] 多次元配列の結合と分離 (※半分妄想)
 
@@ -37,7 +39,7 @@
 
 多次元配列変数の情報を複数行文字列として書き出す `priarray`命令 &emsp; (由来 : print array)
 
-~~~c
+~~~hsp
 // string_var : 情報を受け取る文字列型変数
 // ary        : 多次元配列変数
 // coment     : コメント（省略可）
@@ -70,7 +72,7 @@ priarray string_var, ary, coment
 
 多次元配列変数に連続代入を行う `setarray`命令 &nbsp; (由来 : setting array)
 
-~~~c
+~~~hsp
 // ary      : 代入先の配列変数 (dim系での初期化 必須)
 // in_val   : 代入したい値
 // idx_flag : indexフラグ
@@ -108,7 +110,7 @@ setarray ary, in_val, idx_flag, idx
 
 多次元配列変数の値を複数行文字列として書き出す `outarray`命令 &nbsp; (由来 : output array)
 
-```c
+```hsp
 // string_var : 配列変数の中身を受け取る文字列型変数
 // ary        : 配列変数
 // label_flag : ラベルモード
@@ -136,7 +138,7 @@ outarray string_var, ary, label_flag
 
 あらゆるものを別の多次元配列に変換する `cnvarray`命令 &nbsp; (由来 : convert array)
 
-```c
+```hsp
 // ary_name    : 変数名
 // in_val      : 読み込む 複数行文字列型変数 または 多次元配列変数
 // type        : 変換後の型を表す数値  (= 2, 2:文字列型 / 3:実数型 / 4:整数型)
@@ -155,7 +157,7 @@ cnvarray ary_name, in_val, type, d1, d2, d3, d4
 
 * `outarray`命令と組み合わせることで、値と変数名はそのままに、次元の拡張･縮小、型変換を行うことができる
 
-```c
+```hsp
 sdim hogehoge, 64, 10, 2
 	:
 sdim str_tmp, 1024
@@ -177,7 +179,7 @@ cnvarray hogehoge, str_tmp, 4, 10, 5, 3  // hogehoge を整数型、3次元配�
 
 ラベルを量産する `labarray`命令 &nbsp; (由来 : label array)
 
-```c
+```hsp
 // string_var : 書き出し先の文字列型変数
 // ary        : 書き出す文字列型配列変数
 // in_val     : 代入値またはそれを格納した変数
@@ -199,7 +201,7 @@ labarray string_var, ary, in_val, index
 
 多次元配列どうしの計算を行う `calc_ary` 命令 &nbsp; (由来 : calculate array)
 
-``` c
+``` hsp
 // ans_ary    : 計算結果を受け取る変数名
 // ary1, ary2 : 変数名
 // calc_type  : 演算タイプ
@@ -240,12 +242,17 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 * 多次元配列の線形探索 `MDALiSrch` 関数
 * 多次元配列の二分木探索 `MDABiSrch` 命令
 <!--  -->
-
-**試作中**
 * 多次元配列を1次元配列として扱う `uniary` 関数
 * 複数の多次元配列を オフセットで まとめて扱う `union_d` 関数
 * 複数の多次元配列を 値で&emsp;&emsp;&emsp;&emsp; まとめて扱う `union` 関数
-* `union`, `union_d` 関数の書式設定を行う `unifrmt` 命令
+* `union`, `union_d`, `union4`, `union4d` 関数の書式設定を行う `unifrmt` 命令
+<!--  -->
+
+**試作中**
+* 4つの多次元配列をまとめて扱う `union4`, `union4d` 関数
+* 文字列をASCIIコードに変換する `str2ASCI` 命令
+* ASCIIコードを文字列に変換する `ASCI2str` 関数
+* 文字列をASCIIコードで大小比較 `ASCIcomp` 関数
 <!--  -->
 
 ---
@@ -335,7 +342,7 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
     │  ├─ 02_myarrayフォルダ
 ```
 
-``` c
+``` hsp
 	// インクルードするのは 02_myarray ファイルだけ
 	#include "02_myarray.hsp"
 ```
@@ -358,7 +365,7 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 
 * Windows11 Pro 22H2 x64
 * Hot Soup Processor 3.7beta4
-* Visual Studio Code ver 1.74.3
+* Visual Studio Code ver 1.75.1
 
 ## LICENSE
 
@@ -398,6 +405,31 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 <br>
 
 ## 更新履歴（Change Log）
+
+### テスト版 v0.28.1
+2023/02/27
+
+**新規追加命令･関数**
+
+| 名称       | 種別 | 概要                                  |
+|:-----------|:----:|---------------------------------------|
+| `str2ASCI` | 命令 | 文字列をASCIIコードに変換する         |
+| `ASCI2str` | 関数 | ASCIIコードを文字列に変換する         |
+| `ASCIcomp` | 関数 | 文字列をASCIIコードで大小比較         |
+|            |      |                                       |
+| `union4d`  | 関数 | 4つの多次元配列をオフセットでまとめる |
+| `union4`   | 関数 | 4つの多次元配列を値でまとめる         |
+
+
+**修正･変更**
+
+* `bisrch`, `MDABiSrch` 命令の文字列型対応
+* `calc_ary` の計算処理を行う内部関数`cpu_ary_`に演算タイプ9(べき乗)を追加
+* ソースコードの一部修正･整備
+
+<!----------------------------------------------------------------------------->
+
+---
 
 ### ver 0.28
 2023/02/01

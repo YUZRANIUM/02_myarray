@@ -1,7 +1,7 @@
 ; INFO ************************************************************************
 ; FileName : 02_myarray.hsp
-; Version  : 0.28
-; Date     : 2023/02/01
+; Version  : 0.28.1
+; Date     : 2023/02/27
 ; Author   : YUZRANIUM（ゆずらにうむ）
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -373,9 +373,11 @@
 	; ary_inf(4) : 使用次元数 (1, 2, 3, 4) (旧 : use_dim)
 	; ary_inf(5) : 配列の長さ              (旧 : sum_dim)
 	;
-	; ary_inf(6) : 配列の現在位置          (旧 : num_)
+	; ary_inf(6) : 配列の変数型
+	;
+	; ary_inf(7) : 配列の現在位置          (旧 : num_)
 	; ------------------------------------------------------
-	ary_inf = 0 : dim ary_inf, 7
+	ary_inf = 0 : dim ary_inf, 8
 
 	; ######################################################
 	; if-else での型分岐用
@@ -648,13 +650,12 @@
 	; [header_]  :  priarray と labarray の出力文字列の冒頭保管用
 	;
 #deffunc local ainfo_ var hyouj, array ary, str vname, int linenum, var coment, \
-local header_, \
-local hoge_
+local header_, local hoge_
 
 	hogestr = vname : hogestr = strtrim(hogestr, 3,)        ; 半角スペースのトリミング
 
 	dim vtype, 7    : typ_info_@myarray_core ary, vtype     ; 以降の if-else での型分岐用
-	dim ary_inf, 7  : dim_info_@myarray_core ary, ary_inf   ; 配列分解処理の下準備
+	dim ary_inf, 8  : dim_info_@myarray_core ary, ary_inf   ; 配列分解処理の下準備
 
 	/*****  出力文字列の冒頭処理  *****/
 
@@ -685,25 +686,25 @@ local hoge_
 ; jump_(1, 0)
 *D1_aryinfo@myarray
 	sdim header_, 1024
-	header_ = strf(sfrmt(0, hoge_), hogestr, vtype_names(vartype(ary)), ary_inf.0, linenum)
+	header_ = strf(sfrmt(0, hoge_), hogestr, vtype_names(ary_inf.6), ary_inf.0, linenum)
 	return
 
 ; jump_(2, 0)
 *D2_aryinfo@myarray
 	sdim header_, 1024
-	header_ = strf(sfrmt(1, hoge_), hogestr, vtype_names(vartype(ary)), ary_inf.0, ary_inf.1, linenum)
+	header_ = strf(sfrmt(1, hoge_), hogestr, vtype_names(ary_inf.6), ary_inf.0, ary_inf.1, linenum)
 	return
 
 ; jump_(3, 0)
 *D3_aryinfo@myarray
 	sdim header_, 1024
-	header_ = strf(sfrmt(2, hoge_), hogestr, vtype_names(vartype(ary)), ary_inf.0, ary_inf.1, ary_inf.2, linenum)
+	header_ = strf(sfrmt(2, hoge_), hogestr, vtype_names(ary_inf.6), ary_inf.0, ary_inf.1, ary_inf.2, linenum)
 	return
 
 ; jump_(4, 0)
 *D4_aryinfo@myarray
 	sdim header_, 1024
-	header_ = strf(sfrmt(3, hoge_), hogestr, vtype_names(vartype(ary)), ary_inf.0, ary_inf.1, ary_inf.2, ary_inf.3, linenum)
+	header_ = strf(sfrmt(3, hoge_), hogestr, vtype_names(ary_inf.6), ary_inf.0, ary_inf.1, ary_inf.2, ary_inf.3, linenum)
 	return
 
 
@@ -824,7 +825,7 @@ local hoge_
 local input_buf_, local index_buf_
 
 	dim vtype, 7   : typ_info_@myarray_core ary, vtype   ; 以降の if-else での型分岐用
-	dim ary_inf, 7 : dim_info_@myarray_core ary, ary_inf ; 配列分解処理の下準備
+	dim ary_inf, 8 : dim_info_@myarray_core ary, ary_inf ; 配列分解処理の下準備
 
 	if (vtype(0) | vtype(6)) : goto jump_(0, 2)
 	;_______________________________________________________
@@ -909,7 +910,7 @@ local hoge_
 	sdim out_holder_, 4096
 
 	dim vtype, 7   : typ_info_@myarray_core ary, vtype   ; 以降の if-else での型分岐用
-	dim ary_inf, 7 : dim_info_@myarray_core ary, ary_inf ; 配列分解処理の下準備
+	dim ary_inf, 8 : dim_info_@myarray_core ary, ary_inf ; 配列分解処理の下準備
 	hoge_ = "\n", "\n\treturn\n"
 
 	dim i, 7
@@ -981,7 +982,7 @@ local hoge_
 	notesel cnv_holder_
 
 	; 配列の各次元要素数
-	dim ary_inf, 7
+	dim ary_inf, 8
 	if (d1 == 0) {ary_inf = length(in_val), length2(in_val), length3(in_val), length4(in_val)}
 	else         {ary_inf = d1, d2, d3, d4}
 
@@ -1002,9 +1003,8 @@ local hoge_
 		dim_line_num_@myarray_core ary_inf, i, i(4)
 		noteget hogeline, i(5)
 
-		if      (type == 2) {hoge_ =    str(hogeline)}
-		else:if (type == 3) {hoge_ = double(hogeline)}
-		else:if (type == 4) {hoge_ =    int(hogeline)}
+		; 型の変換
+		hoge_ = type_convert_@myarray_core(type, hogeline)
 
 		gosub jump_(ary_inf(4), 4)         ; ラベルジャンプで分岐
 		i(4)++ : i(5)++
@@ -1062,8 +1062,7 @@ local hoge_
 	; index  : 増減値
 	;
 #deffunc local labarray_ str vname, var hyouj, array ary, var in_val, var index, var coment, \
-local input_buf_, \
-local index_buf_
+local input_buf_, local index_buf_
 
 	sdim lab_holder_, 4096
 
@@ -1154,25 +1153,26 @@ local index_buf_
 	;		[local] ary2_info_ : 配列情報用
 	;
 #deffunc calc_ary array ans_ary, array ary1, array ary2, int calc_type, int error_stop, \
-local ary1_info_, \
-local ary2_info_
+local ary1_info_, local ary2_info_, local hoge_
 
 	; 文字列型の場合に加算以外を指定されたとき計算しない
 	if (vartype(ary1) == 2 | vartype(ary2) == 2) & (calc_type != 0) {return -1}
 	;___________________________________________________________________________
 
 	; 配列情報の取得
-	dim ary1_info_, 7 : dim_info_@myarray_core ary1, ary1_info_
-	dim ary2_info_, 7 : dim_info_@myarray_core ary2, ary2_info_
+	dim ary1_info_, 8 : dim_info_@myarray_core ary1, ary1_info_
+	dim ary2_info_, 8 : dim_info_@myarray_core ary2, ary2_info_
 
 	; 配列演算継続フラグ
-	if calc_add_flag == 0 {
+	if (calc_add_flag == 0) {
 		; ans_aryはary1の変数型と各次元要素数で初期化する
-		if vartype(ary1) == 2 {sdim ans_ary, 1024, ary1_info_.0, ary1_info_.1, ary1_info_.2, ary1_info_.3}
-		else      {dimtype ans_ary, vartype(ary1), ary1_info_.0, ary1_info_.1, ary1_info_.2, ary1_info_.3}
+		if      (ary1_info_.6 == 2) {sdim ans_ary, 1024, ary1_info_.0, ary1_info_.1, ary1_info_.2, ary1_info_.3}
+		else:if (calc_type == 9) {hoge_ = 3} ; べき乗のときは変数型を強制的に実数型にしておく
+		else                     {hoge_ = ary1_info_.6}
+		dimtype ans_ary, hoge_, ary1_info_.0, ary1_info_.1, ary1_info_.2, ary1_info_.3
 	}
 
-	dimtype ary2_, vartype(ary2)
+	dimtype ary2_, ary2_info_(6)
 	; ctrarray(動作制御命令)による離脱設定
 	dim i, 7 : i.4 = ctlarray_core_@myarray(0, i.4) : ary1_info_.5 = ctlarray_core_@myarray(1, ary1_info_.5)
 	dim j, 7 : j.4 = ctlarray_core_@myarray(0, j.4) : ary2_info_.5 = ctlarray_core_@myarray(1, ary2_info_.5)
@@ -1198,28 +1198,24 @@ local ary2_info_
 *calc_ary_1@myarray
 	if i.5 {ary2_ = ary2(j.0)}
 	else   {ans_ary(i.0) = cpu_ary_@myarray(ary1(i.0), ary2_, calc_type, error_stop)}
-
 	return
 
 ; 2次元配列 jump_(2, 6)
 *calc_ary_2@myarray
 	if i.5 {ary2_ = ary2(j.0, j.1)}
 	else   {ans_ary(i.0, i.1) = cpu_ary_@myarray(ary1(i.0, i.1), ary2_, calc_type, error_stop)}
-
 	return
 
 ; 3次元配列 jump_(3, 6)
 *calc_ary_3@myarray
 	if i.5 {ary2_ = ary2(j.0, j.1, j.2)}
 	else   {ans_ary(i.0, i.1, i.2) = cpu_ary_@myarray(ary1(i.0, i.1, i.2), ary2_, calc_type, error_stop)}
-
 	return
 
 ; 4次元配列 jump_(4, 6)
 *calc_ary_4@myarray
 	if i.5 {ary2_ = ary2(j.0, j.1, j.2, j.3)}
 	else   {ans_ary(i.0, i.1, i.2, i.3) = cpu_ary_@myarray(ary1(i.0, i.1, i.2, i.3), ary2_, calc_type, error_stop)}
-
 	return
 
 
@@ -1266,13 +1262,14 @@ local ary2_info_
 *calc_typ_2@myarray : return (v1 * v2)  ; 乗算
 *calc_typ_3@myarray : return (v1 / v2)  ; 除算
 *calc_typ_4@myarray : return (v1 \ v2)  ; 剰余
+
 *calc_typ_5@myarray : return (v1 + v1 * v2)        ; 割増 (実数指定)
 *calc_typ_6@myarray : return (v1 - v1 * v2)        ; 割引 (実数指定)
 *calc_typ_7@myarray : return (v1 + v1 * v2 * 0.01) ; 割増 (%)
 *calc_typ_8@myarray : return (v1 - v1 * v2 * 0.01) ; 割引 (%)
+*calc_typ_9@myarray : return powf(v1, v2)          ; べき乗
 
 	; こちら以降にどんどん計算式を追加することでカスタムすることができます。
-*calc_typ_9@myarray : return
 *calc_typ_10@myarray : return
 *calc_typ_11@myarray : return
 *calc_typ_12@myarray : return

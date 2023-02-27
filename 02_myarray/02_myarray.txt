@@ -1,8 +1,8 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 	Module   : 02_myarray.hsp
-	Version  : 0.28
-	Date     : 2023/02/01
+	Version  : 0.28.1
+	Date     : 2023/02/27
 	Author   : YUZRANIUM（ゆずらにうむ）
 	Twitter  : https://twitter.com/YUZRANIUM
 	Git Hub  : https://github.com/YUZRANIUM/02_myarray
@@ -77,6 +77,9 @@ myarray_list モジュール  (辞書機能やデータ管理機能等を担う※今後開発予定)
 	3つの多次元配列をまとめて1次元配列として扱う
 	(第一パラメータ指定配列の値で管理)
 
+	val = union4d() 関数
+	val = union4()  関数
+
 ------------------------------------------------------------
 
 myarray_srch モジュール  (提供機能の前処理や裏処理を担う)
@@ -86,6 +89,17 @@ myarray_srch モジュール  (提供機能の前処理や裏処理を担う)
 
 	twinsortary 命令
 	一方のソート結果に応じて他方もソート
+
+	-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+	str2ASCI 命令
+	文字列からASCIIコードに変換
+
+	val = ASCI2str() 関数
+	ASCIIコードから文字列に変換
+
+	val = ASCIcomp() 関数
+	ASCIIコードの大小比較
 
 	-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
@@ -237,6 +251,27 @@ MDALiSrch関数、MDABiSrch命令等を含む。
 
 # 更新履歴
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ver 0.28.1
+2023/02/27
+
+/*** 新規追加命令･関数 ***/
+
+ * union4  関数
+ * union4d 関数
+
+ * str2ASCI 命令 (文字列をASCIIコードに変換)
+ * ASCI2str 関数 (ASCIIコードを文字列に変換)
+ * ASCIcomp 関数 (ASCIIコードの大小を比較)
+
+
+/*** 修正･変更 ***/
+
+calc_aryの計算処理を行う内部関数cpu_ary_に演算タイプ9(べき乗)を追加
+
+bisrch命令、MDABiSrch命令を文字列型変数に対応
+
+
 
 ver 0.28
 2023/02/01

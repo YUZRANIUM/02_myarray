@@ -1,7 +1,7 @@
 ; INFO *************************************************************************
 ; FileName : 02_myarray_srch.hsp
-; Version  : 0.28
-; Date     : 2023/02/01
+; Version  : 0.28.1
+; Date     : 2023/02/27
 ; Author   : YUZRANIUM（ゆずらにうむ）
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -18,7 +18,8 @@
 
 - 輸入品 -
 		myarray_core から
-			* dim_info_  (MDALiSrch_, MDABiSrch_)
+			* dim_info_     (MDALiSrch_, MDABiSrch_)
+			* type_convert_ (MDALiSrch_, MDABiSrch_)
 
 		myarray_list から
 			* uniary_    (MDALiSrch_, MDABiSrch_)
@@ -49,14 +50,105 @@
 	dim sortgetc_res_    ; sortgetc関数    返り値用変数
 	dim found_           ; LiSrchc_関数    返り値用変数
 
-	dim srch_ary_inf_, 7     ; MDALiSrch関数    配列情報用
-	dim srch_ary_var_, 2     ; MDALiSrch関数    型変換用
+	dim srch_ary_inf_, 8     ; MDALiSrch関数    配列情報用
+	dim srch_ary_var_, 3     ; MDALiSrch関数    型変換用
+	dim prm_chk, 2           ; MDALiSrch関数    条件式用
 
-	dim i, 6                 ; MDALiSrch関数    多目的
-	; i(0), i(1), i(2), i(3) : 4分割で探索するための要素数用
-	; i(4) : 発見フラグ
-	; i(5) : 戻り値用変数
+	; dim ary1_pt, 2
+	; dim ary2_pt, 2
+	dim i, 9                 ; MDALiSrch関数    多目的
+	; i(0), i(1), i(2), i(3), i(5), i(6) : 6分割で探索するための要素数用
+	; i(7) : 戻り値用変数
+	; i(8) : 発見フラグ
 	return
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 文字列からASCIIコードに変換
+	;
+	;	str2ASCII_ ary1, s1
+	;
+	;	[array] ary1 : ASCIIコードを受け取る変数名
+	;	[ str ] s1   : 変換したい文字列
+	;
+#deffunc str2ASCI array ary1, str s1
+
+	; バイト数を得るために変数に代入
+	midlevar_ = s1 : notesel midlevar_
+	dim ary1, notesize
+
+	; 文字列をASCIIコードに
+	repeat notesize:   ary1(cnt) = peek(midlevar_, cnt)   :loop
+	ary1(notesize) = 0    ; 終了コード
+
+	return
+
+
+;-------------------------------------------------------------------------------
+	;
+	; ASCIIコードから文字列に変換
+	;
+	; val = ASCII2str_(ary1)
+	;
+	;	[array] ary1 : ASCIIコードを格納した変数名
+	;
+	; *** 返り値 ***
+	;	refstr : 復元した文字列
+	;
+#defcfunc ASCI2str array ary1, local hoge_
+
+	sdim midlevar_, 64
+
+	repeat length(ary1)
+		getstr hoge_, ary1(cnt), 0
+		midlevar_ += hoge_
+	loop
+	return midlevar_
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 大小比較
+	;
+	;	val = ASCIcomp(ary1, ary2, p1)
+	;
+	;	[array] ary1,ary2 : ASCIIコードを格納した変数名
+	;	[ int ] p1        : 返りフラグ (= 0, 0:小さい方 / 1:大きい方)
+	;
+	; *** 返り値 ***
+	;	stat : 比較結果
+	;	     : 0:完全一致
+	;	     : 1:第一パラメータ
+	;	     : 2:第二パラメータ
+	;
+#defcfunc ASCIcomp array ary1, array ary2, int p1
+
+	; 大小ポイント
+	dim ary1_pt, 2
+	dim ary2_pt, 2
+	dim i
+
+	; 比較回数は小さい方に合わせる 文字数の大きい方に1pt
+	if      (length(ary1) < length(ary2)) {i = length(ary1) : ary2_pt(1)++}
+	else:if (length(ary1) > length(ary2)) {i = length(ary2) : ary1_pt(1)++}
+	else                                  {i = length(ary1)}
+
+	; 大きい方に1pt入る. 同じ場合はpt入れないで次の文字コード比較へ
+	repeat i
+		if      (ary1(cnt) < ary2(cnt)) {ary2_pt++ : break}
+		else:if (ary1(cnt) > ary2(cnt)) {ary1_pt++ : break}
+	loop
+
+	; p1 = 0 のときは小さい方を, p1 = 1 のときは大きい方を返す
+	if      (ary1_pt(0) < ary2_pt(0)) & p1 {return 2} ; 第2パラメータの文字列が大きい
+	else:if (ary1_pt(0) > ary2_pt(0)) & p1 {return 1} ; 第1パラメータの文字列が大きい
+	else:if (ary1_pt(1) < ary2_pt(1)) & p1 {return 2} ; 文字数の長いほうが大きい
+	else:if (ary1_pt(1) > ary2_pt(1)) & p1 {return 1} ;
+	else:if (ary1_pt(0) < ary2_pt(0)) {return 1}
+	else:if (ary1_pt(0) > ary2_pt(0)) {return 2}
+	else:if (ary1_pt(1) < ary2_pt(1)) {return 1}
+	else:if (ary1_pt(1) > ary2_pt(1)) {return 2} else {return 0}
 
 
 ;-------------------------------------------------------------------------------
@@ -134,31 +226,39 @@
 	;
 #defcfunc local MDALiSrch_ str item_, array srch_ary
 
-	dim_info_@myarray_core srch_ary, srch_ary_inf_ ; 配列情報の取得
+	; 配列情報の取得
+	dim srch_ary_inf_, 8
+	dim_info_@myarray_core srch_ary, srch_ary_inf_
 
 	; 型変換
-	if      (vartype(srch_ary) == 2) {srch_ary_var_(0) =    str(item_)}
-	else:if (vartype(srch_ary) == 3) {srch_ary_var_(0) = double(item_)}
-	else:if (vartype(srch_ary) == 4) {srch_ary_var_(0) =    int(item_)}
+	dimtype srch_ary_var_, srch_ary_inf_(6)
+	srch_ary_var_ = type_convert_@myarray_core(srch_ary_inf_(6), item_)
 
-	dim i, 6
-	repeat int(srch_ary_inf_(5) / 2) ; 探索ループ ここから ======================
+	dim i, 9
+	dim prm_chk, 2
+	repeat int(srch_ary_inf_(5) / 3) ; 探索ループ ここから ======================
 
-		i(0) = 0 +                           cnt  ; 先頭から 下へ : ↓
-		i(1) = 0 + ((srch_ary_inf_(5) / 2) - cnt) ; 中央から 上へ : ↑
-		i(2) = 0 + ((srch_ary_inf_(5) / 2) + cnt) ; 中央から 下へ : ↓
-		i(3) = 0 + ((srch_ary_inf_(5) - 1) - cnt) ; 後尾から 上へ : ↑
+		i(0) = 0 +                               cnt  ; 先頭から 下へ : ↓
+		i(1) = 0 + ((srch_ary_inf_(5) / 3) * 1 - cnt) ; 1/3 から 上へ : ↑
+		i(2) = 0 + ((srch_ary_inf_(5) / 3) * 1 + cnt) ; 1/3 から 下へ : ↓
+		i(3) = 0 + ((srch_ary_inf_(5) / 3) * 2 - cnt) ; 2/3 から 上へ : ↑
+		i(4) = 0 + ((srch_ary_inf_(5) / 3) * 2 + cnt) ; 2/3 から 下へ : ↓
+		i(5) = 0 + ((srch_ary_inf_(5) - 1) * 1 - cnt) ; 後尾から 上へ : ↑
 
-		; 4分ループ
-		repeat 4
-			srch_ary_var_(1) = uniary_@myarray_list(srch_ary, i(cnt), srch_ary_inf_)
-			if (srch_ary_var_(0) == srch_ary_var_(1)) {i(5) = i(cnt) : i(4) = 1 : break} ; ここは4分ループのbreak
+		; 6分ループ
+		repeat 3
+			i(6) = i(5 - cnt)
+			prm_chk(0) = (srch_ary_var_ == uniary_@myarray_list(srch_ary, i(cnt), srch_ary_inf_))
+			prm_chk(1) = (srch_ary_var_ == uniary_@myarray_list(srch_ary, i(6),   srch_ary_inf_))
+
+			if      prm_chk(0) {i(7) = i(cnt), 1 : break}
+			else:if prm_chk(1) {i(7) = i(6),   1 : break}
 		loop
-		if i(4) == 1 : break ; こっちは探索ループのbreak
 
+		if i(8) == 1 : break
 	loop                            ; 探索ループ ここまで =======================
 
-	if i(4) == 1 {return i(5)} else {return -1}
+	if i(8) == 1 {return i(7)} else {return -1}
 
 
 ;-------------------------------------------------------------------------------
@@ -197,13 +297,30 @@
 	dim srch_, 3
 	srch_(2) = length(srch_ary) - 1
 
-	repeat
-		srch_.0 = (srch_.1 + srch_.2) / 2
-		if      ((srch_.1 <= srch_.2) != 1) {srch_.0 = -1 : break}
-		else:if (item_ = srch_ary(srch_.0)) {break}
-		else:if (item_ < srch_ary(srch_.0)) {srch_.2 = srch_.0 - 1}
-		else                                {srch_.1 = srch_.0 + 1}
-	loop
+	if (vartype(item_) = 2) {           ; 文字列型の場合
+		str2ASCI item_asci, item_       ; 探索文字列をASCIIコードに変換
+
+		repeat
+			srch_.0 = (srch_.1 + srch_.2) / 2
+
+			str2ASCI asci_ary, srch_ary(srch_.0)             ; 比較サンプル文字列をASCIIコードに変換
+			srch_ary_var_ = ASCIcomp(item_asci, asci_ary, 0) ; 探索文字列と比較サンプルのASCIIコードを比較
+
+			if      ((srch_.1 <= srch_.2) != 1) {srch_.0 = -1 : break}
+			else:if (srch_ary_var_ = 0) {break}
+			else:if (srch_ary_var_ = 1) {srch_.2 = srch_.0 - 1}
+			else:if (srch_ary_var_ = 2) {srch_.1 = srch_.0 + 1}
+		loop
+	}
+	else {                              ; 実数型、整数型の場合
+		repeat
+			srch_.0 = (srch_.1 + srch_.2) / 2
+			if      ((srch_.1 <= srch_.2) != 1) {srch_.0 = -1 : break}
+			else:if (item_ = srch_ary(srch_.0)) {break}
+			else:if (item_ < srch_ary(srch_.0)) {srch_.2 = srch_.0 - 1}
+			else                                {srch_.1 = srch_.0 + 1}
+		loop
+	}
 	return
 
 ;-------------------------------------------------------------------------------
@@ -236,24 +353,43 @@
 	; srch_(1) : low
 	; srch_(2) : high
 	;
-	; ※注意※ 文字列型非対応
-	;
-#deffunc local MDABiSrch_ var item_, array srch_ary, array srch_
+#deffunc local MDABiSrch_ str item_, array srch_ary, array srch_
 
 	dim_info_@myarray_core srch_ary, srch_ary_inf_ ; 配列情報の取得
-
 	dim srch_, 4
 	srch_(2) = srch_ary_inf_(5) - 1
 
-	repeat
-		srch_.0 = (srch_.1 + srch_.2) / 2
-		srch_.3 = uniary_@myarray_list(srch_ary, srch_.0, srch_ary_inf_)
+	if (srch_ary_inf_(6) == 2) {        ; 文字列型の場合
 
-		if      ((srch_.1 <= srch_.2) != 1) {srch_.0 = -1 : break}
-		else:if (item_ = srch_.3) {break}
-		else:if (item_ < srch_.3) {srch_.2 = srch_.0 - 1}
-		else                      {srch_.1 = srch_.0 + 1}
-	loop
+		str2ASCI item_asci, item_       ; 探索文字列をASCIIコードに変換
+
+		repeat
+			srch_.0 = (srch_.1 + srch_.2) / 2
+			; 比較サンプル文字列をASCIIコードに変換
+			str2ASCI asci_ary, uniary_@myarray_list(srch_ary, srch_.0, srch_ary_inf_)
+			; 探索文字列と比較サンプルのASCIIコードを比較
+			srch_ary_var_ = ASCIcomp(item_asci, asci_ary, 0)
+
+			if      ((srch_.1 <= srch_.2) != 1) {srch_.0 = -1 : break}
+			else:if (srch_ary_var_ = 0) {break}
+			else:if (srch_ary_var_ = 1) {srch_.2 = srch_.0 - 1}
+			else:if (srch_ary_var_ = 2) {srch_.1 = srch_.0 + 1}
+		loop
+	}
+	else {                              ; 実数型、整数型の場合
+		; 型変換
+		srch_ary_var_ = type_convert_@myarray_core(srch_ary_inf_(6), item_)
+
+		repeat
+			srch_.0 = (srch_.1 + srch_.2) / 2
+			srch_.3 = uniary_@myarray_list(srch_ary, srch_.0, srch_ary_inf_)
+
+			if      ((srch_.1 <= srch_.2) != 1) {srch_.0 = -1 : break}
+			else:if (srch_ary_var_ = srch_.3) {break}
+			else:if (srch_ary_var_ < srch_.3) {srch_.2 = srch_.0 - 1}
+			else                              {srch_.1 = srch_.0 + 1}
+		loop
+	}
 
 	return
 
@@ -270,10 +406,7 @@
 	;
 	; ※注意※ 文字列型非対応
 	;
-#define global MDABiSrch(%1,%2,%3)\
-	midlevar_@myarray_srch=%1:\
-	MDABiSrch_@myarray_srch midlevar_@myarray_srch,%2,%3
-
+#define global MDABiSrch(%1,%2,%3) MDABiSrch_@myarray_srch str(%1),%2,%3
 
 
 #global // myarray_srch
