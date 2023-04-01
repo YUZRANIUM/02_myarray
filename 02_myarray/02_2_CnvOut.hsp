@@ -1,7 +1,7 @@
 // INFO ************************************************************************
 // FileName : 02_2_CnvOut.hsp
-// Version  : 0.28
-// Date     : 2023/02/01
+// Version  : 0.28.1
+// Date     : 2023/02/27
 // Author   : YUZRANIUM（ゆずらにうむ）
 // Twitter  : https://twitter.com/YUZRANIUM
 // GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -16,28 +16,27 @@
 	#include "C:\\gitproject\\doclib\\02_myarray.hsp"
 	; #include "02_myarray.hsp"           ; ここと↑のコメントアウトを切り替えて下さい
 	#const bufsize0 1024
-	#const bufsize1 bufsize0 * 10
 
 //----------------------------------------------------------
 // 使用する変数
 //----------------------------------------------------------
 
 	/***  わかりやすいようにフォルダをば  ***/
-	sdim fname     :  dirlist fname, "output_text", 5
-	if fname = ""  :  mkdir "output_text"
+	sdim fname_     :  dirlist fname_, "output_text", 5
+	if fname_ = ""  :  mkdir "output_text"
 
 	; 出力用ファイル
-	sdim fname, 64, 5
-	fname(0) = "output_text\\text_ary0.txt"
-	fname(1) = "output_text\\text_ary1.txt"
-	fname(2) = "output_text\\text_ary2.txt"
-	fname(3) = "output_text\\text_ary3.hsp"
-	fname(4) = "output_text\\output_log.txt"
+	sdim fname_, 64, 5
+	fname_(0) = "output_text\\text_ary0.txt"
+	fname_(1) = "output_text\\text_ary1.txt"
+	fname_(2) = "output_text\\text_ary2.txt"
+	fname_(3) = "output_text\\text_ary3.hsp"
+	fname_(4) = "output_text\\output_log.txt"
 
 	/*****  変数の用意  *****/
 	dim hmes, 3  :  dim hButton, 3      ; オブジェクトハンドル用
-	sdim lmoni1, bufsize1          ; 表示用1
-	sdim lmoni2, bufsize1          ; 表示用2
+	sdim lmoni1,    bufsize0          ; 表示用1
+	sdim lmoni2,    bufsize0          ; 表示用2
 	sdim text_ary0, bufsize0            ; 書き出し用 複数行文字列型
 	sdim text_ary1, bufsize0            ; 書き出し用 複数行文字列型
 	sdim text_ary2, bufsize0            ; 書き出し用 複数行文字列型
@@ -55,24 +54,25 @@
 	sdim convtype, 32, 5  :  convtype = "", "", "STRING", "DOUBLE", "INTEGER"
 	ctrlloop = "STOP", "START"
 
-	// 配列要素管理
-	dim id, 4
-	id(0) = 0       ; combox: 読み込むファイル名の配列 fname の第1次元
-	id(1) = 2       ; 型変換ボタンの表示文字列の配列 convtype
-	id(2) = 0       ; メインループ制御
-	id(3) = 0       ; メインループ制御ボタンの表示変更完了フラグ
+	; 配列要素管理
+	; id(0) : combox: 読み込むファイル名の配列 fname_ の第1次元
+	; id(1) : 型変換ボタンの表示文字列の配列 convtype
+	; id(2) : メインループ制御
+	; id(3) : メインループ制御ボタンの表示変更完了フラグ
+	id = 0 : dim id, 4
+	id(0) = 0, 2, 0, 0
 
 	/*** おまけ ***/
 	a = 1 : b = 0
 	logpri a & b
 	logpri a | b
 
+	dim p
 
 //----------------------------------------------------------
 // ウィンドウオブジェクト関連
 //----------------------------------------------------------
-	screen 0, 980, 500, 2
-	font "メイリオ", 14 : objmode 2, 1
+	screen 0, 980, 500, 2 : font "メイリオ", 14 : objmode 2, 1
 
 	pos 0, 0    : mes "TEXT to ARRAY"
 	pos 370, 0  : mes "ARRAY to ARRAY"
@@ -114,17 +114,21 @@
 	outarray text_ary3, labl_ary, 1
 
 	/*****  テキストファイルとして出力  *****/
-	notesel text_ary0  :  notesave fname(0) ; output_text\\text_ary0.txt
-	notesel text_ary1  :  notesave fname(1) ; output_text\\text_ary1.txt
-	notesel text_ary2  :  notesave fname(2) ; output_text\\text_ary2.txt
-	notesel text_ary3  :  notesave fname(3) ; output_text\\text_ary3.hsp
-	notesel lmoni1     :  notesave fname(4) ; output_text\\output_log.txt
-	sdim lmoni1, bufsize1
+	notesel text_ary0  :  notesave fname_(0) ; output_text\\text_ary0.txt
+	notesel text_ary1  :  notesave fname_(1) ; output_text\\text_ary1.txt
+	notesel text_ary2  :  notesave fname_(2) ; output_text\\text_ary2.txt
+	notesel text_ary3  :  notesave fname_(3) ; output_text\\text_ary3.hsp
+	notesel lmoni1     :  notesave fname_(4) ; output_text\\output_log.txt
+	sdim lmoni1, bufsize0
 
 	/*****  表示用変数  *****/
-	sdim memodata, bufsize0
+	sdim memodata0, bufsize0
+	sdim memodata1, bufsize0
+	sdim memodata2, bufsize0
 	/*****  ファイルロード  *****/
-	notesel memodata  :  noteload fname(id(0))
+	notesel memodata0 : noteload fname_(0)
+	notesel memodata1 : noteload fname_(1)
+	notesel memodata2 : noteload fname_(2)
 
 	gsel 0, 1
 //==============================================================================
@@ -133,35 +137,31 @@
 
 ///////////////////////////  メインループ ここから  /////////////////////////////
 *ary_dim
-	wait 120
+	wait 100
 	; メインループ一時停止用
-	if      (id(2) == 1) & (id(3) == 0) {objprh hButton(2), ctrlloop(id(2)) : id(3) = 1 : goto sub_labl(0)}
-	else:if (id(2) == 1) & (id(3) == 1) {goto sub_labl(0)}
-	else:if (id(2) == 0) & (id(3) == 1) {objprh hButton(2), ctrlloop(id(2)) : id(3) = 0}
-
+	if ((id.2 = 1) & (id.3 = 0)) {sendmsg hButton(2), $C, 0, ctrlloop(id(2)) : id(3) = 1 : goto sub_labl(0)}
+	if ((id.2 = 1) & (id.3 = 1)) {goto sub_labl(0)}
+	if ((id.2 = 0) & (id.3 = 1)) {sendmsg hButton(2), $C, 0, ctrlloop(id(2)) : id(3) = 0}
 
 	dim dim_id, 4
 	randomize
-	dim_id(0) = rnd(20) + 1
-	repeat , 1
-		ran_ = rnd(10)
-		if (cnt > 3) | (ran_ == 0) : break
-		dim_id(cnt) = ran_
+	dim_id(0) = rnd(15) + 1
+	repeat 3, 1
+		ran_ = rnd(10) : if (ran_ = 0) {break} else {dim_id(cnt) = ran_}
 	loop
 	sortval dim_id, 1
 
 	; 複数行文字列から多次元配列へ
-	cnvarray read_data, memodata, id(1), dim_id(0), dim_id(1), dim_id(2), dim_id(3)
+	if      id = 0 {cnvarray read_data, memodata0, id(1), dim_id(0), dim_id(1), dim_id(2), dim_id(3)}
+	else:if id = 1 {cnvarray read_data, memodata1, id(1), dim_id(0), dim_id(1), dim_id(2), dim_id(3)}
+	else:if id = 2 {cnvarray read_data, memodata2, id(1), dim_id(0), dim_id(1), dim_id(2), dim_id(3)}
 	priarray lmoni1, read_data, "複数行文字列から多次元配列へ"
 
-
-	randomize dim_id(1)
+	randomize dim_id
 	dim dim_id, 4
-	dim_id(0) = rnd(20) + 1
-	repeat , 1
-		ran_ = rnd(10)
-		if (cnt > 3) | (ran_ == 0)  : break
-		dim_id(cnt) = ran_
+	dim_id(0) = rnd(15) + 1
+	repeat 3, 1
+		ran_ = rnd(10) : if (ran_ = 0) {break} else {dim_id(cnt) = ran_}
 	loop
 	sortval dim_id, 1
 
@@ -171,38 +171,29 @@
 
 
 	/*****  結果表示  *****/
-	objprh hmes(0), lmoni1
-	objprh hmes(1), lmoni2
-	sdim lmoni1, bufsize1
-	sdim lmoni2, bufsize1
+	sendmsg hmes(0), $C, 0, lmoni1 : sdim lmoni1, bufsize0
+	sendmsg hmes(1), $C, 0, lmoni2 : sdim lmoni2, bufsize0
 
 	goto sub_labl(0)
 ///////////////////////////  メインループ ここまで  /////////////////////////////
 
+
 // メインループ制御
 *loop_ch
 	id(2)++
-	if (id(2) == 2)  :  id(2) = 0
-
+	if (id(2) = 2) {id(2) = 0}
 	return
 
 // ファイルの切り替え
 *fileload
 	id(0)++
-	if id(0) == 3 : id(0) = 0
-
-	/*****  表示用変数  *****/
-	sdim memodata, bufsize0
-	/*****  ファイルロード  *****/
-	notesel memodata  :  noteload fname(id(0))
-
-	objprh hButton(0), loadfile(id(0))
+	if (id(0) = 3) {id(0) = 0}
+	sendmsg hButton(0), $C, 0, loadfile(id(0))
 	return
 
 // 型の変換
 *type_change
 	id(1)++
-	if id(1) == 5 : id(1) = 2
-
-	objprh hButton(1), convtype(id(1))
+	if (id(1) = 5) {id(1) = 2}
+	sendmsg hButton(1), $C, 0, convtype(id(1))
 	return

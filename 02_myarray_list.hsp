@@ -1,7 +1,7 @@
 ; INFO *************************************************************************
 ; FileName : 02_myarray_list.hsp
-; Version  : 0.28
-; Date     : 2023/02/01
+; Version  : 0.28.3
+; Date     : 2023/04/01
 ; Author   : YUZRANIUM（ゆずらにうむ）
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -17,11 +17,12 @@
 
 - 輸入品 -
 		myarray_core から
-			* dim_info_     (uniary)
+			* dim_info     (uniary)
 			* dim_line_num_ (uniary, uniary_)
 
 		myarray_srch から
 			* MDALiSrch_    (union_)
+			* MDALiSrch_    (union4_)
 
 - 輸出品 -
 		myarray_srch へ
@@ -40,20 +41,38 @@
 #deffunc local _myarray_list_init_
 
 	; ラベルジャンプの分岐用
-	ldim jump, 5, 1
+	ldim jump, 5, 2
 	; uniary
-	jump(0, 0) = *not_varuni@myarray_list, *uniarray_1@myarray_list, *uniarray_2@myarray_list, *uniarray_3@myarray_list, *uniarray_4@myarray_list
+	jump(0, 0) = *not_varuni@myarray_list, *uniarycf_1@myarray_list, *uniarycf_2@myarray_list, *uniarycf_3@myarray_list, *uniarycf_4@myarray_list
+	jump(0, 1) = *not_uniary@myarray_list, *uniarray_1@myarray_list, *uniarray_2@myarray_list, *uniarray_3@myarray_list, *uniarray_4@myarray_list
 
 	; strf関数用書式文字列
-	sfrmt = "" : sdim sfrmt, 128, 2
+	sfrmt = "" : sdim sfrmt, 128, 3
 	sfrmt(0) = "%s : %s : %s\n"
-	sfrmt(1) = "//// < %s > IS NOT FOUND! ////\n\n"
+	sfrmt(1) = "%s : %s : %s : %s\n"
+	sfrmt(2) = "//// < %s > IS NOT FOUND! ////\n\n"
 
 	; union_d, union関数の書式のユーザー設定用
-	sdim uni_format, 512
+	sdim uni_format
 
 	dim i, 7
 	dim j, 7
+
+	; 連想配列情報 d = 0:本体情報 / 1,2,3,4:各次元要素(key)の情報
+	;-------------------------------------------------------
+	; asoc_inf(0, d) : length()  (1次元要素数)
+	; asoc_inf(1, d) : length2() (2次元要素数)
+	; asoc_inf(2, d) : length3() (3次元要素数)
+	; asoc_inf(3, d) : length4() (4次元要素数)
+	;
+	; asoc_inf(4, d) : 使用次元数 (1, 2, 3, 4)
+	; asoc_inf(5, d) : 配列の長さ
+	; asoc_inf(6, d) : 配列の変数型
+	;
+	; asoc_inf(7, d) : 配列の現在位置
+	;-------------------------------------------------------
+	; asoc_info = 0 : dim asoc_info, 8, 5
+
 	return
 
 
@@ -67,7 +86,7 @@
 	;	[array] dim_ofset : 配列のオフセット値 (1次元化要素数)
 	;	[array] ary_inf_  : 配列情報変数名
 	;
-#defcfunc local uniary_ array ary1, int dim_ofset, array ary_inf_
+#defcfunc uniary_ array ary1, int dim_ofset, array ary_inf_
 
 	; 配列のオフセット値(1次元化要素数)から本来の各次元要素数を復元
 	dim i, 7 : dim_line_num_@myarray_core ary_inf_, i, dim_ofset
@@ -87,7 +106,7 @@
 #defcfunc uniary array ary1, int dim_ofset
 
 	; 配列情報の取得
-	dim ary_inf : dim_info_@myarray_core ary1, ary_inf
+	dim ary_inf, 7 : dim_info ary1, ary_inf
 
 	; 配列のオフセット値(1次元化要素数)から本来の各次元要素数を復元
 	dim i, 7    : dim_line_num_@myarray_core ary_inf, i, dim_ofset
@@ -100,21 +119,73 @@
 *not_varuni@myarray_list
 	return
 
-; junp_(1, 6)
-*uniarray_1@myarray_list
+; junp(1, 0)
+*uniarycf_1@myarray_list
 	return ary1(i(0))
 
-; junp_(2, 6)
-*uniarray_2@myarray_list
+; junp(2, 0)
+*uniarycf_2@myarray_list
 	return ary1(i(0), i(1))
 
-; junp_(3, 6)
-*uniarray_3@myarray_list
+; junp(3, 0)
+*uniarycf_3@myarray_list
 	return ary1(i(0), i(1), i(2))
 
-; junp_(4, 6)
-*uniarray_4@myarray_list
+; junp(4, 0)
+*uniarycf_4@myarray_list
 	return ary1(i(0), i(1), i(2), i(3))
+
+
+;-------------------------------------------------------------------------------
+	; 多次元配列を1次元配列として扱う (代入 / 業務用)
+	;	asin_uniary ary1, dim_ofset, in_val, ary_inf
+	;
+	;	[ int ] ary1      : 変数名
+	;	[array] dim_ofset : 配列のオフセット値 (1次元化要素数)
+	;	[ var ] in_val    : 代入値
+	;	[array] ary_inf   : 配列情報
+	;
+#deffunc local asin_uniary array ary1, int dim_ofset, str in_val, array ary_inf_
+
+	; 配列のオフセット値(1次元化要素数)から本来の各次元要素数を復元
+	dim i, 7 : dim_line_num_@myarray_core ary_inf_, i, dim_ofset
+
+	; ラベルジャンプで分岐
+	gosub jump(ary_inf_(4), 1)
+	return
+//-------------------------------  配列書き出し  -------------------------------//
+*not_uniary@myarray_list
+	return
+
+; junp(1, 1)
+*uniarray_1@myarray_list
+	ary1(i(0)) = TypeCnv(in_val, vartype(ary1))
+	return
+
+; junp(2, 1)
+*uniarray_2@myarray_list
+	ary1(i(0), i(1)) = TypeCnv(in_val, vartype(ary1))
+	return
+
+; junp(3, 1)
+*uniarray_3@myarray_list
+	ary1(i(0), i(1), i(2)) = TypeCnv(in_val, vartype(ary1))
+	return
+
+; junp(4, 1)
+*uniarray_4@myarray_list
+	ary1(i(0), i(1), i(2), i(3)) = TypeCnv(in_val, vartype(ary1))
+	return
+
+;-------------------------------------------------------------------------------
+	; 多次元配列を1次元配列として扱う (代入 / 業務用)
+	;	Auniary ary1, dim_ofset, in_val, ary_inf
+	;
+	;	[array] ary1      : 変数名
+	;	[ int ] dim_ofset : 配列のオフセット値 (1次元化要素数)
+	;	[ var ] in_val    : 代入値
+	;	[array] ary_inf   : 配列情報
+#define global Auniary(%1,%2,%3,%4) asin_uniary@myarray_list%1,%2,str(%3),%4
 
 
 ;-------------------------------------------------------------------------------
@@ -126,7 +197,7 @@
 	;	[ str ] s_format : 書式文字列
 	;
 #deffunc uniformat str s_format
-	sdim uni_format, 512
+	sdim uni_format
 	uni_format = s_format
 	return
 
@@ -145,12 +216,32 @@
 #defcfunc union_d array ary1, array ary2, array ary3, int dim_ofset
 
 	; uni_formatが設定されていなければこちらで設定する
-	if (uni_format == "") {uni_format = sfrmt(0)}
+	if (uni_format = "") {uni_format = sfrmt(0)}
 
 	return strf(uni_format, uniary(ary1, dim_ofset), uniary(ary2, dim_ofset), uniary(ary3, dim_ofset))
 
-
 ;-------------------------------------------------------------------------------
+	;
+	; 4つの多次元配列を1次元配列として扱う (オフセット (1次元化要素数) 指定)
+	;
+	;	val = union4d(ary1, ary2, ary3, ary4, dim_ofset)
+	;
+	;	[array] ary1           : メイン管理する配列変数名
+	;	[array] ary2,ary3,ary4 : サブで管理する配列変数名 (通常変数可)
+	;	[ int ] dim_ofset      : 配列のオフセット値 (1次元化要素数)
+	;
+#defcfunc union4d array ary1, array ary2, array ary3, array ary4, int dim_ofset
+
+	; uni_formatが設定されていなければこちらで設定する
+	if (uni_format = "") {uni_format = sfrmt(1)}
+
+	return strf(uni_format, uniary(ary1, dim_ofset), uniary(ary2, dim_ofset), uniary(ary3, dim_ofset), uniary(ary4, dim_ofset))
+
+
+
+
+
+;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	;
 	; 複数の多次元配列を1次元配列として扱う (ary1の値で直接指定)
 	;
@@ -170,13 +261,13 @@
 #defcfunc local union_ array ary1, array ary2, array ary3, str ary1_val
 
 	; uni_formatが設定されていなければこちらで設定する
-	if (uni_format == "") {uni_format = sfrmt(0)}
+	if (uni_format = "") {uni_format = sfrmt(0)}
 
 	dim j : j = MDALiSrch_@myarray_srch(ary1_val, ary1)
 
 	; MDALiSrch関数は探索に失敗した場合は-1を返してくるので、-1とそれ以外とで場合分け
-	if (j == -1) {return strf(sfrmt(1),   ary1_val)}
-	else:         return strf(uni_format, ary1_val, uniary(ary2, j), uniary(ary3, j))
+	if (j = -1) {return strf(sfrmt(2),   ary1_val)}
+	else:        return strf(uni_format, ary1_val, uniary(ary2, j), uniary(ary3, j))
 
 
 ;-------------------------------------------------------------------------------
@@ -191,6 +282,96 @@
 	;	[ var ] ary1_val : ary1の値もしくはそれを格納した変数
 	;
 #define global ctype union(%1,%2,%3,%4) union_@myarray_list(%1,%2,%3,str(%4))
+
+
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 4つの多次元配列を1次元配列として扱う (ary1の値で直接指定)
+	;
+	;	val = union4(ary1, ary2, ary3, ary4, ary1_val)
+	;
+	;	[array] ary1           : メインで管理する配列変数名
+	;	[array] ary2,ary3,ary4 : サブで管理する配列変数名 (通常変数可)
+	;	[ var ] ary1_val       : ary1の値もしくはそれを格納した変数
+	;
+#defcfunc local union4_ array ary1, array ary2, array ary3, array ary4, str ary1_val
+
+	; uni_formatが設定されていなければこちらで設定する
+	if (uni_format = "") {uni_format = sfrmt(1)}
+
+	dim j : j = MDALiSrch_@myarray_srch(ary1_val, ary1)
+
+	; MDALiSrch関数は探索に失敗した場合は-1を返してくるので、-1とそれ以外とで場合分け
+	if (j = -1) {return strf(sfrmt(2),   ary1_val)}
+	else:        return strf(uni_format, ary1_val, uniary(ary2, j), uniary(ary3, j), uniary(ary4, j))
+
+;-------------------------------------------------------------------------------
+	;
+	; 4つの多次元配列を1次元配列として扱う (ary1の値で直接指定)
+	;
+	;	val = union4(ary1, ary2, ary3, ary4, ary1_val)
+	;
+	;	[array] ary1           : メイン管理する配列変数名
+	;	[array] ary2,ary3,ary4 : サブで管理する配列変数名 (通常変数可)
+	;	[ var ] ary1_val       : ary1の値もしくはそれを格納した変数
+	;
+#define global ctype union4(%1,%2,%3,%4,%5) union4_@myarray_list(%1,%2,%3,%4,str(%5))
+
+;-------------------------------------------------------------------------------
+
+; #defcfunc uad array ary1, var v1
+
+
+	; return
+
+
+
+;-------------------------------------------------------------------------------
+	;
+	; 連想配列設定
+	;
+; #deffunc local asoc_init_ array ary1, var asoc_val, array key1, array key2, array key3, array key4
+
+
+; 	dimtype ary1, vartype(asoc_val)
+
+
+; 	dim asoc_info, 8, 5
+; 	asoc_info_@myarray_core ary1, asoc_info, 0
+
+; 	asoc_info_@myarray_core key1, asoc_info, 1
+; 	asoc_info_@myarray_core key2, asoc_info, 2
+; 	asoc_info_@myarray_core key3, asoc_info, 3
+; 	asoc_info_@myarray_core key4, asoc_info, 4
+
+
+; 	return
+
+;-------------------------------------------------------------------------------
+
+; #define global asocinit(%1,%2,%3="",%4="",%5="",%6="")\
+; ac_value@myarray_list=%2 : \
+; asoc_init_@myarray_list%1, ac_value@myarray_list, %3, %4, %5, %6
+
+;-------------------------------------------------------------------------------
+	;
+	; 連想配列key設定
+	;
+; #defcfunc local keyset_ array ary1, str key, int d1, local key_var
+
+; 	key_var = TypeCnv(vartype(ary1), key)
+
+; 	return
+
+
+
+
+;-------------------------------------------------------------------------------
+
+; #define global ctype kyeset(%1,%2,%3) keyset_@myarray_list(%1,str(%2),%3)
+
 
 
 #global // myarray_list
