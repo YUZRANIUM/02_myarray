@@ -1,7 +1,7 @@
 ; INFO „ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 ; FileName : 02_myarray.hs
-; Version  : 0.28.1
-; Date     : 2023/02/27
+; Version  : 0.28.3
+; Date     : 2023/04/01
 ; Author   : YUZRANIUMi‚ä‚¸‚ç‚É‚¤‚Þj
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -25,9 +25,9 @@
 %dll
 myarray
 %ver
-0.28.1
+0.28.3
 %date
-2023/02/27
+2023/04/01
 %author
 YUZRANIUM
 %url
@@ -64,6 +64,57 @@ Win
 ; objprh
 ;„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 
+
+%index
+dim_info
+”z—ñ•Ï”‚Ìî•ñŽæ“¾
+%prm
+ary1, var1
+ary1 : •Ï”–¼
+var1 : ŠeŽíî•ñ‚ª“Ç‚Ýo‚³‚ê‚é•Ï”–¼
+%inst
+‚±‚Ì–½—ß‚ÍAary1‚ÉŽw’è‚³‚ê‚½”z—ñ•Ï”‚ÉŠÖ‚·‚éŠeŽíî•ñ‚ðvar1‚É“Ç‚Ýo‚·‚à‚Ì‚Å‚·B
+^
+‚±‚Ì–½—ß‚ÌŽÀsŒãAvar1‚É‚ÍˆÈ‰º‚Ì“à—e‚ª‘ã“ü‚³‚ê‚Ü‚·B
+^
+        var1‚Ì“à—e
+------------------------
+    var1(0) : length(ary1)
+    var1(1) : length2(ary1)
+    var1(2) : length3(ary1)
+    var1(3) : length4(ary1)
+
+    var1(4) : ary1‚ÌŽg—pŽŸŒ³” (1, 2, 3, 4)
+    var1(5) : ary1‚Ì”z—ñ‚Ì’·‚³ (‘”)
+    var1(6) : ary1‚Ì•Ï”Œ^ (1, 2, 3, 4, 5, 6)
+^
+var1(4)‚ÌŽg—pŽŸŒ³”‚Æ‚ÍA2ŽŸŒ³”z—ñ•Ï”‚Ì2A3ŽŸŒ³”z—ñ•Ï”‚Ì3A4ŽŸŒ³”z—ñ•Ï”‚Ì4‚ÆŒ¾‚Á‚½‹ï‡‚É–¼Ì‚Å—p‚¢‚ç‚ê‚é’l‚Å‚·B
+var1(5)‚Ì”z—ñ‚Ì’·‚³‚Æ‚ÍA‚»‚Ì•Ï”‚ÌŠeŽŸŒ³—v‘f”‚Ì‘”‚ð•\‚µ‚Ü‚·B
+var1(6)‚Ì•Ï”Œ^‚Ívartype‚Æ“¯—l‚Ì’l‚Å‚·B
+^
+’ˆÓŽ–€‚Æ‚µ‚Ä‚ÍAî•ñŽæ“¾‚Ì‘ÎÛ‚Æ‚È‚é”z—ñ•Ï”‚Ì‰Šú‰»’¼Œã‚É–{–½—ß‚ðŽg—p‚µ‚Ä‰º‚³‚¢B
+
+
+%sample
+
+%group
+Šg’£“üo—Í§Œä
+%type
+ƒ†[ƒU[’è‹`–½—ß
+%href
+priarray
+setarray
+labarray
+outarray
+cnvarray
+uniary
+uniary_
+Auniary
+linedim
+dimlinec
+
+;„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
+
 %index
 mlgetc
 ƒ‚ƒWƒ…[ƒ‹¥ƒ‰ƒxƒ‹–¼Žæ“¾
@@ -96,14 +147,14 @@ dimlinec
 ary1        : ‘½ŽŸŒ³”z—ñ‚Ì•Ï”–¼
 d1,d2,d3,d4 : ŠeŽŸŒ³—v‘f (= 0)
 %inst
-‚±‚ÌŠÖ”‚ÍAary1‚ÉŽw’è‚³‚ê‚½‘½ŽŸŒ³”z—ñ‚Ì—v‘f(d1, d2, d3, d4)‚ðA1ŽŸŒ³”z—ñ‚É•ÏŠ·‚µ‚½Û‚Ì—v‘f‚ð•Ô‚·‚à‚Ì‚Å‚·B
+‚±‚ÌŠÖ”‚ÍAary1‚ÉŽw’è‚³‚ê‚½‘½ŽŸŒ³”z—ñ‚Ì—v‘f(d1, d2, d3, d4)‚ðA1ŽŸŒ³”z—ñ‚É•ÏŠ·‚µ‚½Û‚Ì—v‘fi1ŽŸŒ³‰»—v‘f”j‚ð•Ô‚·‚à‚Ì‚Å‚·B
 ^
 * ary1 ‚É‚Í‘ÎÛ‚Æ‚È‚é‘½ŽŸŒ³”z—ñ‚Ì•Ï”–¼‚ðŽw’è‚µ‚Ä‰º‚³‚¢B
 * d1,d2,d3,d4 ‚É‚ÍAary1‚ÅŽw’è‚µ‚½”z—ñ‚Ì—v‘f‚ðŽw’è‚µ‚Ä‰º‚³‚¢B
 ^
 d1ˆÈ~‘S‚Ä‚ðÈ—ª‚µ‚½ê‡‚Íary1‚ÅŽw’è‚µ‚½”z—ñ‚Ì "’·‚³" ‚ª•Ô‚³‚ê‚Ü‚·B
 ^
-—á‚¦‚ÎAdim a, 3, 3, 2 ‚Æ‰Šú‰»‚µ‚½3ŽŸŒ³”z—ña‚ÍA1ŽŸŒ³”z—ñz‚Å‰º‚Ì‚æ‚¤‚É•\‚·‚±‚Æ‚ª‚Å‚«‚Ü‚·B
+—á‚¦‚ÎAdim a, 3, 3, 2 ‚Æ‰Šú‰»‚µ‚½3ŽŸŒ³”z—ñ•Ï”a‚ÍA1ŽŸŒ³”z—ñ•Ï”z‚Å‰º‚Ì‚æ‚¤‚É•\‚·‚±‚Æ‚ª‚Å‚«‚Ü‚·B
 ^
         a(0, 0, 0)   ==>   z(0)
         a(1, 0, 0)   ==>   z(1)
@@ -115,17 +166,23 @@ d1ˆÈ~‘S‚Ä‚ðÈ—ª‚µ‚½ê‡‚Íary1‚ÅŽw’è‚µ‚½”z—ñ‚Ì "’·‚³" ‚ª•Ô‚³‚ê‚Ü‚·B
         a(1, 2, 1)   ==>   z(16)
         a(2, 2, 1)   ==>   z(17)
 ^
-ã‹L‚Ì‚æ‚¤‚ÉA‘½ŽŸŒ³”z—ñ‚ð1ŽŸŒ³”z—ñ‚Å•\‚·‘€ì‚Ì‚±‚Æ‚ð‘¼Œ¾Œê‚Å‚Í "1ŽŸŒ³‰»" ‚Ü‚½‚Í "•½’R‰»"A"ƒtƒ‰ƒbƒg‰»"A ‚È‚Ç‚ÆŒÄ‚Ô‚±‚Æ‚ª‚ ‚è‚Ü‚·B
+ã‹L‚Ì‚æ‚¤‚ÉA‘½ŽŸŒ³”z—ñ•Ï”‚Ì—v‘f”‚ð1ŽŸŒ³‚Å•\‚·‘€ì‚Ì‚±‚Æ‚ð‘¼Œ¾Œê‚Å‚Í "1ŽŸŒ³‰»" ‚Ü‚½‚Í "•½’R‰»"A"ƒtƒ‰ƒbƒg‰»"A ‚È‚Ç‚ÆŒÄ‚Ô‚±‚Æ‚ª‚ ‚è‚Ü‚·B
 ^
-‚±‚Ì‚Æ‚«A1ŽŸŒ³”z—ñz‚Ì—v‘f‚Í3ŽŸŒ³”z—ña‚Ìæ“ªa(0, 0, 0)‚ðŠî“_‚Æ‚µ‚½ƒIƒtƒZƒbƒg’l‚Æ‘¨‚¦‚é‚±‚Æ‚ª‚Å‚«A3ŽŸŒ³”z—ña‚Ì—v‘f‚É‘Î‚µ‚Äˆê‘Îˆê‚ÌŠÖŒW‚É‚ ‚è‚Ü‚·B‚±‚ÌŠÖŒW‚Í3ŽŸŒ³”z—ña‚ÌŽŸŒ³”‚ª•Ï‰»‚µ‚È‚¢ŒÀ‚è•ÛŽ‚³‚ê‚Ü‚·B‚»‚Ì‚½‚ßA1ŽŸŒ³”z—ñz‚Ì—v‘f‚ðA"”z—ña‚ÌƒIƒtƒZƒbƒg’l" ‚Ü‚½‚Í "”z—ña‚Ì1ŽŸŒ³‰»—v‘f”" ‚ÆŒÄ‚ñ‚Å‚¢‚Ü‚·B
+‚±‚Ì‚Æ‚«A1ŽŸŒ³”z—ñ•Ï”z‚Ì—v‘f‚Í3ŽŸŒ³”z—ñ•Ï”a‚Ìæ“ªa(0, 0, 0)‚ðŠî“_‚Æ‚µ‚½ƒIƒtƒZƒbƒg’l‚Æ‘¨‚¦‚é‚±‚Æ‚ª‚Å‚«A3ŽŸŒ³”z—ñ•Ï”a‚ÌŠeŽŸŒ³‚Ì—v‘f‚Ì‘g‚Ý‡‚í‚¹‚É‘Î‚µ‚Äˆê‘Îˆê‚ÌŠÖŒW‚É‚ ‚è‚Ü‚·B
+‚±‚ÌŠÖŒW‚Í3ŽŸŒ³”z—ñ•Ï”a‚ÌŽŸŒ³”A‚Ü‚½‚Í”z—ñ‚Ì’·‚³‚ª•Ï‰»‚µ‚È‚¢ŒÀ‚è•ÛŽ‚³‚ê‚Ü‚·B
+
+‚»‚Ì‚½‚ßA1ŽŸŒ³”z—ñ•Ï”z‚Ì—v‘f‚ðA"a‚ÌƒIƒtƒZƒbƒg’l" ‚Ü‚½‚Í "a‚Ì1ŽŸŒ³‰»—v‘f”" ‚ÆŒÄ‚ñ‚Å‚¢‚Ü‚·B
+“Á‚ÉA"ƒIƒtƒZƒbƒg’l" (1ŽŸŒ³‰»—v‘f”) ‚Ì‘”‚ð "”z—ñ‚Ì’·‚³" ‚Ü‚½‚Í ’P‚É "’·‚³" ‚ÆŒÄ‚Ô‚±‚Æ‚ª‚ ‚è‚Ü‚·B
+—á‚¦‚ÎA1ŽŸŒ³”z—ñ•Ï”z‚Ì—v‘f”‚Ì‘”‚Í z(0)‚©‚çz(17)‚Ü‚Å‚Ì18‚È‚Ì‚Åu3ŽŸŒ³”z—ñ•Ï”a‚Ì "’·‚³" ‚Í 18 ‚Å‚ ‚év‚Æ•\Œ»‚Å‚«‚Ü‚·B
 ^
-“Á‚ÉA"”z—ñ‚ÌƒIƒtƒZƒbƒg’l" ("1ŽŸŒ³‰»—v‘f”") ‚Ì‘”‚ð "”z—ñ‚Ì’·‚³" ‚Ü‚½‚Í ’P‚É "’·‚³" ‚ÆŒÄ‚Ô‚±‚Æ‚ª‚ ‚è‚Ü‚·B—á‚¦‚ÎA1ŽŸŒ³”z—ñz‚Ì—v‘f”‚Ì‘”‚Í 17 + 1 ‚Ì 18 ‚Å‚ ‚é‚±‚Æ‚©‚çAu3ŽŸŒ³”z—ña‚Ì "’·‚³" ‚Í 18 ‚Å‚ ‚év‚Æ•\Œ»‚Å‚«‚Ü‚·B
 ^
-d1ˆÈ~‚ðÈ—ª‚µdimlinec(a)‚Æ‚µ‚½ê‡‚Í "”z—ñ‚Ì’·‚³" A‚Â‚Ü‚èã‚Ì—á‚Å‚Í 18 ‚ª•Ô‚èAd1ˆÈ~‚ðŽw’è‚µ‚½ê‡A—á‚¦‚Îã‹La(0, 1, 1)‚Ì‚Æ‚«z(12)‚Å‚·‚Ì‚ÅAdimlinec(a, 0, 1, 1)‚Æ‚µ‚½ê‡‚Í 12 ‚ª•Ô‚è‚Ü‚·B
+d1ˆÈ~‚ð‚·‚×‚ÄÈ—ª‚µdimlinec(a)‚Æ‚µ‚½ê‡‚Í "”z—ñ‚Ì’·‚³" ‚Â‚Ü‚èã‚Ì—á‚Å‚Í 18 ‚ª•Ô‚èAˆê•û‚ÅAd1ˆÈ~‚ðŽw’è‚µ‚½ê‡A—á‚¦‚Îã‹La(0, 1, 1)‚Ì‚Æ‚«z(12)‚Å‚·‚Ì‚ÅAdimlinec(a, 0, 1, 1)‚Æ‚µ‚½ê‡‚Í 12 ‚ª•Ô‚è‚Ü‚·B
 ^
-‚±‚Ì‚æ‚¤‚ÉA"”z—ñ‚ÌƒIƒtƒZƒbƒg’l" ("1ŽŸŒ³‰»—v‘f”") ‚ð•Ô‚·ŠÖ”‚ªdimlinecŠÖ”‚Å‚·B
 ^
-dimlinecŠÖ”‚ð—˜—p‚·‚é‚±‚Æ‚ÅA‘½ŽŸŒ³”z—ñ‚ð1ŽŸŒ³”z—ñ‚Ì‚æ‚¤‚Éˆµ‚¤‚±‚Æ‚ª‰Â”\‚É‚È‚è‚Ü‚·Bctlarray–½—ß‚Å‚Í "1ŽŸŒ³‰»—v‘f”" ‚ÅŠJŽn’l‚ÆI—¹’l‚ðŽw’è‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·Bctlarray–½—ß‚Å‘½ŽŸŒ³”z—ñ‚ðˆµ‚¤ê‡‚ÍdimlinecŠÖ”‚ðŽg—p‚µ‚Ä‰º‚³‚¢B
+‚±‚Ì‚æ‚¤‚ÉA"”z—ñ‚ÌƒIƒtƒZƒbƒg’l" (1ŽŸŒ³‰»—v‘f”) ‚ð•Ô‚·ŠÖ”‚ªdimlinecŠÖ”‚Å‚·B
+^
+dimlinecŠÖ”‚ð—˜—p‚·‚é‚±‚Æ‚ÅA‘½ŽŸŒ³”z—ñ‚ð1ŽŸŒ³”z—ñ‚Ì‚æ‚¤‚Éˆµ‚¤‚±‚Æ‚ª‰Â”\‚É‚È‚è‚Ü‚·B
+ctlarray–½—ß‚âMDAQSort–½—ß‚Å‚Í "1ŽŸŒ³‰»—v‘f”" ‚ÅŠJŽn’l‚ÆI—¹’l‚ðŽw’è‚·‚é‚±‚Æ‚É‚È‚è‚Ü‚·‚Ì‚ÅA‚±‚ê‚ç‚Ì–½—ß‚Å‘½ŽŸŒ³”z—ñ•Ï”‚ðˆµ‚¤ê‡‚ÍdimlinecŠÖ”‚ðŽg—p‚µ‚Ä‰º‚³‚¢B
 ^
 ¦linedim–½—ß‚Ì€–Ú‚à‡‚í‚¹‚Ä“Ç‚ñ‚Å‚­‚¾‚³‚¢B
 %sample
@@ -138,6 +195,10 @@ dimlinecŠÖ”‚ð—˜—p‚·‚é‚±‚Æ‚ÅA‘½ŽŸŒ³”z—ñ‚ð1ŽŸŒ³”z—ñ‚Ì‚æ‚¤‚Éˆµ‚¤‚±‚Æ‚ª‰Â”\‚É‚È‚è‚
 linedim
 ctlarray
 uniary
+uniary_
+Auniary
+MDAQSort
+MFCQSort
 
 ;„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 
@@ -195,6 +256,8 @@ dim_ofset : ”z—ñ‚ÌƒIƒtƒZƒbƒg’l
 dimlinec
 ctlarray
 uniary
+uniary_
+Auniary
 
 ;„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª„ª
 

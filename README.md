@@ -1,6 +1,6 @@
-<!-- # マイ・アレイ ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YUZRANIUM/02_myarray?include_prereleases&style=flat-square) -->
+# マイ・アレイ ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YUZRANIUM/02_myarray?include_prereleases&style=flat-square)
 
-# myarray テスト版 v0.28.1
+<!-- # myarray テスト版 v0.28.3 -->
 
 多次元配列変数をなんやかんやする、なんてことないモジュール
 
@@ -11,11 +11,11 @@
 ## 今後の予定
 * [x] `ctlarray`命令をはじめとした制御系命令の調整
 * [x] `bisrch`命令, `MDABiSrch`命令の文字列型対応
-* [ ] 多次元配列変数のソート命令
-* [ ] 三角関数、数列機能の試作･追加
+* [x] 多次元配列変数のソート命令
 * [ ] 辞書的なもの
 * [ ] モジュール型変数への対応
 * [ ] 多次元配列の結合と分離 (※半分妄想)
+* ~~[ ] 三角関数、数列機能の試作･追加~~    ※`Auniary`命令新規追加に伴って廃案
 
 <br>
 
@@ -231,28 +231,31 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 
 <!----------------------------------------------------------------------------->
 
+* 配列情報取得 `dim_info` 命令
+* 多次元配列を1次元化した要素数を返す `dimlinec` 関数
+* 1次元化した要素数から元の各次元要素数を返す `linedim` 命令
+<!--  -->
 * 配列動作制御 `ctlarray` 命令
 * 制御フィールド開始 `ctlarray_start` 命令
 * 制御フィールド終了 `ctlarray_end` 命令
 * 制御の除外 `ctlexcld` 命令
 <!--  -->
-* 多次元配列を1次元化した要素数を返す `dimlinec` 関数
-* 1次元化した要素数から元の各次元要素数を返す `linedim` 命令
-<!--  -->
 * 多次元配列の線形探索 `MDALiSrch` 関数
 * 多次元配列の二分木探索 `MDABiSrch` 命令
+* 多次元配列のクイックソート `MDAQSort`, `MFCQSort` 命令
 <!--  -->
-* 多次元配列を1次元配列として扱う `uniary` 関数
+* 多次元配列を1次元配列として扱う `uniary`, `uniary_` 関数, `Auniary` 命令
 * 複数の多次元配列を オフセットで まとめて扱う `union_d` 関数
 * 複数の多次元配列を 値で&emsp;&emsp;&emsp;&emsp; まとめて扱う `union` 関数
 * `union`, `union_d`, `union4`, `union4d` 関数の書式設定を行う `unifrmt` 命令
 <!--  -->
-
-**試作中**
-* 4つの多次元配列をまとめて扱う `union4`, `union4d` 関数
 * 文字列をASCIIコードに変換する `str2ASCI` 命令
 * ASCIIコードを文字列に変換する `ASCI2str` 関数
 * 文字列をASCIIコードで大小比較 `ASCIcomp` 関数
+<!--  -->
+
+**試作中**
+* 4つの多次元配列をまとめて扱う `union4`, `union4d` 関数
 <!--  -->
 
 ---
@@ -326,9 +329,15 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 * 02_myarray_srch.hsp
 * 02_myarray.hsp
 <!--  -->
-* 02_myarrayフォルダ
+上記の4つのファイルをユーザースクリプトのディレクトリか、HSP のインストールディレクトリ下の commonフォルダ内において、`02_myarray.hsp` をインクルードしてください。
 
-上記の4つのファイルをユーザースクリプトのディレクトリか、HSP のインストールディレクトリ下の commonフォルダ内において、`02_myarray.hsp` をインクルードしてください。02_myarrayフォルダをHSPのインストールディレクトリ下にある **doclibフォルダ内に02_myarrayフォルダごと** 置いて下さい。サンプルファイルもそのままで構いません。
+<br>
+
+
+* 02_myarrayフォルダ
+<!--  -->
+02_myarrayフォルダをHSPのインストールディレクトリ下にある **doclibフォルダ内に02_myarrayフォルダごと** 置いて下さい。
+サンプルファイルもそのままで構いません。
 
 ```
 例）
@@ -345,11 +354,13 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 ```
 
 ``` hsp
-	// インクルードするのは 02_myarray ファイルだけ
+	; インクルードするのは 02_myarray.hsp ファイルだけ!!
 	#include "02_myarray.hsp"
 ```
 
+
 <!----------------------------------------------------------------------------->
+
 
 <br>
 
@@ -367,7 +378,7 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 
 * Windows11 Pro 22H2 x64
 * Hot Soup Processor 3.7beta4
-* Visual Studio Code ver 1.75.1
+* Visual Studio Code ver 1.77.0
 
 ## LICENSE
 
@@ -407,6 +418,33 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 <br>
 
 ## 更新履歴（Change Log）
+
+### ver 0.28.3
+2023/04/01
+
+**新規追加命令･関数**
+
+| 名称       | 種別 | 概要                             |
+|:-----------|:----:|----------------------------------|
+| `dim_info` | 命令 | 配列情報を取得する (※1)          |
+|            |      |                                  |
+| `uniary_`  | 関数 | `uniary`をループ内の使用に最適化 |
+| `Auniary`  | 命令 | ループ内で連続代入               |
+|            |      |                                  |
+| `MDAQSort` | 命令 | 多次元配列クイックソート         |
+| `MFCQSort` | 命令 | 多次元配列クイックソート         |
+
+
+**修正･変更**
+
+※1
+ループ内の使用に最適化した`uniary_`, `Auniary`関数の新規追加に伴い、内部命令(`local`指定)だった`dim_info`命令に修正を加え、一般公開命令とした
+
+
+<!----------------------------------------------------------------------------->
+
+---
+
 
 ### テスト版 v0.28.1
 2023/02/27
@@ -482,6 +520,14 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 
 ---
 
+<details>
+
+<summary>以下略</summary>
+
+<br>
+
+---
+
 ### ver 0.27.3
 2023/01/21
 
@@ -501,12 +547,6 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 
 ---
 
-<details>
-
-<summary>以下略</summary>
-
-<br>
-
 ### ver 0.27.1
 2023/01/16
 
@@ -517,9 +557,9 @@ calc_ary ans_ary, ary1, ary2, calc_type, error_stop
 * ヘルプファイルに新規追加分の命令･関数の項目を追記、一部文言の修正。
 * 一部ソースコードの修正
 
----
 
 <!----------------------------------------------------------------------------->
+---
 
 ### ver 0.27
 2023/01/09

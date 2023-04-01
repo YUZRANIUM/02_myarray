@@ -1,7 +1,7 @@
 ; INFO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ; FileName : 02_myarray_srch.hs
-; Version  : 0.28.1
-; Date     : 2023/02/27
+; Version  : 0.28.3
+; Date     : 2023/04/01
 ; Author   : YUZRANIUM（ゆずらにうむ）
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -23,11 +23,11 @@
 ;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 %dll
-myarray_srch
+myarray
 %ver
-0.28.1
+0.28.3
 %date
-2023/02/27
+2023/04/01
 %author
 YUZRANIUM
 %url
@@ -77,7 +77,7 @@ index : インデックス
     loop
 
 %group
-拡張入出力制御
+探索・ソート関連
 %type
 ユーザー拡張入出力制御関数
 %href
@@ -111,7 +111,7 @@ p1   : 昇降順 (= 0, 0: 昇順 / 1: 降順)
 %sample
 
 %group
-拡張入出力制御
+探索・ソート関連
 %type
 ユーザー拡張入出力制御命令
 %href
@@ -133,6 +133,7 @@ s_v1 : 文字列または文字列型変数名
 ^
 * ary1はsdim等で初期化する必要はありません。
 ^
+終了コードか、改行コードまでを連続してASCIIコードへ変換します。
 半角英数はもちろん、全角文字(2バイトコード, シフトJIS)が含まれている文字列でもASCIIコードに変換可能です。
 実行後、ary1にはs_v1で指定された文字列のASCIIコードが10進数で一つずつ格納された整数型の1次元配列となります。
 ^
@@ -277,16 +278,19 @@ srch     : 結果を受け取る変数名
 * srch_ary はあらかじめ、昇順ソートされていることが前提です。
 ^
 実行後、探索に成功した場合はsrch_aryの配列要素がsrchに代入されます。探索に失敗した場合はsrchに-1が代入されます。
+多次元配列変数をソートする場合はMDAQSortかMFCMQSort命令を使用して下さい。
 
 %sample
 
 %group
-拡張入出力制御
+探索・ソート関連
 %type
 ユーザー定義命令
 %href
 mlgetc
-mdabisrch
+MDABisrch
+MDAQSort
+MFCQSort
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -320,16 +324,18 @@ srch     : 変数名
 
     stop
 %group
-拡張入出力制御
+探索・ソート関連
 %type
 ユーザー定義関数
 %href
 uniary
-bisrch
-MDALiSrch
 str2ASCI
 ASCI2str
 ASCIcomp
+bisrch
+MDALiSrch
+MDAQSort
+MFCQSort
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -359,12 +365,97 @@ srch_ary : 探索元の配列変数名
 
     stop
 %group
-拡張入出力制御
+探索・ソート関連
 %type
 ユーザー定義関数
 %href
+linedim
 uniary
 bisrch
 MDABiSrch
+
+;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+%index
+MDAQSort
+多次元配列クイックソート
+%prm
+ary1, mode, frst, last
+ary1 : 変数名
+mode : 昇降順切り替え (= 0, 0:昇順 / 1:降順)
+frst : ソート区間の開始値 (1次元化要素数)
+last : ソート区間の終了値 (1次元化要素数)
+%inst
+この命令は、ary1に指定された配列変数の値をソートするものです。
+^
+ary1は文字列型、実数型、整数型の1, 2, 3, 4、いずれの次元にも対応しています。
+modeではソート時の昇降順を選択でき、省略もしくは0指定で昇順、1指定で降順となります。
+frstおよびlastを指定した場合は、配列変数のfrstからlastまでの一部分のみをソーティングの対象とします。省略時は配列変数のすべての値（全区間）をソートします。
+^
+frstおよびlastは、ary1が1次元配列変数の場合はその要素数で、多次元配列変数（2, 3, 4次元）の場合はdimlinec関数で得られる1次元化要素数で、それぞれソーティングの区間を指定できます。
+
+%sample
+    #include "02_myarray.hsp"
+
+    dim test, 12, 10, 5, 4
+
+    dim_info test, test_info   ; testの配列情報をtest_infoへ読み出す
+                               ; test_info(5)には、4次元配列変数testの配列総数が代入されている
+    ; testの要素の数だけ繰り返す
+    repeat test_info(5)
+        Auniary test, cnt, rnd(100), test_info   ; testの1次元化要素数がcntのところにrnd(100)を代入する
+    loop
+
+    ; test(6, 5, 4, 2) から test(0, 0, 0, 3) までの範囲を昇順でソート
+    MDAQSort test, 0, dimlinec(test, 6, 5, 4, 2), dimlinec(test, 0, 0, 0, 3)
+
+    repeat test_info(5)
+        mes "" + uniary_(test, cnt, test_info)
+    loop
+
+%group
+探索・ソート関連
+%type
+ユーザー定義命令
+%href
+dimlinec
+bisrch
+MDABiSrch
+MFCQSort
+
+;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+%index
+MFCQSort
+多機能複合型クイックソート
+%prm
+ary1, mode, frst, last
+ary1 : 変数名
+mode : 昇降順切り替え (= 0, 0:昇順 / 1:降順)
+frst : ソート区間の開始値 (1次元化要素数)
+last : ソート区間の終了値 (1次元化要素数)
+%inst
+この命令は、ary1に指定された配列変数の値をソートするものです。
+^
+ary1は文字列型、実数型、整数型の1, 2, 3, 4、いずれの次元にも対応しています。
+modeではソート時の昇降順を選択でき、省略もしくは0指定で昇順、1指定で降順となります。
+frstおよびlastを指定した場合は、配列変数のfrstからlastまでの一部分のみをソーティングの対象とします。省略時は配列変数のすべての値（全区間）をソートします。
+^
+frstおよびlastは、ary1が1次元配列変数の場合はその要素数で、多次元配列変数（2, 3, 4次元）の場合はdimlinec関数で得られる1次元化要素数で、それぞれソーティングの区間を指定できます。
+^
+機能的にはMDAQSort命令と変わりません。
+
+
+%sample
+
+%group
+探索・ソート関連
+%type
+ユーザー定義命令
+%href
+dimlinec
+bisrch
+MDABiSrch
+MDAQSort
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

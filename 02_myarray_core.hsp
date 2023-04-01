@@ -1,7 +1,7 @@
 ; INFO *************************************************************************
 ; FileName : myarray_core.hsp
-; Version  : 0.28.1
-; Date     : 2023/02/27
+; Version  : 0.28.3
+; Date     : 2023/04/01
 ; Author   : YUZRANIUM（ゆずらにうむ）
 ; Twitter  : https://twitter.com/YUZRANIUM
 ; GitHub   : https://github.com/YUZRANIUM/02_myarray
@@ -54,12 +54,10 @@
 	;
 	; ary_inf(4) : 使用次元数 (1, 2, 3, 4) (旧 : use_dim)
 	; ary_inf(5) : 配列の長さ              (旧 : sum_dim)
-	;
 	; ary_inf(6) : 配列の変数型
 	;
-	; ary_inf(7) : 配列の現在位置          (旧 : num_)
 	; ------------------------------------------------------
-	ary_inf = 0 : dim ary_inf, 8
+	ary_inf = 0 : dim ary_inf, 7
 
 
 	; if-else での型分岐用
@@ -74,6 +72,8 @@
 	;
 	vtype = 0 : dim vtype, 7
 
+	; 一次保存用
+	my_temp = 0
 	return
 
 
@@ -88,20 +88,17 @@
 	;
 	; ary_inf(4) : 使用次元数 (1, 2, 3, 4) (旧 : use_dim)
 	; ary_inf(5) : 配列の長さ              (旧 : sum_dim)
-	;
 	; ary_inf(6) : 配列の変数型
 	;
-	; ary_inf(7) : 配列の現在位置          (旧 : num_)
-	;
-#deffunc local dim_info_ array ary, array ary_inf_
+#deffunc dim_info array ary, array ary_inf_
 
-	dim ary_inf_, 8
+	dim ary_inf_, 7
 
 	; 配列の各次元要素数
 	ary_inf_(0) = length(ary), length2(ary), length3(ary), length4(ary)
 
 	; 使用次元の確認
-	ary_inf_(4) = (ary_inf_(0) != 0) + (ary_inf_(1) != 0) + (ary_inf_(2) != 0) + (ary_inf_(3) != 0)
+	ary_inf_(4) = (ary_inf_(0) ! 0) + (ary_inf_(1) ! 0) + (ary_inf_(2) ! 0) + (ary_inf_(3) ! 0)
 
 	; 配列合計数
 	ary_inf_(5) = 1
@@ -133,17 +130,17 @@
 #deffunc local asoc_info_ array ary, array asoc_inf_, int d1
 
 	; 配列の各次元要素数
-	asoc_inf_(0, d1) = length(ary1), length2(ary1), length3(ary1), length4(ary1)
+	asoc_inf_(0, d1) = length(ary), length2(ary), length3(ary), length4(ary)
 
 	; 使用次元の確認
-	asoc_inf_(4, d1) = (asoc_inf_(0, d1) != 0) + (asoc_inf_(1, d1) != 0) + (asoc_inf_(2, d1) != 0) + (asoc_inf_(3, d1) != 0)
+	asoc_inf_(4, d1) = (asoc_inf_(0, d1) ! 0) + (asoc_inf_(1, d1) ! 0) + (asoc_inf_(2, d1) ! 0) + (asoc_inf_(3, d1) ! 0)
 
 	; 配列の長さ
 	asoc_inf_(5, d1) = 1
 	repeat asoc_inf_(4, d1):   asoc_inf_(5, d1) *= asoc_inf_(cnt, d1)   :loop
 
 	; 変数型
-	asoc_inf_(6, d1) = vartype(asoc_val)
+	asoc_inf_(6, d1) = vartype(ary)
 
 	return
 
@@ -161,9 +158,9 @@
 #deffunc local typ_info_ array ary, array vtype_
 
 	; 変数の型による分岐
-	vtype_(0) = (vartype(ary) == 1) | (vartype(ary) == 5)
+	vtype_(0) = (vartype(ary) = 1) | (vartype(ary) = 5)
 
-	repeat 6, 1:   vtype_(cnt) = (vartype(ary) == cnt)   :loop
+	repeat 6, 1:   vtype_(cnt) = (vartype(ary) = cnt)   :loop
 
 	return
 
@@ -184,11 +181,11 @@
 #deffunc local dim_line_num_ array ary_inf_, array dim_num, int dim_ofset
 
 	repeat ary_inf_(4)
-		ary_inf_(7) = dim_ofset
+		my_temp = dim_ofset
 		repeat cnt
-			ary_inf_(7) /= ary_inf_(cnt)
+			my_temp /= ary_inf_(cnt)
 		loop
-		dim_num(cnt) = ary_inf_(7) \ ary_inf_(cnt)
+		dim_num(cnt) = my_temp \ ary_inf_(cnt)
 	loop
 
 	return
@@ -205,7 +202,7 @@
 #deffunc linedim array ary, array dim_num, int dim_ofset
 
 	; 配列情報の取得
-	dim ary_inf : dim_info_@myarray_core ary, ary_inf
+	dim ary_inf : dim_info ary, ary_inf
 
 	if ary_inf(5) < dim_ofset : return 0
 
@@ -223,22 +220,22 @@
 #defcfunc dimlinec array ary, int d1, int d2, int d3, int d4
 
 	; 配列情報の取得
-	dim ary_inf, 8  : dim_info_@myarray_core ary, ary_inf
+	dim ary_inf, 7  : dim_info ary, ary_inf
 
 	; 条件分岐用
 	dim prm_chk_, 5 : prm_chk_ = d1, d2, d3, d4
 
 	; 各次元要素数より指定値が大きい または 0より小さい
 	repeat 4
-		if      (prm_chk_.cnt == 0) {continue}
-		else:if (prm_chk_.cnt <  0) | (ary_inf.cnt <= prm_chk_.cnt) {prm_chk_.4 = 1}
+		if      (prm_chk_.cnt = 0) {continue}
+		else:if (prm_chk_.cnt < 0) | (ary_inf.cnt <= prm_chk_.cnt) {prm_chk_.4 = 1}
 	loop
 	if prm_chk_(4) == 1 : return 0
 	;___________________________________
 
 
 	dim prm_chk_, 5
-	prm_chk_(0) = (d1 == 0) & (d2 == 0) & (d3 == 0) & (d4 == 0)
+	prm_chk_(0) = (d1 = 0) & (d2 = 0) & (d3 = 0) & (d4 = 0)
 	prm_chk_(1) = (d1 <= ary_inf.0) & (d2 <= ary_inf.1) & (d3 <= ary_inf.2) & (d4 <= ary_inf.3)
 
 	; prm_chk_(0) 配列の "長さ" を返す
@@ -249,19 +246,44 @@
 
 
 
-;-------------------------------------------------------------------------------
-	;
-	; val = type_convert_(p1, s1)
+;-----------------------------------------------------------
+	; 型変換
+	; val = TypeCnv(p1, s1)
 	;
 	;	[ int ] p1 : 型のタイプ値 (2:文字列型 / 3:実数型 / 4:整数型)
 	;	[ str ] s1 : 変換する値
 	;
-#defcfunc local type_convert_ int p1, str s1
+#defcfunc TypeCnv str s1, int p1
+	if      (p1 = 2) {return    str(s1)}
+	else:if (p1 = 3) {return double(s1)}
+	else:if (p1 = 4) {return    int(s1)}
 
-	if      (p1 == 2) {return    str(s1)}
-	else:if (p1 == 3) {return double(s1)}
-	else:if (p1 == 4) {return    int(s1)}
-	else              {return       -0.0}
+
+;-----------------------------------------------------------
+	;
+	; STRUCTDAT構造体 情報表示関数
+	;
+#defcfunc local STRUCTDAT_info_ var format_, array ary, int d1
+
+	return strf(format_, ary(0, d1), ary(1, d1), ary(2, d1), ary(3, d1), ary(4, d1), ary(5, d1), ary(6, d1))
+
+
+;-----------------------------------------------------------
+	;
+	; PVAL構造体 情報表示関数
+	;
+#defcfunc local PVAL_info_ var format_, array ary
+
+	return strf(format_, (ary(0) & $FF), (ary(0) >> 16), ary(1), ary(2), ary(3), ary(4), ary(5), ary(6), ary(7), ary(7))
+
+
+;-----------------------------------------------------------
+	;
+	; STRUCTDAT構造体 情報表示関数
+	;
+#defcfunc local STRBUF_info_ var format_, array ary
+
+	return strf(format_, (ary(0) & $FF), (ary(0) >> 16), ary(1), ary(2), ary(3), ary(3), ary(4), ary(4), ary(5), ary(5))
 
 
 #global // myarray_core
